@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using CodeBase.Infrastructure.Services;
 using CodeBase.Infrastructure.Services.PersistentProgress;
+using CodeBase.StaticData;
 using UnityEngine;
 
 namespace CodeBase.Infrastructure.Factory
@@ -13,5 +14,6 @@ namespace CodeBase.Infrastructure.Factory
         Task WarmUp();
         void Cleanup();
         Task<GameObject> CreatePlayer(Vector3 at);
+        Task<GameObject> CreateWeapon(WeaponTypeId weaponId, Transform parent);
     }
 }
