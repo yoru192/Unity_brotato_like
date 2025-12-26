@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using CodeBase.Logic;
 using UnityEngine;
 
 namespace CodeBase.Weapon
@@ -34,7 +35,7 @@ namespace CodeBase.Weapon
         {
             UpdateCooldown();
             
-            if (CanAttack() && HasTarget()) // Тепер атакує тільки якщо є ціль
+            if (CanAttack() && HasTarget())
                 StartAttack();
         }
 
@@ -43,13 +44,12 @@ namespace CodeBase.Weapon
             if (Hit(out Collider2D hit))
             {
                 Debug.Log($"Hit enemy: {hit.name}");
-                // hit.GetComponent<IHealth>().TakeDamage(_damage);
+                hit.GetComponent<IHealth>().TakeDamage(_damage);
             }
         }
 
         public void OnAttackEnded()
         {
-            Debug.Log("Attack Ended"); // Для дебагу
             _currentCooldown = _attackCooldown;
             _isAttacking = false;
         }

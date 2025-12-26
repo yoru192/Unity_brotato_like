@@ -8,6 +8,8 @@ namespace CodeBase.StaticData
     {
         private Dictionary<string, LevelStaticData> _levels;
         private Dictionary<WeaponTypeId, WeaponStaticData> _weapons;
+        private Dictionary<EnemyTypeId, EnemyStaticData> _enemies;
+        
 
         public void Load()
         {
@@ -15,6 +17,8 @@ namespace CodeBase.StaticData
                 .ToDictionary(x => x.levelKey,  x => x);
             _weapons = Resources.LoadAll<WeaponStaticData>("StaticData/Weapons")
                 .ToDictionary(x => x.weaponTypeId,  x => x);
+            _enemies = Resources.LoadAll<EnemyStaticData>("StaticData/Enemy")
+                .ToDictionary(x => x.enemyTypeId,  x => x);
         }
         
         public LevelStaticData ForLevel(string sceneKey) =>
@@ -23,6 +27,10 @@ namespace CodeBase.StaticData
                 : null;
         public WeaponStaticData ForWeapon(WeaponTypeId weaponId) =>
             _weapons.TryGetValue(weaponId, out WeaponStaticData staticData)
+                ? staticData
+                : null;
+        public EnemyStaticData ForEnemy(EnemyTypeId enemyId) =>
+            _enemies.TryGetValue(enemyId, out EnemyStaticData staticData)
                 ? staticData
                 : null;
     }
