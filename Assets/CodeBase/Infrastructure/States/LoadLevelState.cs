@@ -4,6 +4,7 @@ using CodeBase.Infrastructure.Factory;
 using CodeBase.Infrastructure.Services.PersistentProgress;
 using CodeBase.Logic;
 using CodeBase.StaticData;
+using CodeBase.Weapon;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -55,15 +56,26 @@ namespace CodeBase.Infrastructure.States
         private async Task InitGameWorld()
         {
             LevelStaticData levelData = LevelStaticData();
-            GameObject hero = await InitHero(levelData);
-            CameraFollow(hero);
+            GameObject player = await InitPlayer(levelData);
+            CameraFollow(player);
         }
+        
+        
         
         private void CameraFollow(GameObject hero) =>
             Camera.main.GetComponent<CameraFollow>().Follow(hero);
         
-        private async Task<GameObject> InitHero(LevelStaticData levelData) => 
-            await _gameFactory.CreatePlayer(levelData.initialHeroPosition);
+        private async Task<GameObject> InitPlayer(LevelStaticData levelData)
+        {
+            GameObject player = await _gameFactory.CreatePlayer(levelData.initialHeroPosition);
+
+            WeaponHolder weaponHolder = player.GetComponentInChildren<WeaponHolder>();
+            if (weaponHolder != null)
+                weaponHolder.Construct(_gameFactory);
+    
+            return player;
+        }
+
         
         private LevelStaticData LevelStaticData()
         {

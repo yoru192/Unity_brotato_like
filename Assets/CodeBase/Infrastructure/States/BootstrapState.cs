@@ -37,7 +37,7 @@ namespace CodeBase.Infrastructure.States
 
         private void EnterLoadLevel()
         {
-            _stateMachine.Enter<LoadLevelState, string>("Main");
+            _stateMachine.Enter<LoadProgressState>();
         }
 
         private void RegisterServices()
@@ -50,8 +50,7 @@ namespace CodeBase.Infrastructure.States
             _services.RegisterSingle<IInputService>(InputService());
             _services.RegisterSingle<IPersistentProgressService>( new PersistentProgressService());
             _services.RegisterSingle<IGameFactory>(new GameFactory(
-                _services.Single<IAssets>()
-            ));
+                _services.Single<IAssets>(), _services.Single<IStaticDataService>()));
             _services.RegisterSingle<ISaveLoadService>( new SaveLoadService(_services.Single<IPersistentProgressService>(), _services.Single<IGameFactory>()));
         }
         
