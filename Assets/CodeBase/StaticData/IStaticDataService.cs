@@ -7,5 +7,6 @@ namespace CodeBase.StaticData
         void Load();
         LevelStaticData ForLevel(string sceneKey);
         WeaponStaticData ForWeapon(WeaponTypeId weaponId);
+        EnemyStaticData ForEnemy(EnemyTypeId enemyId);
     }
 }

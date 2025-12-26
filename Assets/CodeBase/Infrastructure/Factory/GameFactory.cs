@@ -2,8 +2,10 @@
 using System.Threading.Tasks;
 using CodeBase.Infrastructure.AssetManagement;
 using CodeBase.Infrastructure.Services.PersistentProgress;
+using CodeBase.Logic;
 using CodeBase.Player;
 using CodeBase.StaticData;
+using CodeBase.UI.Elements;
 using CodeBase.Weapon;
 using UnityEngine;
 
@@ -35,6 +37,22 @@ namespace CodeBase.Infrastructure.Factory
             PlayerGameObject = await InstantiateRegistered(AssetsAddress.PlayerPath, at);
             return PlayerGameObject;
         }
+
+        public async Task<GameObject> CreateEnemy(EnemyTypeId enemyId, Transform parent)
+        {
+            EnemyStaticData enemyData = _staticData.ForEnemy(enemyId);
+            GameObject prefab = await _assets.Load<GameObject>(enemyData.prefabReference);
+            GameObject enemy = InstantiateRegisteredAsync(prefab, parent.transform.position);
+    
+            IHealth health = enemy.GetComponent<IHealth>();
+            health.Current = enemyData.health;
+            health.Max = enemyData.health;
+    
+            enemy.GetComponent<ActorUI>().Construct(health);
+    
+            return enemy;
+        }
+
 
         public async Task<GameObject> CreateWeapon(WeaponTypeId weaponId, Transform parent)
         {

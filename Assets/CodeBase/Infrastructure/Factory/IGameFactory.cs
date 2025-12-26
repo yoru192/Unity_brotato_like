@@ -15,5 +15,6 @@ namespace CodeBase.Infrastructure.Factory
         void Cleanup();
         Task<GameObject> CreatePlayer(Vector3 at);
         Task<GameObject> CreateWeapon(WeaponTypeId weaponId, Transform parent);
+        Task<GameObject> CreateEnemy(EnemyTypeId enemyId, Transform parent);
     }
 }
