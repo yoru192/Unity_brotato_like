@@ -12,6 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1d7847fe7cce465aa72d1ace415ee0cb, type: 3}
   m_Name: Base
   m_EditorClassIdentifier: Assembly-CSharp::CodeBase.StaticData.EnemyStaticData
+  enemyTypeId: 0
   health: 4
   damage: 1
   moveSpeed: 2
+  prefabReference:
+    m_AssetGUID: 79171cc7afbd7524da1e002766f5d634
+    m_SubObjectName: 
+    m_SubObjectType: 
+    m_SubObjectGUID: 
+    m_EditorAssetChanged: 0

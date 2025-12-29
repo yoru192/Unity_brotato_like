@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CodeBase.StaticData.WeaponStaticData
   weaponTypeId: 0
   damage: 2
-  cooldown: 1
-  radius: 0.5
+  cooldown: 0.9
+  radius: 1
   effectiveDistance: 0.5
   prefabReference:
     m_AssetGUID: bd898651e4604bb44a729f0244b84c09

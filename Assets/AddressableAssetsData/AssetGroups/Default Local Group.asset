@@ -15,8 +15,18 @@ MonoBehaviour:
   m_GroupName: Default Local Group
   m_GUID: c0ffe91331d1f8f4c9c3662dd8f52cbd
   m_SerializeEntries:
+  - m_GUID: 19cdc2158dfe63a4cb50523f0e8de4c3
+    m_Address: Kamikadze
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 79171cc7afbd7524da1e002766f5d634
     m_Address: Base
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ad9327ae309f1cf4cb5090f6b46c0a9c
+    m_Address: Tank
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0

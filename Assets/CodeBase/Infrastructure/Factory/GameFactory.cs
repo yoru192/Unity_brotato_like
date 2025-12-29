@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using CodeBase.Enemy;
 using CodeBase.Infrastructure.AssetManagement;
 using CodeBase.Infrastructure.Services.PersistentProgress;
 using CodeBase.Logic;
@@ -8,6 +9,7 @@ using CodeBase.StaticData;
 using CodeBase.UI.Elements;
 using CodeBase.Weapon;
 using UnityEngine;
+using UnityEngine.AI;
 
 namespace CodeBase.Infrastructure.Factory
 {
@@ -49,6 +51,9 @@ namespace CodeBase.Infrastructure.Factory
             health.Max = enemyData.health;
     
             enemy.GetComponent<ActorUI>().Construct(health);
+            enemy.GetComponent<NavMeshAgent>().speed = enemyData.moveSpeed;
+            enemy.GetComponent<AgentMoveToPlayer>().Construct(PlayerGameObject.transform);
+           
     
             return enemy;
         }
