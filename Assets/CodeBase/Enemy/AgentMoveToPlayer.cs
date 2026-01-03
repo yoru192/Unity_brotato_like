@@ -34,8 +34,7 @@ namespace CodeBase.Enemy
         {
             if (_heroTransform == null || _agent == null)
                 return;
-
-            // Перевірка чи агент на NavMesh
+            
             if (!_agent.isOnNavMesh)
             {
                 Debug.Log($"{gameObject.name} is NOT on NavMesh! Position: {transform.position}");

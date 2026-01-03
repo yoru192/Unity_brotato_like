@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 namespace CodeBase.StaticData
 {
@@ -7,5 +8,6 @@ namespace CodeBase.StaticData
     {
         public string levelKey;
         public Vector3 initialHeroPosition;
+        public List<Vector2> spawnersPosition;
     }
 }

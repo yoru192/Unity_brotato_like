@@ -10,6 +10,7 @@ using CodeBase.UI.Elements;
 using CodeBase.Weapon;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.SceneManagement;
 
 namespace CodeBase.Infrastructure.Factory
 {
@@ -49,7 +50,14 @@ namespace CodeBase.Infrastructure.Factory
             IHealth health = enemy.GetComponent<IHealth>();
             health.Current = enemyData.health;
             health.Max = enemyData.health;
-    
+
+            enemy.GetComponent<EnemyAttack>().Construct(
+                PlayerGameObject.transform,
+                enemy.GetComponent<EnemyAnimator>(),
+                enemyData.cooldown,
+                enemyData.radius,
+                enemyData.effectiveDistance,
+                enemyData.damage);
             enemy.GetComponent<ActorUI>().Construct(health);
             enemy.GetComponent<NavMeshAgent>().speed = enemyData.moveSpeed;
             enemy.GetComponent<AgentMoveToPlayer>().Construct(PlayerGameObject.transform);
@@ -78,6 +86,17 @@ namespace CodeBase.Infrastructure.Factory
             );
     
             return weapon;
+        }
+
+        public async Task<GameObject> CreateSpawner(List<Vector2> spawnPositions)
+        {
+            GameObject spawner = await InstantiateRegistered(AssetsAddress.SpawnerPath, Vector3.zero);
+    
+            EnemySpawner enemySpawner = spawner.GetComponent<EnemySpawner>();
+            if (enemySpawner != null)
+                enemySpawner.Construct(this, spawnPositions);
+    
+            return spawner;
         }
 
 

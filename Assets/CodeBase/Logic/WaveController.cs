@@ -1,43 +1,48 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-using CodeBase.Infrastructure.Factory;
-using CodeBase.Infrastructure.Services;
+﻿using System;
+using System.Collections.Generic;
 using CodeBase.StaticData;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 namespace CodeBase.Logic
 {
-    public class WaveSpawner : MonoBehaviour
+    public class WaveController : MonoBehaviour
     {
-        [System.Serializable]
+        [Serializable]
         public class EnemyWaveConfig
         {
             public EnemyTypeId enemyTypeId;
             public int cost;
         }
 
+        [Header("Wave Settings")]
         public List<EnemyWaveConfig> enemyConfigs = new List<EnemyWaveConfig>();
-        public int currWave;
+        public int waveDuration = 60;
+        public float spawnInterval = 2f;
+        public int maxAlive = 10;
+
+        [Header("Wave Info")]
+        public int currentWave;
         private int waveValue;
-        public Transform[] spawnLocation;
-        public int spawnIndex;
-        public int waveDuration;
-        
-        private IGameFactory _gameFactory;
+
+        private EnemySpawner _spawner;
         private float waveTimer;
-        private float spawnInterval;
         private float spawnTimer;
         private Queue<EnemyTypeId> enemiesToSpawn = new Queue<EnemyTypeId>();
-        public List<GameObject> spawnedEnemies = new List<GameObject>();
 
-        public void Construct(IGameFactory gameFactory)
+        public event Action OnWaveCompleted;
+
+        private void Awake()
         {
-            _gameFactory = gameFactory;
+            _spawner = GetComponent<EnemySpawner>();
+            if (_spawner == null)
+            {
+                Debug.LogError("EnemySpawner component not found on the same GameObject!");
+            }
         }
 
         void Start()
         {
-            _gameFactory = AllServices.Container.Single<IGameFactory>();
             GenerateWave();
         }
 
@@ -47,7 +52,7 @@ namespace CodeBase.Logic
             {
                 if (enemiesToSpawn.Count > 0)
                 {
-                    SpawnNextEnemy();
+                    TrySpawnNextEnemy();
                     spawnTimer = spawnInterval;
                 }
                 else
@@ -61,59 +66,50 @@ namespace CodeBase.Logic
                 waveTimer -= Time.fixedDeltaTime;
             }
 
-            spawnedEnemies.RemoveAll(enemy => enemy == null);
+            _spawner.CleanupDeadEnemies();
 
-            if (waveTimer <= 0 && spawnedEnemies.Count <= 0)
+            if (waveTimer <= 0 && _spawner.GetAliveEnemiesCount() <= 0)
             {
-                currWave++;
-                GenerateWave();
+                CompleteWave();
             }
         }
 
-        private async void SpawnNextEnemy()
+        private async void TrySpawnNextEnemy()
         {
-            if (spawnLocation == null || spawnLocation.Length == 0)
-            {
-                Debug.LogError("Spawn locations are not set!");
+            if (enemiesToSpawn.Count == 0)
                 return;
-            }
 
-            if (spawnIndex < 0 || spawnIndex >= spawnLocation.Length)
+            EnemyTypeId enemyTypeId = enemiesToSpawn.Peek();
+            GameObject spawnedEnemy = await _spawner.TrySpawnEnemy(enemyTypeId, maxAlive);
+
+            if (spawnedEnemy != null)
             {
-                spawnIndex = 0;
+                enemiesToSpawn.Dequeue();
             }
+        }
 
-            if (spawnLocation[spawnIndex] == null)
-            {
-                Debug.LogError($"Spawn location at index {spawnIndex} is null!");
-                spawnIndex = (spawnIndex + 1) % spawnLocation.Length;
-                return;
-            }
-
-            EnemyTypeId enemyTypeId = enemiesToSpawn.Dequeue();
-
-            GameObject enemy = await _gameFactory.CreateEnemy(enemyTypeId, spawnLocation[spawnIndex]);
-            
-            if (enemy != null)
-            {
-                spawnedEnemies.Add(enemy);
-            }
-
-            spawnIndex = (spawnIndex + 1) % spawnLocation.Length;
+        private void CompleteWave()
+        {
+            Debug.Log($"Wave {currentWave} completed!");
+            OnWaveCompleted?.Invoke();
+            currentWave++;
+            GenerateWave();
         }
 
         public void GenerateWave()
         {
-            waveValue = currWave * 10;
+            waveValue = currentWave * 10;
             GenerateEnemies();
-            spawnInterval = enemiesToSpawn.Count > 0 ? (float)waveDuration / enemiesToSpawn.Count : 1f;
             waveTimer = waveDuration;
+            spawnTimer = 0;
+
+            Debug.Log($"Wave {currentWave} started with {enemiesToSpawn.Count} enemies");
         }
 
-        public void GenerateEnemies()
+        private void GenerateEnemies()
         {
             List<EnemyTypeId> generatedEnemies = new List<EnemyTypeId>();
-            
+
             while (waveValue > 0 && generatedEnemies.Count < 50)
             {
                 int randEnemyId = Random.Range(0, enemyConfigs.Count);

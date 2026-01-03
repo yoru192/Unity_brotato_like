@@ -8,7 +8,7 @@ namespace CodeBase.Player
         
         private Animator _animator;
         private Rigidbody2D _rb;
-        private int _facingDirection;
+        private int _facingDirection = 1;
 
         private void Awake()
         {

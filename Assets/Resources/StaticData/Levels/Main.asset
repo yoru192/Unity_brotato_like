@@ -14,3 +14,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CodeBase.StaticData.LevelStaticData
   levelKey: Main
   initialHeroPosition: {x: 0, y: 0, z: 0}
+  spawnersPosition:
+  - {x: 31.3, y: -5.4}
+  - {x: 8.7, y: 32.7}
+  - {x: -25.2, y: -25.4}
+  - {x: -40.1, y: 0.9}
+  - {x: -7.5, y: -34}
+  - {x: 24.6, y: -23.8}
+  - {x: 31.1, y: 14.1}
+  - {x: -32.5, y: 28.3}
+  - {x: -11.8, y: 31.6}
+  - {x: -38.5, y: 16.6}
+  - {x: 9.8, y: -31.3}
+  - {x: -34.1, y: -15.9}
+  - {x: -32.2, y: 28.1}
+  - {x: 28.4, y: 28}

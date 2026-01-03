@@ -57,6 +57,8 @@ namespace CodeBase.Infrastructure.States
         {
             LevelStaticData levelData = LevelStaticData();
             GameObject player = await InitPlayer(levelData);
+            await InitSpawner(levelData);
+            
             CameraFollow(player);
         }
         
@@ -68,12 +70,16 @@ namespace CodeBase.Infrastructure.States
         private async Task<GameObject> InitPlayer(LevelStaticData levelData)
         {
             GameObject player = await _gameFactory.CreatePlayer(levelData.initialHeroPosition);
-
             WeaponHolder weaponHolder = player.GetComponentInChildren<WeaponHolder>();
             if (weaponHolder != null)
                 weaponHolder.Construct(_gameFactory);
-    
+            
             return player;
+        }
+        
+        private async Task InitSpawner(LevelStaticData levelData)
+        {
+                await _gameFactory.CreateSpawner(levelData.spawnersPosition);
         }
 
         
