@@ -15,13 +15,13 @@ MonoBehaviour:
   m_GroupName: Default Local Group
   m_GUID: c0ffe91331d1f8f4c9c3662dd8f52cbd
   m_SerializeEntries:
-  - m_GUID: 19cdc2158dfe63a4cb50523f0e8de4c3
-    m_Address: Kamikadze
+  - m_GUID: 01bba8ac272838f4da2622aedb7f8237
+    m_Address: Base
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 79171cc7afbd7524da1e002766f5d634
-    m_Address: Base
+  - m_GUID: 2cc0c268e2166134b89d380864c957d6
+    m_Address: WaveController
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -32,6 +32,11 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: bd898651e4604bb44a729f0244b84c09
     m_Address: Knife
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d1d4b7c44ce59f14389b438a82980fa3
+    m_Address: Kamikadze
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0

@@ -6,16 +6,17 @@ namespace CodeBase.Weapon
 {
     public class WeaponAttack : MonoBehaviour
     {
-        [SerializeField] private float _attackCooldown;
-        [SerializeField] private float _effectiveDistance;
-        [SerializeField] private float _radius;
-        [SerializeField] private int _damage = 10;
-        
+        private float _attackCooldown;
+        private float _effectiveDistance;
+        private float _radius;
+        private int _damage;
+
         private WeaponAnimator _animator;
         private float _currentCooldown;
         private int _layerMask;
         private bool _isAttacking;
         private Collider2D[] _hits = new Collider2D[1];
+        private Collider2D _currentTarget;
 
         public void Construct(WeaponAnimator animator, float effectiveDistance, float radius, int damage, float cooldown)
         {
@@ -34,17 +35,21 @@ namespace CodeBase.Weapon
         private void Update()
         {
             UpdateCooldown();
-            
-            if (CanAttack() && HasTarget())
+
+            if (CanAttack() && HasTarget(out _currentTarget))
                 StartAttack();
         }
 
         public void OnAttack()
         {
-            if (Hit(out Collider2D hit))
+            if (_currentTarget != null && _currentTarget.gameObject.activeInHierarchy)
             {
-                Debug.Log($"Hit enemy: {hit.name}");
-                hit.GetComponent<IHealth>().TakeDamage(_damage);
+                var health = _currentTarget.GetComponent<IHealth>();
+                if (health != null)
+                {
+                    Debug.Log($"Hit enemy: {_currentTarget.name}");
+                    health.TakeDamage(_damage);
+                }
             }
         }
 
@@ -52,6 +57,7 @@ namespace CodeBase.Weapon
         {
             _currentCooldown = _attackCooldown;
             _isAttacking = false;
+            _currentTarget = null;
         }
 
         private void UpdateCooldown()
@@ -61,25 +67,19 @@ namespace CodeBase.Weapon
         }
 
         private bool CooldownIsUp() => _currentCooldown <= 0f;
-        
-        private bool CanAttack() => !_isAttacking && CooldownIsUp();
-        
-        private bool HasTarget()
-        {
-            return Physics2D.OverlapCircleNonAlloc(StartPoint(), _radius, _hits, _layerMask) > 0;
-        }
 
-        private bool Hit(out Collider2D hit)
+        private bool CanAttack() => !_isAttacking && CooldownIsUp();
+
+        private bool HasTarget(out Collider2D target)
         {
             int hitAmount = Physics2D.OverlapCircleNonAlloc(StartPoint(), _radius, _hits, _layerMask);
-            hit = _hits.FirstOrDefault();
+            target = _hits.FirstOrDefault();
             return hitAmount > 0;
         }
 
         private Vector2 StartPoint()
         {
-            return new Vector2(transform.position.x, transform.position.y + 0.5f) + 
-                   (Vector2)transform.right * _effectiveDistance;
+            return (Vector2)transform.position + Vector2.up * 0.5f + (Vector2)transform.right * _effectiveDistance;
         }
 
         private void StartAttack()
@@ -90,8 +90,22 @@ namespace CodeBase.Weapon
 
         private void OnDrawGizmos()
         {
-            Gizmos.color = Color.red;
-            Gizmos.DrawWireSphere(StartPoint(), _radius);
+            if (!Application.isPlaying)
+                return;
+
+            Gizmos.color = _isAttacking ? Color.yellow : Color.red;
+            
+            Vector3 center = StartPoint();
+            float angle = 0f;
+            Vector3 lastPoint = center + new Vector3(_radius, 0, 0);
+            
+            for (int i = 1; i <= 32; i++)
+            {
+                angle = i * (360f / 32f) * Mathf.Deg2Rad;
+                Vector3 newPoint = center + new Vector3(Mathf.Cos(angle) * _radius, Mathf.Sin(angle) * _radius, 0);
+                Gizmos.DrawLine(lastPoint, newPoint);
+                lastPoint = newPoint;
+            }
         }
     }
 }

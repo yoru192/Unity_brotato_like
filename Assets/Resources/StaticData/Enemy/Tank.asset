@@ -13,9 +13,12 @@ MonoBehaviour:
   m_Name: Tank
   m_EditorClassIdentifier: Assembly-CSharp::CodeBase.StaticData.EnemyStaticData
   enemyTypeId: 1
-  health: 4
-  damage: 1
-  moveSpeed: 2
+  health: 12
+  damage: 0
+  moveSpeed: 1
+  cooldown: 2
+  radius: 0.5
+  effectiveDistance: 0.5
   prefabReference:
     m_AssetGUID: ad9327ae309f1cf4cb5090f6b46c0a9c
     m_SubObjectName: 
