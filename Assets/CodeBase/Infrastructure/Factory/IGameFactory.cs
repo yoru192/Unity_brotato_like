@@ -17,5 +17,8 @@ namespace CodeBase.Infrastructure.Factory
         Task<GameObject> CreateWeapon(WeaponTypeId weaponId, Transform parent);
         Task<GameObject> CreateEnemy(EnemyTypeId enemyId, Transform parent);
         Task<GameObject> CreateSpawner(List<Vector2> spawnPositions);
+        Task<GameObject> CreateHud();
+        Task<GameObject> CreateGameOverScreen();
+        Task<GameObject> CreateUpgradeScreen();
     }
 }

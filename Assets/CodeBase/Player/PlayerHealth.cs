@@ -49,7 +49,7 @@ namespace CodeBase.Player
                 return; 
             
             Current -= damage;
-            Debug.Log(Current);
+            Debug.Log($"Current HP: {Current}");
         }
     }
 }

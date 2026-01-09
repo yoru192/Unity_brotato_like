@@ -4,6 +4,7 @@ using CodeBase.Infrastructure.Factory;
 using CodeBase.Infrastructure.Services;
 using CodeBase.Infrastructure.Services.PersistentProgress;
 using CodeBase.Infrastructure.Services.SaveLoad;
+using CodeBase.Infrastructure.Services.Upgrade;
 using CodeBase.Logic;
 using CodeBase.StaticData;
 
@@ -24,13 +25,16 @@ namespace CodeBase.Infrastructure.States
                     curtain,
                     services.Single<IGameFactory>(),
                     services.Single<IPersistentProgressService>(),
-                    services.Single<IStaticDataService>()
+                    services.Single<IStaticDataService>(),
+                    services.Single<IProgressService>()
                 ),
                 [typeof(LoadProgressState)] = new LoadProgressState(
                     this, 
                     services.Single<IPersistentProgressService>(), 
                     services.Single<ISaveLoadService>()),
-                [typeof(GameLoopState)] = new GameLoopState(this),
+                [typeof(UpgradeState)] = new UpgradeState(this,services.Single<IGameFactory>(),services.Single<IUpgradeService>()),
+                [typeof(GameLoopState)] = new GameLoopState(this,services.Single<IProgressService>()),
+                [typeof(GameOverState)] = new GameOverState(this, services.Single<IGameFactory>()),
             };
         }
         public void Enter<TState>() where TState : class, IState

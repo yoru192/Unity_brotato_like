@@ -1,4 +1,5 @@
 ﻿using System;
+using CodeBase.Infrastructure.States;
 using CodeBase.Player.Movement;
 using CodeBase.Weapon;
 using UnityEngine;
@@ -12,7 +13,12 @@ namespace CodeBase.Player
         public PlayerMovement movement;
         public WeaponAttack attack;
         private bool _isDeath;
+        private IGameStateMachine _stateMachine;
 
+        public void Construct(IGameStateMachine stateMachine)
+        {
+            _stateMachine = stateMachine;
+        }
         private void Start()
         {
             health.HealthChanged += HealthChanged;
@@ -32,9 +38,7 @@ namespace CodeBase.Player
         private void Die()
         {
             _isDeath = true;
-            movement.enabled = false;
-            attack.enabled = false;
-            
+            _stateMachine.Enter<GameOverState>();
         }
     }
 }

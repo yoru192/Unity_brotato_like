@@ -1,22 +1,48 @@
 ﻿using System.Linq;
+using CodeBase.Data;
+using CodeBase.Infrastructure.Services.PersistentProgress;
 using CodeBase.Logic;
 using UnityEngine;
 
 namespace CodeBase.Weapon
 {
-    public class WeaponAttack : MonoBehaviour
+    public class WeaponAttack : MonoBehaviour, ISavedProgress
     {
         private float _attackCooldown;
         private float _effectiveDistance;
         private float _radius;
         private int _damage;
-
+        private State _state;
         private WeaponAnimator _animator;
         private float _currentCooldown;
         private int _layerMask;
         private bool _isAttacking;
         private Collider2D[] _hits = new Collider2D[1];
         private Collider2D _currentTarget;
+
+        public int Damage
+        {
+            get => (int)(_state?.weaponDamage ?? _damage);
+            set
+            {
+                if(_state != null && _state.weaponDamage != value)
+                {
+                    _state.weaponDamage = value;
+                }
+            }
+        }
+
+        public float Cooldown
+        {
+            get => _state?.weaponCooldown ?? _attackCooldown;
+            set
+            {
+                if(_state != null && _state.weaponCooldown != value)
+                {
+                    _state.weaponCooldown = value;
+                }
+            }
+        }
 
         public void Construct(WeaponAnimator animator, float effectiveDistance, float radius, int damage, float cooldown)
         {
@@ -35,7 +61,6 @@ namespace CodeBase.Weapon
         private void Update()
         {
             UpdateCooldown();
-
             if (CanAttack() && HasTarget(out _currentTarget))
                 StartAttack();
         }
@@ -47,15 +72,14 @@ namespace CodeBase.Weapon
                 var health = _currentTarget.GetComponent<IHealth>();
                 if (health != null)
                 {
-                    Debug.Log($"Hit enemy: {_currentTarget.name}");
-                    health.TakeDamage(_damage);
+                    health.TakeDamage(Damage);
                 }
             }
         }
 
         public void OnAttackEnded()
         {
-            _currentCooldown = _attackCooldown;
+            _currentCooldown = Cooldown;
             _isAttacking = false;
             _currentTarget = null;
         }
@@ -67,7 +91,6 @@ namespace CodeBase.Weapon
         }
 
         private bool CooldownIsUp() => _currentCooldown <= 0f;
-
         private bool CanAttack() => !_isAttacking && CooldownIsUp();
 
         private bool HasTarget(out Collider2D target)
@@ -79,7 +102,12 @@ namespace CodeBase.Weapon
 
         private Vector2 StartPoint()
         {
-            return (Vector2)transform.position + Vector2.up * 0.5f + (Vector2)transform.right * _effectiveDistance;
+            // ВИПРАВЛЕНО: враховуємо напрямок через scale
+            float direction = Mathf.Sign(transform.lossyScale.x);
+            
+            return (Vector2)transform.position + 
+                   Vector2.up * 0.5f + 
+                   Vector2.right * _effectiveDistance * direction;
         }
 
         private void StartAttack()
@@ -92,10 +120,10 @@ namespace CodeBase.Weapon
         {
             if (!Application.isPlaying)
                 return;
-
-            Gizmos.color = _isAttacking ? Color.yellow : Color.red;
             
+            Gizmos.color = _isAttacking ? Color.yellow : Color.red;
             Vector3 center = StartPoint();
+            
             float angle = 0f;
             Vector3 lastPoint = center + new Vector3(_radius, 0, 0);
             
@@ -106,6 +134,29 @@ namespace CodeBase.Weapon
                 Gizmos.DrawLine(lastPoint, newPoint);
                 lastPoint = newPoint;
             }
+            
+            // Показуємо напрямок
+            Gizmos.color = Color.blue;
+            Gizmos.DrawLine(transform.position, center);
+        }
+
+        public void LoadProgress(PlayerProgress progress)
+        {
+            _state = progress.playerState;
+            if (_state.weaponDamage == 0 && _damage > 0)
+            {
+                _state.weaponDamage = _damage;
+            }
+            if (_state.weaponCooldown == 0 && _attackCooldown > 0)
+            {
+                _state.weaponCooldown = _attackCooldown;
+            }
+        }
+
+        public void UpdateProgress(PlayerProgress progress)
+        {
+            progress.playerState.weaponDamage = Damage;
+            progress.playerState.weaponCooldown = Cooldown;
         }
     }
 }

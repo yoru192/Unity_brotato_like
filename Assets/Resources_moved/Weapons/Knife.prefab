@@ -143,10 +143,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 45af4cde525549a48a02d44d732b8c87, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CodeBase.Weapon.WeaponAttack
-  _attackCooldown: 3
-  _effectiveDistance: 0.5
-  _cleavage: 0.5
-  _damage: 10
 --- !u!95 &9099526682573801411
 Animator:
   serializedVersion: 7

@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using CodeBase.Infrastructure.Services;
+using CodeBase.Infrastructure.States;
+using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
@@ -7,9 +9,11 @@ namespace CodeBase.UI
     public class MenuUI : MonoBehaviour
     {
         [SerializeField] private Button startGameButton;
-
+        private IGameStateMachine _stateMachine;
+        
         private void Awake()
         {
+            _stateMachine = AllServices.Container.Single<IGameStateMachine>();
             if (startGameButton != null)
             {
                 startGameButton.onClick.AddListener(OnStartGameClicked);
@@ -30,7 +34,14 @@ namespace CodeBase.UI
 
         private void OnStartGameClicked()
         {
-            SceneManager.LoadScene("Initial");
+            if (_stateMachine != null)
+            {
+                _stateMachine.Enter<BootstrapState>();
+            }
+            else
+            {
+                SceneManager.LoadScene("Initial");
+            }
         }
     }
 }

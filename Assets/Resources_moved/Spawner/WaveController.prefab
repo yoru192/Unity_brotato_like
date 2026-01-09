@@ -47,14 +47,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CodeBase.Logic.WaveSpawner
   enemyConfigs:
   - enemyTypeId: 0
-    cost: 2
+    cost: 1
   - enemyTypeId: 2
     cost: 7
   - enemyTypeId: 1
     cost: 4
   waveDuration: 10
-  spawnInterval: 5
-  maxAlive: 10
+  spawnInterval: 2
+  maxAlive: 50
   currentWave: 0
 --- !u!114 &447936452215725716
 MonoBehaviour:
@@ -68,20 +68,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 27184f3958cd4ba2a2c16efd9e566fa8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CodeBase.Logic.EnemySpawner
-  spawnLocation:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
   player: {fileID: 7586575036973614916, guid: d56dedbae3c21d7459e583c231f86d0a, type: 3}
   minDistanceFromPlayer: 15

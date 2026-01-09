@@ -1,8 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using CodeBase.Data;
 using CodeBase.Enemy;
 using CodeBase.Infrastructure.AssetManagement;
+using CodeBase.Infrastructure.Services;
 using CodeBase.Infrastructure.Services.PersistentProgress;
+using CodeBase.Infrastructure.States;
 using CodeBase.Logic;
 using CodeBase.Player;
 using CodeBase.StaticData;
@@ -22,12 +25,17 @@ namespace CodeBase.Infrastructure.Factory
 
         private readonly IAssets _assets;
         private readonly IStaticDataService _staticData;
+        private readonly IProgressService _progress;
+        private IPersistentProgressService _persistentProgress;
 
 
-        public GameFactory(IAssets assets, IStaticDataService staticData)
+        public GameFactory(IAssets assets, IStaticDataService staticData, IProgressService progress,
+            IPersistentProgressService progressService)
         {
             _assets = assets;
             _staticData = staticData;
+            _progress = progress;
+            _persistentProgress = progressService;
         }
 
         public async Task WarmUp()
@@ -40,6 +48,26 @@ namespace CodeBase.Infrastructure.Factory
             PlayerGameObject = await InstantiateRegistered(AssetsAddress.PlayerPath, at);
             return PlayerGameObject;
         }
+        
+        public async Task<GameObject> CreateHud()
+        {
+            GameObject hud = await InstantiateRegistered(AssetsAddress.HudPath);
+
+            return hud;
+        }
+        
+        public async Task<GameObject> CreateGameOverScreen()
+        {
+            GameObject gameOverScreen = await InstantiateRegistered(AssetsAddress.GameOverScreenPath);
+            return gameOverScreen;
+        }
+
+        public async Task<GameObject> CreateUpgradeScreen()
+        {
+            GameObject upgradeScreen = await InstantiateRegistered(AssetsAddress.UpgradeScreenPath);
+            return upgradeScreen;
+        }
+
 
         public async Task<GameObject> CreateEnemy(EnemyTypeId enemyId, Transform parent)
         {
@@ -51,13 +79,20 @@ namespace CodeBase.Infrastructure.Factory
             health.Current = enemyData.health;
             health.Max = enemyData.health;
 
-            enemy.GetComponent<EnemyAttack>().Construct(
-                PlayerGameObject.transform,
-                enemy.GetComponent<EnemyAnimator>(),
-                enemyData.cooldown,
-                enemyData.radius,
-                enemyData.effectiveDistance,
-                enemyData.damage);
+            if (enemy.TryGetComponent<EnemyKamikadzeAttack>(out var kamikadzeAttack))
+            {
+                kamikadzeAttack.Construct(PlayerGameObject.transform, enemyData.damage);
+            }
+            if (enemy.TryGetComponent<EnemyAttack>(out var attack))
+            {
+                attack.Construct(
+                    PlayerGameObject.transform,
+                    enemy.GetComponent<EnemyAnimator>(),
+                    enemyData.cooldown,
+                    enemyData.effectiveDistance,
+                    enemyData.damage);
+            }
+            enemy.GetComponent<EnemyDeath>().Construct(_progress,enemyData);
             enemy.GetComponent<ActorUI>().Construct(health);
             enemy.GetComponent<NavMeshAgent>().speed = enemyData.moveSpeed;
             enemy.GetComponent<AgentMoveToPlayer>().Construct(PlayerGameObject.transform);
@@ -71,8 +106,9 @@ namespace CodeBase.Infrastructure.Factory
         {
             WeaponStaticData weaponData = _staticData.ForWeapon(weaponId);
             GameObject prefab = await _assets.Load<GameObject>(weaponData.prefabReference);
-            GameObject weapon = Object.Instantiate(prefab, parent, false);
+            GameObject weapon = InstantiateRegisteredAsync(prefab);
     
+            weapon.transform.SetParent(parent, false);
             weapon.transform.localPosition = Vector3.zero;
             weapon.transform.localRotation = Quaternion.identity;
     
@@ -84,6 +120,12 @@ namespace CodeBase.Infrastructure.Factory
                 weaponData.damage,
                 weaponData.cooldown
             );
+            
+            IPersistentProgressService progressService = _persistentProgress as IPersistentProgressService;
+            if (progressService != null)
+            {
+                weaponAttack.LoadProgress(progressService.Progress);
+            }
     
             return weapon;
         }

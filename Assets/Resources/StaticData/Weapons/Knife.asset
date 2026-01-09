@@ -15,8 +15,8 @@ MonoBehaviour:
   weaponTypeId: 0
   damage: 2
   cooldown: 0.9
-  radius: 1
-  effectiveDistance: 0.5
+  radius: 1.25
+  effectiveDistance: 0.8
   prefabReference:
     m_AssetGUID: bd898651e4604bb44a729f0244b84c09
     m_SubObjectName: 

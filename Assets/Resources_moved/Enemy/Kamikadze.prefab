@@ -8,6 +8,26 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: -4926311014338796958, guid: 79171cc7afbd7524da1e002766f5d634, type: 3}
+      propertyPath: m_WalkableMask
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3429082478703915027, guid: 79171cc7afbd7524da1e002766f5d634, type: 3}
+      propertyPath: m_Constraints
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 3429082478703915027, guid: 79171cc7afbd7524da1e002766f5d634, type: 3}
+      propertyPath: m_GravityScale
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3429082478703915027, guid: 79171cc7afbd7524da1e002766f5d634, type: 3}
+      propertyPath: m_AngularDamping
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3429082478703915027, guid: 79171cc7afbd7524da1e002766f5d634, type: 3}
+      propertyPath: m_CollisionDetection
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3812080264952788126, guid: 79171cc7afbd7524da1e002766f5d634, type: 3}
       propertyPath: m_Sprite
       value: 
@@ -23,6 +43,30 @@ PrefabInstance:
     - target: {fileID: 3812080264952788126, guid: 79171cc7afbd7524da1e002766f5d634, type: 3}
       propertyPath: m_Color.r
       value: 0.745283
+      objectReference: {fileID: 0}
+    - target: {fileID: 4752512289087285980, guid: 79171cc7afbd7524da1e002766f5d634, type: 3}
+      propertyPath: m_EdgeRadius
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5889177277896389733, guid: 79171cc7afbd7524da1e002766f5d634, type: 3}
+      propertyPath: m_Size.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5889177277896389733, guid: 79171cc7afbd7524da1e002766f5d634, type: 3}
+      propertyPath: m_Size.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5889177277896389733, guid: 79171cc7afbd7524da1e002766f5d634, type: 3}
+      propertyPath: m_Offset.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5889177277896389733, guid: 79171cc7afbd7524da1e002766f5d634, type: 3}
+      propertyPath: m_Offset.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5889177277896389733, guid: 79171cc7afbd7524da1e002766f5d634, type: 3}
+      propertyPath: m_IsTrigger
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5889177277896389733, guid: 79171cc7afbd7524da1e002766f5d634, type: 3}
       propertyPath: m_SpriteTilingProperty.pivot.y
@@ -88,8 +132,33 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
+    m_RemovedComponents:
+    - {fileID: 5839358376161208676, guid: 79171cc7afbd7524da1e002766f5d634, type: 3}
+    - {fileID: 6439101464423264672, guid: 79171cc7afbd7524da1e002766f5d634, type: 3}
+    m_RemovedGameObjects:
+    - {fileID: 1982796779103414458, guid: 79171cc7afbd7524da1e002766f5d634, type: 3}
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 8060626389315759474, guid: 79171cc7afbd7524da1e002766f5d634, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: -2707525873714832965}
   m_SourcePrefab: {fileID: 100100000, guid: 79171cc7afbd7524da1e002766f5d634, type: 3}
+--- !u!1 &2954887877818592416 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8060626389315759474, guid: 79171cc7afbd7524da1e002766f5d634, type: 3}
+  m_PrefabInstance: {fileID: 5106173922537243090}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &-2707525873714832965
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2954887877818592416}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 784f8ef172a54119b1a489124e4a509f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CodeBase.Enemy.EnemyKamikadzeAttack
+  _explosionRadius: 1
+  explosionPrefab: {fileID: 2504214343621411470, guid: 3ed0d324122d7b24eaec75c55c74aafc, type: 3}

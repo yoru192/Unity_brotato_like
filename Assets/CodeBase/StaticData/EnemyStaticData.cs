@@ -15,11 +15,10 @@ namespace CodeBase.StaticData
         public float moveSpeed;
         [Range(0, 3)] 
         public float cooldown;
-        [Range(0.1f, 2f)]
-        public float radius = 0.5f;
-        [Range(.5f,1f)]
+        [Range(.5f,3f)]
         public float effectiveDistance = .5f;
-        
+        [Range(1, 50)] 
+        public int xpReward;
         public AssetReferenceGameObject prefabReference;
     }
 }

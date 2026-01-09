@@ -1,9 +1,13 @@
 ﻿using System.Threading.Tasks;
 using CodeBase.CameraLogic;
 using CodeBase.Infrastructure.Factory;
+using CodeBase.Infrastructure.Services;
 using CodeBase.Infrastructure.Services.PersistentProgress;
 using CodeBase.Logic;
+using CodeBase.Player;
 using CodeBase.StaticData;
+using CodeBase.UI;
+using CodeBase.UI.Elements;
 using CodeBase.Weapon;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -16,18 +20,20 @@ namespace CodeBase.Infrastructure.States
         private readonly SceneLoader _sceneLoader;
         private readonly LoadingCurtain _loadingCurtain;
         private readonly IGameFactory _gameFactory;
-        private readonly IPersistentProgressService _progressService;
+        private readonly IPersistentProgressService _persistentProgressService;
         private readonly IStaticDataService _staticData;
+        private readonly IProgressService _progressService;
 
         public LoadLevelState(GameStateMachine gameStateMachine, SceneLoader sceneLoader, LoadingCurtain loadingCurtain,
-            IGameFactory gameFactory, IPersistentProgressService progressService, IStaticDataService staticData)
+            IGameFactory gameFactory, IPersistentProgressService persistentProgressService, IStaticDataService staticData, IProgressService progressService)
         {
             _staticData = staticData;
-            _progressService = progressService;
+            _persistentProgressService = persistentProgressService;
             _gameFactory = gameFactory;
             _stateMachine = gameStateMachine;
             _sceneLoader = sceneLoader;
             _loadingCurtain = loadingCurtain;
+            _progressService = progressService;
         }
         public void Enter(string sceneName)
         {
@@ -50,7 +56,7 @@ namespace CodeBase.Infrastructure.States
         private void InformProgressReaders()
         {
             foreach (ISavedProgressReader progressReader in _gameFactory.ProgressReaders)
-                progressReader.LoadProgress(_progressService.Progress);
+                progressReader.LoadProgress(_persistentProgressService.Progress);
         }
 
         private async Task InitGameWorld()
@@ -58,11 +64,9 @@ namespace CodeBase.Infrastructure.States
             LevelStaticData levelData = LevelStaticData();
             GameObject player = await InitPlayer(levelData);
             await InitSpawner(levelData);
-            
+            await InitHud(player);
             CameraFollow(player);
         }
-        
-        
         
         private void CameraFollow(GameObject hero) =>
             Camera.main.GetComponent<CameraFollow>().Follow(hero);
@@ -73,8 +77,17 @@ namespace CodeBase.Infrastructure.States
             WeaponHolder weaponHolder = player.GetComponentInChildren<WeaponHolder>();
             if (weaponHolder != null)
                 weaponHolder.Construct(_gameFactory);
+            player.GetComponent<PlayerDeath>().Construct(_stateMachine);
             
             return player;
+        }
+        
+        private async Task InitHud(GameObject player)
+        {
+            GameObject hud = await _gameFactory.CreateHud();
+      
+            hud.GetComponentInChildren<ActorUI>().Construct(player.GetComponent<PlayerHealth>());
+            hud.GetComponent<HudUI>().Construct(_progressService, _persistentProgressService);
         }
         
         private async Task InitSpawner(LevelStaticData levelData)
