@@ -1,4 +1,5 @@
-﻿using CodeBase.Data;
+﻿using System.Threading.Tasks;
+using CodeBase.Data;
 using CodeBase.Infrastructure.Factory;
 using CodeBase.Infrastructure.Services.PersistentProgress;
 using CodeBase.StaticData;
@@ -10,22 +11,29 @@ namespace CodeBase.Weapon
     {
         public WeaponTypeId weaponTypeId;
         private IGameFactory _factory;
-        
-        public void Construct(IGameFactory factory) => 
-            _factory = factory;
-        public void LoadProgress(PlayerProgress progress)
+        private bool _isWeaponSpawned = false;
+
+        public void Construct(IGameFactory factory)
         {
-            Spawn();
+            _factory = factory;
         }
 
+        public async void LoadProgress(PlayerProgress progress)
+        {
+            if (!_isWeaponSpawned)
+            {
+                await Spawn();
+                _isWeaponSpawned = true;
+            }
+        }
         public void UpdateProgress(PlayerProgress progress)
         {
-            
         }
 
-        private async void Spawn()
+        private async Task Spawn()
         {
             await _factory.CreateWeapon(weaponTypeId, transform);
         }
     }
+
 }

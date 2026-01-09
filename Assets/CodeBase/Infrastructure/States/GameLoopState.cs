@@ -1,19 +1,32 @@
+using CodeBase.Infrastructure.Services;
+using UnityEngine;
+
 namespace CodeBase.Infrastructure.States
 {
     public class GameLoopState : IState
     {
-        public GameLoopState(GameStateMachine stateMachine)
+        private readonly IGameStateMachine _stateMachine;
+        private readonly IProgressService _progressService;
+
+        public GameLoopState(IGameStateMachine stateMachine, IProgressService progressService)
         {
-            
-        }
-        public void Exit()
-        {
-            
+            _stateMachine = stateMachine;
+            _progressService = progressService;
         }
 
         public void Enter()
         {
-            
+            _progressService.OnLevelUp += OnLevelUp;
+        }
+
+        public void Exit()
+        {
+            _progressService.OnLevelUp -= OnLevelUp;
+        }
+
+        private void OnLevelUp(int newLevel)
+        {
+            _stateMachine.Enter<UpgradeState>();
         }
     }
 }

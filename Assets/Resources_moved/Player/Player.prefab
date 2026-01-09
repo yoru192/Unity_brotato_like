@@ -16,6 +16,7 @@ GameObject:
   - component: {fileID: 4857256226288562267}
   - component: {fileID: 2837152868613712892}
   - component: {fileID: 830348996970052507}
+  - component: {fileID: 3624077631070046025}
   m_Layer: 7
   m_Name: Player
   m_TagString: Player
@@ -107,14 +108,14 @@ Rigidbody2D:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2402408937873353428}
-  m_BodyType: 1
+  m_BodyType: 0
   m_Simulated: 1
-  m_UseFullKinematicContacts: 0
+  m_UseFullKinematicContacts: 1
   m_UseAutoMass: 0
   m_Mass: 1
   m_LinearDamping: 0
   m_AngularDamping: 0
-  m_GravityScale: 1
+  m_GravityScale: 0
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
@@ -124,7 +125,7 @@ Rigidbody2D:
     m_Bits: 0
   m_Interpolate: 0
   m_SleepingMode: 1
-  m_CollisionDetection: 0
+  m_CollisionDetection: 1
   m_Constraints: 4
 --- !u!114 &3072839379265776912
 MonoBehaviour:
@@ -219,8 +220,23 @@ CircleCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: -0.061683655, y: -0.2182647}
+  m_Offset: {x: 0, y: 0}
   m_Radius: 1.2923958
+--- !u!114 &3624077631070046025
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2402408937873353428}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e89e2bc3f4514bb6954f0b07ea6769af, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CodeBase.Player.PlayerDeath
+  health: {fileID: 2837152868613712892}
+  movement: {fileID: 3072839379265776912}
+  attack: {fileID: 9202767394896694355, guid: bd898651e4604bb44a729f0244b84c09, type: 3}
 --- !u!1 &4617086062293499086
 GameObject:
   m_ObjectHideFlags: 0

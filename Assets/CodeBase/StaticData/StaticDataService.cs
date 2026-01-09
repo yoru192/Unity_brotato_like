@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using CodeBase.Data;
 using UnityEngine;
 
 namespace CodeBase.StaticData
@@ -9,6 +10,7 @@ namespace CodeBase.StaticData
         private Dictionary<string, LevelStaticData> _levels;
         private Dictionary<WeaponTypeId, WeaponStaticData> _weapons;
         private Dictionary<EnemyTypeId, EnemyStaticData> _enemies;
+        private List<UpgradeStaticData> _upgrades;
         
 
         public void Load()
@@ -19,6 +21,8 @@ namespace CodeBase.StaticData
                 .ToDictionary(x => x.weaponTypeId,  x => x);
             _enemies = Resources.LoadAll<EnemyStaticData>("StaticData/Enemy")
                 .ToDictionary(x => x.enemyTypeId,  x => x);
+            _upgrades = Resources.LoadAll<UpgradeStaticData>("StaticData/Upgrades")
+                .ToList();
         }
         
         public LevelStaticData ForLevel(string sceneKey) =>
@@ -33,5 +37,7 @@ namespace CodeBase.StaticData
             _enemies.TryGetValue(enemyId, out EnemyStaticData staticData)
                 ? staticData
                 : null;
+
+        public List<UpgradeStaticData> GetAllUpgrades() => _upgrades;
     }
 }
