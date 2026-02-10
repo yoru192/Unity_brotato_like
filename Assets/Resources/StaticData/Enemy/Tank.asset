@@ -17,7 +17,7 @@ MonoBehaviour:
   damage: 0
   moveSpeed: 1
   cooldown: 2
-  effectiveDistance: 1
+  effectiveDistance: 1.5
   xpReward: 22
   prefabReference:
     m_AssetGUID: ad9327ae309f1cf4cb5090f6b46c0a9c

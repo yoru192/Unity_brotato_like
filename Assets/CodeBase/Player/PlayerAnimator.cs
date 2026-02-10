@@ -1,31 +1,29 @@
-﻿using UnityEngine;
+﻿using Assets.HeroEditor.Common.Scripts.CharacterScripts;
+using UnityEngine;
 
 namespace CodeBase.Player
 {
     public class PlayerAnimator : MonoBehaviour
     {
-        private readonly int _walkingStateHash = Animator.StringToHash("Walking");
-        
+        private Character _character;
         private Animator _animator;
-        private Rigidbody2D _rb;
-        private int _facingDirection = 1;
 
         private void Awake()
         {
-            _animator = GetComponent<Animator>();
-            _rb = GetComponent<Rigidbody2D>();
-        }
-        
-        private void Update()
-        {
-            _animator.SetFloat(_walkingStateHash, _rb.linearVelocity.magnitude, 0.1f, Time.deltaTime);
-
-            if (_rb.linearVelocity.x != 0)
-                _facingDirection = _rb.linearVelocity.x > 0 ? 1 : -1;
+            _character = GetComponent<Character>();
+            _animator = GetComponentInChildren<Animator>();
             
-            transform.localScale = new Vector2(_facingDirection, 1);
+            if (_animator != null)
+            {
+                _animator.SetBool("Ready", true);
+            }
         }
-        
-       
+        public void PlayDeath()
+        {
+            if (_character != null)
+            {
+                _character.SetState(CharacterState.DeathB);
+            }
+        }
     }
 }

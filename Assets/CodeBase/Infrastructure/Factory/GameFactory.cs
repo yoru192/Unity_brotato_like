@@ -5,10 +5,13 @@ using CodeBase.Enemy;
 using CodeBase.Infrastructure.AssetManagement;
 using CodeBase.Infrastructure.Services;
 using CodeBase.Infrastructure.Services.PersistentProgress;
+using CodeBase.Infrastructure.Services.ProgressService;
 using CodeBase.Infrastructure.States;
 using CodeBase.Logic;
 using CodeBase.Player;
+using CodeBase.Player.Movement;
 using CodeBase.StaticData;
+using CodeBase.UI;
 using CodeBase.UI.Elements;
 using CodeBase.Weapon;
 using UnityEngine;
@@ -28,7 +31,6 @@ namespace CodeBase.Infrastructure.Factory
         private readonly IProgressService _progress;
         private IPersistentProgressService _persistentProgress;
 
-
         public GameFactory(IAssets assets, IStaticDataService staticData, IProgressService progress,
             IPersistentProgressService progressService)
         {
@@ -46,13 +48,33 @@ namespace CodeBase.Infrastructure.Factory
         public async Task<GameObject> CreatePlayer(Vector3 at)
         {
             PlayerGameObject = await InstantiateRegistered(AssetsAddress.PlayerPath, at);
+            PlayerGameObject.GetComponent<PlayerMovement>().Construct(_persistentProgress);
+    
+            WeaponStaticData weaponData = _staticData.ForWeapon(WeaponTypeId.Melee);
+            WeaponAttack weaponAttack = PlayerGameObject.GetComponentInChildren<WeaponAttack>();
+    
+            weaponAttack.Construct(
+                PlayerGameObject.GetComponentInChildren<WeaponAnimator>(),
+                weaponData.effectiveDistance,
+                weaponData.radius,
+                weaponData.damage,
+                weaponData.cooldown
+            );
+            
+            PlayerGameObject.GetComponent<PlayerStamina>().Construct(_persistentProgress);
             return PlayerGameObject;
         }
+
         
         public async Task<GameObject> CreateHud()
         {
             GameObject hud = await InstantiateRegistered(AssetsAddress.HudPath);
-
+            hud.GetComponent<HudUI>().Construct(
+                _progress, 
+                _persistentProgress, 
+                PlayerGameObject.GetComponent<PlayerStamina>()
+            );
+            hud.GetComponentInChildren<ActorUI>().Construct(PlayerGameObject.GetComponent<PlayerHealth>());
             return hud;
         }
         
@@ -102,19 +124,19 @@ namespace CodeBase.Infrastructure.Factory
         }
 
 
-        public async Task<GameObject> CreateWeapon(WeaponTypeId weaponId, Transform parent)
+        public async Task CreateWeapon(WeaponTypeId weaponId, Transform parent)
         {
             WeaponStaticData weaponData = _staticData.ForWeapon(weaponId);
-            GameObject prefab = await _assets.Load<GameObject>(weaponData.prefabReference);
-            GameObject weapon = InstantiateRegisteredAsync(prefab);
+            //GameObject prefab = await _assets.Load<GameObject>(weaponData.prefabReference);
+            //GameObject weapon = InstantiateRegisteredAsync(prefab);
     
-            weapon.transform.SetParent(parent, false);
-            weapon.transform.localPosition = Vector3.zero;
-            weapon.transform.localRotation = Quaternion.identity;
+            //weapon.transform.SetParent(parent, false);
+            //weapon.transform.localPosition = Vector3.zero;
+            //weapon.transform.localRotation = Quaternion.identity;
     
-            WeaponAttack weaponAttack = weapon.GetComponent<WeaponAttack>();
+            WeaponAttack weaponAttack = PlayerGameObject.GetComponentInChildren<WeaponAttack>();
             weaponAttack.Construct(
-                weapon.GetComponent<WeaponAnimator>(),
+                PlayerGameObject.GetComponentInChildren<WeaponAnimator>(),
                 weaponData.effectiveDistance,
                 weaponData.radius,
                 weaponData.damage,
@@ -126,8 +148,6 @@ namespace CodeBase.Infrastructure.Factory
             {
                 weaponAttack.LoadProgress(progressService.Progress);
             }
-    
-            return weapon;
         }
 
         public async Task<GameObject> CreateSpawner(List<Vector2> spawnPositions)

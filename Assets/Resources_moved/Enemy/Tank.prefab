@@ -8,6 +8,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1982796779103414458, guid: 79171cc7afbd7524da1e002766f5d634, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
     - target: {fileID: 3429082478703915027, guid: 79171cc7afbd7524da1e002766f5d634, type: 3}
       propertyPath: m_Constraints
       value: 4
@@ -36,6 +40,26 @@ PrefabInstance:
       propertyPath: m_Color.r
       value: 0.04913985
       objectReference: {fileID: 0}
+    - target: {fileID: 3857564479067765829, guid: 79171cc7afbd7524da1e002766f5d634, type: 3}
+      propertyPath: m_Layer
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4752512289087285980, guid: 79171cc7afbd7524da1e002766f5d634, type: 3}
+      propertyPath: m_Size.x
+      value: 0.79654026
+      objectReference: {fileID: 0}
+    - target: {fileID: 4752512289087285980, guid: 79171cc7afbd7524da1e002766f5d634, type: 3}
+      propertyPath: m_Size.y
+      value: 0.8089672
+      objectReference: {fileID: 0}
+    - target: {fileID: 4752512289087285980, guid: 79171cc7afbd7524da1e002766f5d634, type: 3}
+      propertyPath: m_Offset.x
+      value: 0.0040187836
+      objectReference: {fileID: 0}
+    - target: {fileID: 4752512289087285980, guid: 79171cc7afbd7524da1e002766f5d634, type: 3}
+      propertyPath: m_Offset.y
+      value: 0.0020463765
+      objectReference: {fileID: 0}
     - target: {fileID: 4752512289087285980, guid: 79171cc7afbd7524da1e002766f5d634, type: 3}
       propertyPath: m_EdgeRadius
       value: 0
@@ -44,9 +68,25 @@ PrefabInstance:
       propertyPath: m_Material
       value: 
       objectReference: {fileID: 0}
+    - target: {fileID: 6703513485674370545, guid: 79171cc7afbd7524da1e002766f5d634, type: 3}
+      propertyPath: m_Layer
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6839732287124557608, guid: 79171cc7afbd7524da1e002766f5d634, type: 3}
+      propertyPath: m_Layer
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7307624126030225387, guid: 79171cc7afbd7524da1e002766f5d634, type: 3}
+      propertyPath: m_Layer
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8060626389315759474, guid: 79171cc7afbd7524da1e002766f5d634, type: 3}
       propertyPath: m_Name
       value: Tank
+      objectReference: {fileID: 0}
+    - target: {fileID: 8060626389315759474, guid: 79171cc7afbd7524da1e002766f5d634, type: 3}
+      propertyPath: m_Layer
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8076011716896018100, guid: 79171cc7afbd7524da1e002766f5d634, type: 3}
       propertyPath: m_LocalScale.x

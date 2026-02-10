@@ -27,6 +27,8 @@ namespace CodeBase.StaticData
         MoveSpeed,
         Damage,
         Cooldown,
+        MaxStamina,
+        RegenRateStamina,
     }
 
 }

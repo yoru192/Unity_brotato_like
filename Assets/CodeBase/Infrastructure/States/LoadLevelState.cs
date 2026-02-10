@@ -3,6 +3,7 @@ using CodeBase.CameraLogic;
 using CodeBase.Infrastructure.Factory;
 using CodeBase.Infrastructure.Services;
 using CodeBase.Infrastructure.Services.PersistentProgress;
+using CodeBase.Infrastructure.Services.ProgressService;
 using CodeBase.Logic;
 using CodeBase.Player;
 using CodeBase.StaticData;
@@ -25,7 +26,8 @@ namespace CodeBase.Infrastructure.States
         private readonly IProgressService _progressService;
 
         public LoadLevelState(GameStateMachine gameStateMachine, SceneLoader sceneLoader, LoadingCurtain loadingCurtain,
-            IGameFactory gameFactory, IPersistentProgressService persistentProgressService, IStaticDataService staticData, IProgressService progressService)
+            IGameFactory gameFactory, IPersistentProgressService persistentProgressService,
+            IStaticDataService staticData, IProgressService progressService)
         {
             _staticData = staticData;
             _persistentProgressService = persistentProgressService;
@@ -64,7 +66,7 @@ namespace CodeBase.Infrastructure.States
             LevelStaticData levelData = LevelStaticData();
             GameObject player = await InitPlayer(levelData);
             await InitSpawner(levelData);
-            await InitHud(player);
+            await InitHud();
             CameraFollow(player);
         }
         
@@ -82,12 +84,9 @@ namespace CodeBase.Infrastructure.States
             return player;
         }
         
-        private async Task InitHud(GameObject player)
+        private async Task InitHud()
         {
-            GameObject hud = await _gameFactory.CreateHud();
-      
-            hud.GetComponentInChildren<ActorUI>().Construct(player.GetComponent<PlayerHealth>());
-            hud.GetComponent<HudUI>().Construct(_progressService, _persistentProgressService);
+            await _gameFactory.CreateHud();
         }
         
         private async Task InitSpawner(LevelStaticData levelData)

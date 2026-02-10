@@ -52,7 +52,7 @@ namespace CodeBase.Enemy
         {
             if (Hit(out Collider2D hit))
             {
-                hit.GetComponent<IHealth>().TakeDamage(_damage);
+                hit.GetComponentInParent<IHealth>().TakeDamage(_damage);
             }
         }
 
@@ -87,13 +87,10 @@ namespace CodeBase.Enemy
                 if (_playerTransform.TryGetComponent<Collider2D>(out var playerCollider))
                 {
                     ColliderDistance2D distanceInfo = Physics2D.Distance(_enemyCollider, playerCollider);
-                    // distanceInfo.distance = 0 коли колайдери доторкаються
-                    // distanceInfo.distance < 0 коли колайдери перетинаються
                     return distanceInfo.distance <= _effectiveDistance;
                 }
                 else
                 {
-                    // Fallback на стару логіку якщо немає колайдера
                     float distanceToPlayer = Vector2.Distance(transform.position, _playerTransform.position);
                     return distanceToPlayer <= _effectiveDistance;
                 }
@@ -119,13 +116,7 @@ namespace CodeBase.Enemy
         {
             _attackIsActive = false;
         }
-
-        private void OnDrawGizmos()
-        {
-            Gizmos.color = _attackIsActive ? new Color(1f, 0f, 0f, 0.3f) : new Color(0.5f, 0.5f, 0.5f, 0.2f);
-            Gizmos.DrawSphere(transform.position, _effectiveDistance);
-        }
-
+        
         private void OnDrawGizmosSelected()
         {
             Collider2D enemyCol = _enemyCollider != null ? _enemyCollider : GetComponent<Collider2D>();
