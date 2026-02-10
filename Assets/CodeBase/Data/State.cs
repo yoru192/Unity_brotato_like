@@ -6,6 +6,9 @@ namespace CodeBase.Data
     [Serializable]
     public class State
     {
+        public float currentStamina = 100f;
+        public float maxStamina = 100f;
+        public float regenRateStamina = 15f;
         public int currentXp;
         public int currentLevel = 1;
         public int maxLevel = 10;

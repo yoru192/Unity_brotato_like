@@ -44,6 +44,10 @@ PrefabInstance:
       propertyPath: m_Color.r
       value: 0.745283
       objectReference: {fileID: 0}
+    - target: {fileID: 3857564479067765829, guid: 79171cc7afbd7524da1e002766f5d634, type: 3}
+      propertyPath: m_Layer
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4752512289087285980, guid: 79171cc7afbd7524da1e002766f5d634, type: 3}
       propertyPath: m_EdgeRadius
       value: 0
@@ -88,9 +92,25 @@ PrefabInstance:
       propertyPath: m_SpriteTilingProperty.border.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6703513485674370545, guid: 79171cc7afbd7524da1e002766f5d634, type: 3}
+      propertyPath: m_Layer
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6839732287124557608, guid: 79171cc7afbd7524da1e002766f5d634, type: 3}
+      propertyPath: m_Layer
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7307624126030225387, guid: 79171cc7afbd7524da1e002766f5d634, type: 3}
+      propertyPath: m_Layer
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8060626389315759474, guid: 79171cc7afbd7524da1e002766f5d634, type: 3}
       propertyPath: m_Name
       value: Kamikadze
+      objectReference: {fileID: 0}
+    - target: {fileID: 8060626389315759474, guid: 79171cc7afbd7524da1e002766f5d634, type: 3}
+      propertyPath: m_Layer
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 8076011716896018100, guid: 79171cc7afbd7524da1e002766f5d634, type: 3}
       propertyPath: m_LocalPosition.x
@@ -160,5 +180,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 784f8ef172a54119b1a489124e4a509f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CodeBase.Enemy.EnemyKamikadzeAttack
-  _explosionRadius: 1
   explosionPrefab: {fileID: 2504214343621411470, guid: 3ed0d324122d7b24eaec75c55c74aafc, type: 3}

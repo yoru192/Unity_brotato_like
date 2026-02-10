@@ -1,4 +1,5 @@
 using CodeBase.Infrastructure.Services;
+using CodeBase.Infrastructure.Services.ProgressService;
 using UnityEngine;
 
 namespace CodeBase.Infrastructure.States

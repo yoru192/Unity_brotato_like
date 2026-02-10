@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using CodeBase.Infrastructure.Services;
+using CodeBase.Infrastructure.Services.ProgressService;
 using CodeBase.StaticData;
 using UnityEngine;
 

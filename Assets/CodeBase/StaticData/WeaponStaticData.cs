@@ -12,7 +12,7 @@ namespace CodeBase.StaticData
         public float cooldown;
         [Range(0.1f, 2f)]
         public float radius = 0.5f;
-        [Range(.5f,1f)]
+        [Range(.5f,10f)]
         public float effectiveDistance = .5f;
         public AssetReferenceGameObject prefabReference;
     }

@@ -1,7 +1,5 @@
-﻿using System;
-using CodeBase.Infrastructure.States;
+﻿using CodeBase.Infrastructure.States;
 using CodeBase.Player.Movement;
-using CodeBase.Weapon;
 using UnityEngine;
 
 namespace CodeBase.Player
@@ -9,16 +7,24 @@ namespace CodeBase.Player
     [RequireComponent(typeof(PlayerHealth))]
     public class PlayerDeath : MonoBehaviour
     {
-        public PlayerHealth health;
-        public PlayerMovement movement;
-        public WeaponAttack attack;
+        [SerializeField] private PlayerHealth health;
+        
         private bool _isDeath;
         private IGameStateMachine _stateMachine;
+        private PlayerAnimator _animator;
+        private PlayerMovement _movement;
 
         public void Construct(IGameStateMachine stateMachine)
         {
             _stateMachine = stateMachine;
         }
+
+        private void Awake()
+        {
+            _animator = GetComponent<PlayerAnimator>();
+            _movement = GetComponent<PlayerMovement>();
+        }
+
         private void Start()
         {
             health.HealthChanged += HealthChanged;
@@ -38,6 +44,13 @@ namespace CodeBase.Player
         private void Die()
         {
             _isDeath = true;
+            
+            if (_movement != null)
+                _movement.enabled = false;
+
+            if (_animator != null)
+                _animator.PlayDeath();
+            
             _stateMachine.Enter<GameOverState>();
         }
     }

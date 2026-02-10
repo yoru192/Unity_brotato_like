@@ -63,7 +63,6 @@ namespace CodeBase.Infrastructure.Services.Upgrade
                 case StatModifierType.MoveSpeed:
                     PlayerState.moveSpeed += upgrade.value;
                     break;
-            
                 
                 case StatModifierType.Damage:
                     PlayerState.weaponDamage += upgrade.value;
@@ -72,7 +71,12 @@ namespace CodeBase.Infrastructure.Services.Upgrade
                 case StatModifierType.Cooldown:
                     PlayerState.weaponCooldown += upgrade.value;
                     break;
-                
+                case StatModifierType.MaxStamina:
+                    PlayerState.maxStamina += upgrade.value;
+                    break;
+                case StatModifierType.RegenRateStamina:
+                    PlayerState.regenRateStamina += upgrade.value;
+                    break;
             }
             
             if (!Progress.AppliedUpgrades.ContainsKey(upgrade.modifierType))
