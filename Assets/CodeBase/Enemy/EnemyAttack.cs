@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using CodeBase.Logic;
+using CodeBase.Player;
 using UnityEngine;
 
 namespace CodeBase.Enemy
@@ -8,7 +9,7 @@ namespace CodeBase.Enemy
     {
         private EnemyAnimator _animator;
         private float _attackCooldown;
-        private float _effectiveDistance;
+        private float _radius;
         private int _damage;
         private Transform _playerTransform;
         private float _currentAttackCooldown;
@@ -19,13 +20,14 @@ namespace CodeBase.Enemy
         private Collider2D _enemyCollider;
 
         public void Construct(Transform playerTransform, EnemyAnimator animator, float attackCooldown,
-            float effectiveDistance, int damage)
+            float radius, int damage)
         {
             _playerTransform = playerTransform;
             _animator = animator;
             _attackCooldown = attackCooldown;
-            _effectiveDistance = effectiveDistance;
+            _radius = radius;
             _damage = damage;
+            _currentAttackCooldown = attackCooldown;
         }
 
         private void Awake()
@@ -52,7 +54,7 @@ namespace CodeBase.Enemy
         {
             if (Hit(out Collider2D hit))
             {
-                hit.GetComponentInParent<IHealth>().TakeDamage(_damage);
+                hit.GetComponentInParent<PlayerHealth>().TakeDamage(_damage);
             }
         }
 
@@ -66,7 +68,7 @@ namespace CodeBase.Enemy
         {
             var hitAmount = Physics2D.OverlapCircleNonAlloc(
                 transform.position, 
-                _effectiveDistance, 
+                _radius,
                 _hits, 
                 _layerMask);
             
@@ -81,18 +83,17 @@ namespace CodeBase.Enemy
 
         private bool CanAttack()
         {
-            if (_attackIsActive && !_isAttacking && CooldownIsUp())
+            if (!_isAttacking && CooldownIsUp())
             {
-                // Використовуємо Physics2D.Distance для перевірки дотику колайдерів
                 if (_playerTransform.TryGetComponent<Collider2D>(out var playerCollider))
                 {
                     ColliderDistance2D distanceInfo = Physics2D.Distance(_enemyCollider, playerCollider);
-                    return distanceInfo.distance <= _effectiveDistance;
+                    return distanceInfo.distance <= _radius;
                 }
                 else
                 {
                     float distanceToPlayer = Vector2.Distance(transform.position, _playerTransform.position);
-                    return distanceToPlayer <= _effectiveDistance;
+                    return distanceToPlayer <= _radius;
                 }
             }
             else
@@ -106,16 +107,6 @@ namespace CodeBase.Enemy
             _animator.PlayAttack();
             _isAttacking = true;
         }
-
-        public void EnableAttack()
-        {
-            _attackIsActive = true;
-        }
-
-        public void DisableAttack()
-        {
-            _attackIsActive = false;
-        }
         
         private void OnDrawGizmosSelected()
         {
@@ -123,7 +114,7 @@ namespace CodeBase.Enemy
             
             // Радіус атаки
             Gizmos.color = Color.red;
-            DrawCircle(transform.position, _effectiveDistance, 30);
+            DrawCircle(transform.position, _radius, 30);
             
             // Показуємо колайдер ворога
             if (enemyCol != null && enemyCol is CircleCollider2D circle)
@@ -155,7 +146,7 @@ namespace CodeBase.Enemy
                 }
                 
                 // Зелена = в радіусі, жовта = поза радіусом
-                Gizmos.color = distance <= _effectiveDistance ? Color.green : Color.yellow;
+                Gizmos.color = distance <= _radius ? Color.green : Color.yellow;
                 Gizmos.DrawLine(transform.position, _playerTransform.position);
                 
                 #if UNITY_EDITOR
@@ -167,14 +158,14 @@ namespace CodeBase.Enemy
             if (_isAttacking)
             {
                 Gizmos.color = Color.red;
-                Gizmos.DrawWireSphere(transform.position, _effectiveDistance * 1.1f);
+                Gizmos.DrawWireSphere(transform.position, _radius * 1.1f);
             }
             
             if (!CooldownIsUp())
             {
                 Gizmos.color = Color.cyan;
                 float cooldownPercent = _currentAttackCooldown / _attackCooldown;
-                Gizmos.DrawWireSphere(transform.position, _effectiveDistance * cooldownPercent);
+                Gizmos.DrawWireSphere(transform.position, _radius * cooldownPercent);
             }
         }
 

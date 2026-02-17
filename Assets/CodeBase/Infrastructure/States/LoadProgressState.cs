@@ -3,6 +3,7 @@ using CodeBase.Infrastructure.Factory;
 using CodeBase.Infrastructure.Services.PersistentProgress;
 using CodeBase.Infrastructure.Services.SaveLoad;
 using CodeBase.Logic;
+using CodeBase.StaticData;
 
 namespace CodeBase.Infrastructure.States
 {
@@ -11,12 +12,14 @@ namespace CodeBase.Infrastructure.States
         private readonly GameStateMachine _gameStateMachine;
         private readonly IPersistentProgressService _progressService;
         private readonly ISaveLoadService _saveLoadService;
+        private readonly PlayerStaticData _playerData;
 
-        public LoadProgressState(GameStateMachine gameStateMachine, IPersistentProgressService  progressService, ISaveLoadService saveLoadService)
+        public LoadProgressState(GameStateMachine gameStateMachine, IPersistentProgressService  progressService, ISaveLoadService saveLoadService, PlayerStaticData playerData)
         {
             _gameStateMachine =  gameStateMachine;
             _progressService = progressService;
             _saveLoadService = saveLoadService;
+            _playerData = playerData;
         }
         public void Enter()
         {
@@ -40,8 +43,9 @@ namespace CodeBase.Infrastructure.States
         {
             PlayerProgress playerProgress = new PlayerProgress("Main");
 
-            playerProgress.playerState.maxHealth = 50f;
+            playerProgress.playerState.maxHealth = _playerData.maxHealth;
             playerProgress.playerState.ResetHealth();
+            playerProgress.playerState.moveSpeed = _playerData.moveSpeed;
             
             return playerProgress;
         }

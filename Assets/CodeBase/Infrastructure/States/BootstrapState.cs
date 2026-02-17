@@ -2,6 +2,7 @@
 using CodeBase.Infrastructure.AssetManagement;
 using CodeBase.Infrastructure.Factory;
 using CodeBase.Infrastructure.Services;
+using CodeBase.Infrastructure.Services.Balance;
 using CodeBase.Infrastructure.Services.Inputs;
 using CodeBase.Infrastructure.Services.PersistentProgress;
 using CodeBase.Infrastructure.Services.ProgressService;
@@ -53,10 +54,20 @@ namespace CodeBase.Infrastructure.States
             _services.RegisterSingle<IInputService>(InputService());
             _services.RegisterSingle<IPersistentProgressService>( new PersistentProgressService());
             _services.RegisterSingle<IProgressService>(new ProgressService(_services.Single<IPersistentProgressService>()));
+            _services.RegisterSingle<IBalanceService>(new BalanceService(_services.Single<IPersistentProgressService>()));
+            _services.RegisterSingle<IUpgradeService>(new UpgradeService(
+                _services.Single<IStaticDataService>(),
+                _services.Single<IPersistentProgressService>()));
             _services.RegisterSingle<IGameFactory>(new GameFactory(
-                _services.Single<IAssets>(), _services.Single<IStaticDataService>(), _services.Single<IProgressService>(), _services.Single<IPersistentProgressService>()));
-            _services.RegisterSingle<IUpgradeService>(new UpgradeService(_services.Single<IStaticDataService>(), _services.Single<IPersistentProgressService>()));
-            _services.RegisterSingle<ISaveLoadService>( new SaveLoadService(_services.Single<IPersistentProgressService>(), _services.Single<IGameFactory>()));
+                _services.Single<IAssets>(),
+                _services.Single<IStaticDataService>(),
+                _services.Single<IBalanceService>(),
+                _services.Single<IProgressService>(),
+                _services.Single<IPersistentProgressService>(),
+                _services.Single<IUpgradeService>()));
+            _services.RegisterSingle<ISaveLoadService>( new SaveLoadService(
+                _services.Single<IPersistentProgressService>(),
+                _services.Single<IGameFactory>()));
         }
         
         private void RegisterAssetsProvider()

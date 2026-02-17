@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using CodeBase.Infrastructure.Factory;
 using CodeBase.StaticData;
+using CodeBase.StaticData.Enemy;
 using UnityEngine;
 
 namespace CodeBase.Logic

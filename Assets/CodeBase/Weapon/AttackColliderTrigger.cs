@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 namespace CodeBase.Weapon
 {
@@ -12,19 +13,18 @@ namespace CodeBase.Weapon
             _weaponAttack = weaponAttack;
             _layerMask = layerMask;
         }
-        
-        private void OnTriggerEnter2D(Collider2D other)
+
+        private void OnTriggerStay2D(Collider2D other)
         {
             if (_weaponAttack != null)
             {
-                // Перевірити шар
                 if (((1 << other.gameObject.layer) & _layerMask) != 0)
                 {
-                    _weaponAttack.OnTargetEntered(other);
+                    _weaponAttack.OnTargetStayed(other);
                 }
             }
         }
-        
+
         private void OnTriggerExit2D(Collider2D other)
         {
             if (_weaponAttack != null)

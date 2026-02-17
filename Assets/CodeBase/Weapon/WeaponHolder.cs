@@ -3,6 +3,7 @@ using CodeBase.Data;
 using CodeBase.Infrastructure.Factory;
 using CodeBase.Infrastructure.Services.PersistentProgress;
 using CodeBase.StaticData;
+using CodeBase.StaticData.Weapon;
 using UnityEngine;
 
 namespace CodeBase.Weapon

@@ -32,7 +32,8 @@ namespace CodeBase.Infrastructure.States
                 [typeof(LoadProgressState)] = new LoadProgressState(
                     this, 
                     services.Single<IPersistentProgressService>(), 
-                    services.Single<ISaveLoadService>()),
+                    services.Single<ISaveLoadService>(),
+                    services.Single<IStaticDataService>().GetPlayer()),
                 [typeof(UpgradeState)] = new UpgradeState(this,services.Single<IGameFactory>(),services.Single<IUpgradeService>()),
                 [typeof(GameLoopState)] = new GameLoopState(this,services.Single<IProgressService>()),
                 [typeof(GameOverState)] = new GameOverState(this, services.Single<IGameFactory>()),

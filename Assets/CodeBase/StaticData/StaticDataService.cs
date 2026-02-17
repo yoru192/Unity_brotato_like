@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using CodeBase.Data;
+using CodeBase.StaticData.Enemy;
+using CodeBase.StaticData.Weapon;
 using UnityEngine;
 
 namespace CodeBase.StaticData
@@ -10,7 +12,10 @@ namespace CodeBase.StaticData
         private Dictionary<string, LevelStaticData> _levels;
         private Dictionary<WeaponTypeId, WeaponStaticData> _weapons;
         private Dictionary<EnemyTypeId, EnemyStaticData> _enemies;
+        private Dictionary<AbilityTypeId, AbilityStaticData> _abilities;
         private List<UpgradeStaticData> _upgrades;
+        private PlayerStaticData _player;
+        
         
 
         public void Load()
@@ -21,8 +26,11 @@ namespace CodeBase.StaticData
                 .ToDictionary(x => x.weaponTypeId,  x => x);
             _enemies = Resources.LoadAll<EnemyStaticData>("StaticData/Enemy")
                 .ToDictionary(x => x.enemyTypeId,  x => x);
+            _abilities = Resources.LoadAll<AbilityStaticData>("StaticData/Abilities")
+                .ToDictionary(x => x.abilityTypeId, x => x);
             _upgrades = Resources.LoadAll<UpgradeStaticData>("StaticData/Upgrades")
                 .ToList();
+            _player = Resources.Load<PlayerStaticData>("StaticData/Player");
         }
         
         public LevelStaticData ForLevel(string sceneKey) =>
@@ -38,6 +46,12 @@ namespace CodeBase.StaticData
                 ? staticData
                 : null;
 
+        public AbilityStaticData ForAbility(AbilityTypeId abilityId) =>
+            _abilities.TryGetValue(abilityId, out AbilityStaticData staticData)
+                ? staticData
+                : null;
         public List<UpgradeStaticData> GetAllUpgrades() => _upgrades;
+        
+        public PlayerStaticData GetPlayer() => _player;
     }
 }

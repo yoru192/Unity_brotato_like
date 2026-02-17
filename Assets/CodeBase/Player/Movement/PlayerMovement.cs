@@ -1,37 +1,48 @@
 ﻿using Assets.HeroEditor.Common.Scripts.CharacterScripts;
 using CodeBase.Data;
 using CodeBase.Infrastructure.Services.PersistentProgress;
+using CodeBase.StaticData;
 using UnityEngine;
 
 namespace CodeBase.Player.Movement
 {
     public class PlayerMovement : MonoBehaviour, ISavedProgress
     {
-        [SerializeField] private float moveSpeed = 5f;
-        
         private Rigidbody2D _rb;
         private Character _character;
         private PlayerControls _controls;
         private Vector2 _moveInput;
         private IPersistentProgressService _persistentProgress;
+        private PlayerStaticData _playerData;
 
-        public void Construct(IPersistentProgressService persistentProgress)
+        public void Construct(IPersistentProgressService persistentProgress, PlayerStaticData playerData)
         {
             _persistentProgress = persistentProgress;
+            _playerData = playerData;
         }
         
         
         public float MoveSpeed
         {
-            get => _persistentProgress?.Progress.playerState?.moveSpeed ?? moveSpeed;
+            get
+            {
+                if (_persistentProgress?.Progress?.playerState == null)
+                    return _playerData != null ? _playerData.moveSpeed : 0f;
+
+                return _persistentProgress.Progress.playerState.moveSpeed == 0
+                    ? _playerData.moveSpeed
+                    : _persistentProgress.Progress.playerState.moveSpeed;
+            }
             set
             {
-                if (_persistentProgress?.Progress.playerState != null && _persistentProgress?.Progress.playerState.moveSpeed != value)
-                {
+                if (_persistentProgress?.Progress?.playerState == null)
+                    return;
+
+                if (_persistentProgress.Progress.playerState.moveSpeed != value)
                     _persistentProgress.Progress.playerState.moveSpeed = value;
-                }
             }
         }
+
 
         private void Awake()
         {
@@ -56,7 +67,8 @@ namespace CodeBase.Player.Movement
         private void FixedUpdate()
         {
             Vector2 movement = _moveInput.normalized;
-            _rb.linearVelocity = movement * MoveSpeed;
+            if(MoveSpeed > 0)
+                _rb.linearVelocity = movement * MoveSpeed;
         }
 
         private void Update()
@@ -92,13 +104,10 @@ namespace CodeBase.Player.Movement
 
         public void LoadProgress(PlayerProgress progress)
         {
-            if (_persistentProgress != null) _persistentProgress.Progress.playerState = progress.playerState;
-
-            if (_persistentProgress?.Progress.playerState.moveSpeed == 0)
-            {
-                _persistentProgress.Progress.playerState.moveSpeed = moveSpeed;
-            }
+            if (progress.playerState.moveSpeed > 0)
+                MoveSpeed = progress.playerState.moveSpeed;
         }
+
 
         public void UpdateProgress(PlayerProgress progress)
         {

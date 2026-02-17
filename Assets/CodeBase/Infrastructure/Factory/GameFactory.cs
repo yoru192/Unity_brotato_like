@@ -1,22 +1,25 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using CodeBase.Data;
+using CodeBase.Ability;
+using CodeBase.Ability.Concrete;
 using CodeBase.Enemy;
 using CodeBase.Infrastructure.AssetManagement;
-using CodeBase.Infrastructure.Services;
+using CodeBase.Infrastructure.Services.Balance;
 using CodeBase.Infrastructure.Services.PersistentProgress;
 using CodeBase.Infrastructure.Services.ProgressService;
-using CodeBase.Infrastructure.States;
+using CodeBase.Infrastructure.Services.Upgrade;
 using CodeBase.Logic;
 using CodeBase.Player;
 using CodeBase.Player.Movement;
 using CodeBase.StaticData;
+using CodeBase.StaticData.Ability;
+using CodeBase.StaticData.Enemy;
+using CodeBase.StaticData.Weapon;
 using CodeBase.UI;
 using CodeBase.UI.Elements;
 using CodeBase.Weapon;
+using Pathfinding;
 using UnityEngine;
-using UnityEngine.AI;
-using UnityEngine.SceneManagement;
 
 namespace CodeBase.Infrastructure.Factory
 {
@@ -30,14 +33,18 @@ namespace CodeBase.Infrastructure.Factory
         private readonly IStaticDataService _staticData;
         private readonly IProgressService _progress;
         private IPersistentProgressService _persistentProgress;
+        private readonly IUpgradeService _upgradeService;
+        private readonly IBalanceService _balanceService;
 
-        public GameFactory(IAssets assets, IStaticDataService staticData, IProgressService progress,
-            IPersistentProgressService progressService)
+        public GameFactory(IAssets assets, IStaticDataService staticData, IBalanceService balanceService ,IProgressService progress,
+            IPersistentProgressService progressService, IUpgradeService upgradeService)
         {
             _assets = assets;
             _staticData = staticData;
+            _balanceService = balanceService;
             _progress = progress;
             _persistentProgress = progressService;
+            _upgradeService = upgradeService;
         }
 
         public async Task WarmUp()
@@ -48,33 +55,58 @@ namespace CodeBase.Infrastructure.Factory
         public async Task<GameObject> CreatePlayer(Vector3 at)
         {
             PlayerGameObject = await InstantiateRegistered(AssetsAddress.PlayerPath, at);
-            PlayerGameObject.GetComponent<PlayerMovement>().Construct(_persistentProgress);
+            PlayerGameObject.GetComponent<PlayerMovement>().Construct(_persistentProgress, _staticData.GetPlayer());
     
             WeaponStaticData weaponData = _staticData.ForWeapon(WeaponTypeId.Melee);
             WeaponAttack weaponAttack = PlayerGameObject.GetComponentInChildren<WeaponAttack>();
     
             weaponAttack.Construct(
                 PlayerGameObject.GetComponentInChildren<WeaponAnimator>(),
-                weaponData.effectiveDistance,
                 weaponData.radius,
                 weaponData.damage,
                 weaponData.cooldown
             );
+            PlayerGameObject.GetComponent<PlayerStamina>().Construct(_persistentProgress, _upgradeService, _staticData.GetPlayer());
+            PlayerGameObject.GetComponent<PlayerHealth>().Construct(_staticData.GetPlayer(), _persistentProgress);
             
-            PlayerGameObject.GetComponent<PlayerStamina>().Construct(_persistentProgress);
+            AbilityController abilityController = PlayerGameObject.AddComponent<AbilityController>();
+            PlayerAbilityInput abilityInput = PlayerGameObject.AddComponent<PlayerAbilityInput>();
+    
+            Rigidbody2D playerRb = PlayerGameObject.GetComponent<Rigidbody2D>();
+            PlayerMovement playerMovement = PlayerGameObject.GetComponent<PlayerMovement>();
+            
+            DashAbilityData dashData = _staticData.ForAbility(AbilityTypeId.Dash) as DashAbilityData;
+            if (dashData != null)
+            {
+                DashAbility dashAbility = new DashAbility(
+                    PlayerGameObject.transform,
+                    playerRb,
+                    playerMovement,
+                    dashData
+                );
+                abilityController.AddAbility(dashAbility);
+            }
+            abilityInput.Construct(abilityController);
             return PlayerGameObject;
         }
 
         
         public async Task<GameObject> CreateHud()
         {
+            WeaponStaticData weaponData = _staticData.ForWeapon(WeaponTypeId.Melee);
             GameObject hud = await InstantiateRegistered(AssetsAddress.HudPath);
             hud.GetComponent<HudUI>().Construct(
+                _balanceService,
                 _progress, 
                 _persistentProgress, 
-                PlayerGameObject.GetComponent<PlayerStamina>()
+                PlayerGameObject.GetComponent<PlayerStamina>(),
+                PlayerGameObject.GetComponent<PlayerHealth>(),
+                weaponData,
+                _upgradeService,
+                PlayerGameObject.GetComponent<PlayerMovement>(),
+                _staticData.GetPlayer()
             );
-            hud.GetComponentInChildren<ActorUI>().Construct(PlayerGameObject.GetComponent<PlayerHealth>());
+            //hud.GetComponentInChildren<ActorUI>().Construct(PlayerGameObject.GetComponent<PlayerHealth>());
             return hud;
         }
         
@@ -111,15 +143,15 @@ namespace CodeBase.Infrastructure.Factory
                     PlayerGameObject.transform,
                     enemy.GetComponent<EnemyAnimator>(),
                     enemyData.cooldown,
-                    enemyData.effectiveDistance,
+                    enemyData.radius,
                     enemyData.damage);
             }
-            enemy.GetComponent<EnemyDeath>().Construct(_progress,enemyData);
+            enemy.GetComponent<EnemyDeath>().Construct(_balanceService, _progress, enemyData);
             enemy.GetComponent<ActorUI>().Construct(health);
-            enemy.GetComponent<NavMeshAgent>().speed = enemyData.moveSpeed;
-            enemy.GetComponent<AgentMoveToPlayer>().Construct(PlayerGameObject.transform);
-           
-    
+            //enemy.GetComponent<NavMeshAgent>().speed = enemyData.moveSpeed;
+            //enemy.GetComponent<AgentMoveToPlayer>().Construct(PlayerGameObject.transform);
+            enemy.GetComponent<AIDestinationSetter>().target =  PlayerGameObject.transform;
+            enemy.GetComponentInChildren<EnemyGFX>().Construct(enemyData.spriteScale);
             return enemy;
         }
 
@@ -137,7 +169,6 @@ namespace CodeBase.Infrastructure.Factory
             WeaponAttack weaponAttack = PlayerGameObject.GetComponentInChildren<WeaponAttack>();
             weaponAttack.Construct(
                 PlayerGameObject.GetComponentInChildren<WeaponAnimator>(),
-                weaponData.effectiveDistance,
                 weaponData.radius,
                 weaponData.damage,
                 weaponData.cooldown
@@ -146,7 +177,7 @@ namespace CodeBase.Infrastructure.Factory
             IPersistentProgressService progressService = _persistentProgress as IPersistentProgressService;
             if (progressService != null)
             {
-                weaponAttack.LoadProgress(progressService.Progress);
+                //weaponAttack.LoadProgress(progressService.Progress);
             }
         }
 

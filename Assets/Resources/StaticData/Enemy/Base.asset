@@ -17,11 +17,14 @@ MonoBehaviour:
   damage: 1
   moveSpeed: 2
   cooldown: 2
-  effectiveDistance: 1.2
+  radius: 2.2
   xpReward: 22
+  balanceReward: 30
+  attackRecoveryTime: 0.7
   prefabReference:
     m_AssetGUID: 01bba8ac272838f4da2622aedb7f8237
     m_SubObjectName: 
     m_SubObjectType: 
     m_SubObjectGUID: 
     m_EditorAssetChanged: 0
+  spriteScale: {x: 0.5, y: 0.5, z: 1}

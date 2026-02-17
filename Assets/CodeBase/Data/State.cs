@@ -6,9 +6,9 @@ namespace CodeBase.Data
     [Serializable]
     public class State
     {
-        public float currentStamina = 100f;
-        public float maxStamina = 100f;
-        public float regenRateStamina = 15f;
+        public float currentStamina;
+        public float maxStamina;
+        public float regenRateStamina;
         public int currentXp;
         public int currentLevel = 1;
         public int maxLevel = 10;
@@ -17,6 +17,7 @@ namespace CodeBase.Data
         public float moveSpeed;
         public float weaponDamage;
         public float weaponCooldown;
+        public int currentBalance = 0;
         
         public void ResetHealth() =>
             currentHealth = maxHealth;

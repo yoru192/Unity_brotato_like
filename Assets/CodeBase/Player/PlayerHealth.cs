@@ -2,38 +2,44 @@
 using CodeBase.Data;
 using CodeBase.Infrastructure.Services.PersistentProgress;
 using CodeBase.Logic;
+using CodeBase.StaticData;
 using UnityEngine;
 
 namespace CodeBase.Player
 {
-    public class PlayerHealth : MonoBehaviour, ISavedProgress, IHealth
+    public class PlayerHealth : MonoBehaviour, ISavedProgress
     {
         public event Action HealthChanged;
-        
-        private State _state;
+        private PlayerStaticData _playerData;
+        private IPersistentProgressService _persistentProgressService;
 
         public float Current
         {
-            get => _state?.currentHealth ?? 0f;
+            get => _persistentProgressService.Progress.playerState.currentHealth;
             set
             {
-                if(_state.currentHealth != value)
+                if(!Mathf.Approximately(_persistentProgressService.Progress.playerState.currentHealth, value))
                 {
-                    _state.currentHealth = value;
+                    _persistentProgressService.Progress.playerState.currentHealth = value;
                     HealthChanged?.Invoke();
                 }
             }
         }
-
         public float Max
         {
-            get => _state?.maxHealth ?? 0f;
-            set => _state.maxHealth = value;
+            get => _persistentProgressService.Progress.playerState.maxHealth == 0 ? _playerData.maxHealth : _persistentProgressService.Progress.playerState.maxHealth;
+            set => _persistentProgressService.Progress.playerState.maxHealth = value;
+        }
+        public void Construct(PlayerStaticData playerData, IPersistentProgressService persistentProgressService)
+        {
+            _playerData = playerData;
+            _persistentProgressService = persistentProgressService;
         }
 
         public void LoadProgress(PlayerProgress progress)
         {
-            _state = progress.playerState;
+            Current = progress.playerState.currentHealth;
+            Max = progress.playerState.maxHealth == 0 ? _playerData.maxHealth : progress.playerState.maxHealth;
             HealthChanged?.Invoke();
         }
 
@@ -42,6 +48,8 @@ namespace CodeBase.Player
             progress.playerState.currentHealth = Current;
             progress.playerState.maxHealth = Max;
         }
+        
+        
 
         public void TakeDamage(float damage)
         {
@@ -49,7 +57,9 @@ namespace CodeBase.Player
                 return; 
             
             Current -= damage;
+            HealthChanged?.Invoke();
             Debug.Log($"Current HP: {Current}");
         }
+        
     }
 }

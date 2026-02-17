@@ -1,9 +1,10 @@
 ﻿using System;
 using CodeBase.Data;
 using CodeBase.Infrastructure.Services.PersistentProgress;
+using CodeBase.Infrastructure.Services.Upgrade;
 using CodeBase.Player.Movement;
+using CodeBase.StaticData;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace CodeBase.Player
 {
@@ -13,21 +14,26 @@ namespace CodeBase.Player
         private IPersistentProgressService _persistentProgressService;
         private PlayerMovement _playerMovement;
         private PlayerControls _controls;
-        private float _normalSpeed;
+        private float _normalSpeed = 5f;
         private bool _isSprinting;
 
         private float _currentStamina;
-        private float _maxStamina = 100f;
+        private float _maxStamina;
         [SerializeField] private float sprintMultiplier = 1.5f;
         private float _staminaRegenRate;
         private float _staminaUnregenRate = 10f;
+        private IUpgradeService _upgradeService;
+        private PlayerStaticData _playerData;
 
         public float CurrentStamina => _currentStamina;
         public float MaxStamina => _maxStamina;
 
-        public void Construct(IPersistentProgressService persistentProgressService)
+        public void Construct(IPersistentProgressService persistentProgressService, IUpgradeService upgradeService, PlayerStaticData playerStaticData)
         {
             _persistentProgressService = persistentProgressService;
+            _upgradeService = upgradeService;
+            _playerData = playerStaticData;
+            _upgradeService.OnUpgradeStamina += UpgradeStamina;
         }
 
         private void Awake()
@@ -40,7 +46,7 @@ namespace CodeBase.Player
 
         private void Start()
         {
-            _normalSpeed = _playerMovement.MoveSpeed;
+            // _normalSpeed = _playerMovement.MoveSpeed;
         }
 
         private void OnEnable()
@@ -51,6 +57,7 @@ namespace CodeBase.Player
         private void OnDisable()
         {
             _controls.Disable();
+            _upgradeService.OnUpgradeStamina -= UpgradeStamina;
         }
         private void Update()
         {
@@ -78,22 +85,28 @@ namespace CodeBase.Player
             {
                 OnStaminaChanged?.Invoke();
             }
+        }
 
+        private void UpgradeStamina()
+        {
             _maxStamina = _persistentProgressService.Progress.playerState.maxStamina;
             _staminaRegenRate = _persistentProgressService.Progress.playerState.regenRateStamina;
+            
         }
-        
+
         public void LoadProgress(PlayerProgress progress)
         {
             if (progress.playerState.maxStamina == 0)
             {
-                progress.playerState.maxStamina = 100f;
-                progress.playerState.currentStamina = 100f;
+                progress.playerState.maxStamina = _playerData.maxStamina;
+                progress.playerState.currentStamina = _playerData.maxStamina;
             }
 
             _maxStamina = progress.playerState.maxStamina;
             _currentStamina = progress.playerState.currentStamina;
-            _staminaRegenRate = progress.playerState.regenRateStamina;
+            _staminaRegenRate =  progress.playerState.regenRateStamina == 0
+                ? _playerData.regenRateStamina
+                : progress.playerState.regenRateStamina;
             OnStaminaChanged?.Invoke();
         }
 

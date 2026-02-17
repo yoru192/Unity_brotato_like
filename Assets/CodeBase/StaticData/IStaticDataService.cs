@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using CodeBase.Data;
 using CodeBase.Infrastructure.Services;
+using CodeBase.StaticData.Enemy;
+using CodeBase.StaticData.Weapon;
 
 namespace CodeBase.StaticData
 {
@@ -11,5 +13,7 @@ namespace CodeBase.StaticData
         WeaponStaticData ForWeapon(WeaponTypeId weaponId);
         EnemyStaticData ForEnemy(EnemyTypeId enemyId);
         List<UpgradeStaticData> GetAllUpgrades();
+        AbilityStaticData ForAbility(AbilityTypeId abilityId);
+        PlayerStaticData GetPlayer();
     }
 }
