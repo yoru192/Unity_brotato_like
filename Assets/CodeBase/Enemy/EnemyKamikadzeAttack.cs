@@ -1,4 +1,5 @@
 ﻿using CodeBase.Logic;
+using CodeBase.Player;
 using UnityEngine;
 
 namespace CodeBase.Enemy
@@ -49,7 +50,7 @@ namespace CodeBase.Enemy
             
             if (_playerTransform != null)
             {
-                if (_playerTransform.TryGetComponent<IHealth>(out var playerHealth))
+                if (_playerTransform.TryGetComponent<PlayerHealth>(out var playerHealth))
                 {
                     playerHealth.TakeDamage(_explosionDamage);
                 }
@@ -64,7 +65,7 @@ namespace CodeBase.Enemy
             if (_hasExploded) return;
             _hasExploded = true;
             
-            if (player.TryGetComponent<IHealth>(out var health))
+            if (player.TryGetComponent<PlayerHealth>(out var health))
             {
                 health.TakeDamage(_explosionDamage);
             }

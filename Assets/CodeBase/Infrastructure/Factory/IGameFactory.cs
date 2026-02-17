@@ -3,6 +3,8 @@ using System.Threading.Tasks;
 using CodeBase.Infrastructure.Services;
 using CodeBase.Infrastructure.Services.PersistentProgress;
 using CodeBase.StaticData;
+using CodeBase.StaticData.Enemy;
+using CodeBase.StaticData.Weapon;
 using UnityEngine;
 
 namespace CodeBase.Infrastructure.Factory

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using CodeBase.StaticData;
+using CodeBase.StaticData.Enemy;
 using UnityEngine;
 using Random = UnityEngine.Random;
 

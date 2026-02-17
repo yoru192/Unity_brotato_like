@@ -23,6 +23,24 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                  "name": "Ability1",
+                  "type": "Button",
+                  "id": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+                  "expectedControlType": "",
+                  "processors": "",
+                  "interactions": "",
+                  "initialStateCheck": false
+                },
+                {
+                  "name": "Ability2",
+                  "type": "Button",
+                  "id": "yyyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy",
+                  "expectedControlType": "",
+                  "processors": "",
+                  "interactions": "",
+                  "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -146,6 +164,22 @@
                     "action": "Sprint",
                     "isComposite": false,
                     "isPartOfComposite": false
+                },
+                {
+                  "name": "",
+                  "id": "...",
+                  "path": "<Keyboard>/q",
+                  "action": "Ability1",
+                  "isComposite": false,
+                  "isPartOfComposite": false
+                },
+                {
+                  "name": "",
+                  "id": "...",
+                  "path": "<Keyboard>/e",
+                  "action": "Ability2",
+                  "isComposite": false,
+                  "isPartOfComposite": false
                 }
             ]
         }

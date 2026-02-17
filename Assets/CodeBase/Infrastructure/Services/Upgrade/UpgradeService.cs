@@ -11,6 +11,10 @@ namespace CodeBase.Infrastructure.Services.Upgrade
 {
        public class UpgradeService : IUpgradeService
     {
+        public event Action OnUpgradeStamina;
+        public event Action OnUpgradeWeapon;
+        public event Action OnUpgradeHP;
+        public event Action OnUpgradeMoveSpeed;
         private IStaticDataService _staticData;
         private readonly IPersistentProgressService _progressService;
 
@@ -44,7 +48,11 @@ namespace CodeBase.Infrastructure.Services.Upgrade
             {
                 case StatModifierType.MaxHealth:
                     PlayerState.maxHealth += upgrade.value;
-                    PlayerState.currentHealth += upgrade.value;
+                    PlayerState.currentHealth = Mathf.Min(
+                        PlayerState.currentHealth + upgrade.value, 
+                        PlayerState.maxHealth
+                    );
+                    OnUpgradeHP?.Invoke();
                     break;
             
                 case StatModifierType.CurrentHealth:
@@ -52,30 +60,37 @@ namespace CodeBase.Infrastructure.Services.Upgrade
                         PlayerState.currentHealth + upgrade.value, 
                         PlayerState.maxHealth
                     );
+                    OnUpgradeHP?.Invoke();
                     break;
             
                 case StatModifierType.MaxHealthPercent:
                     float bonus = PlayerState.maxHealth * (upgrade.value / 100f);
                     PlayerState.maxHealth += bonus;
                     PlayerState.currentHealth += bonus;
+                    OnUpgradeHP?.Invoke();
                     break;
-            
                 case StatModifierType.MoveSpeed:
                     PlayerState.moveSpeed += upgrade.value;
+                    OnUpgradeMoveSpeed?.Invoke();
                     break;
                 
                 case StatModifierType.Damage:
                     PlayerState.weaponDamage += upgrade.value;
+                    OnUpgradeWeapon?.Invoke();
                     break;
             
                 case StatModifierType.Cooldown:
                     PlayerState.weaponCooldown += upgrade.value;
+                    OnUpgradeWeapon?.Invoke();
                     break;
                 case StatModifierType.MaxStamina:
                     PlayerState.maxStamina += upgrade.value;
+                    PlayerState.currentStamina += upgrade.value;
+                    OnUpgradeStamina?.Invoke();
                     break;
                 case StatModifierType.RegenRateStamina:
                     PlayerState.regenRateStamina += upgrade.value;
+                    OnUpgradeStamina?.Invoke();
                     break;
             }
             

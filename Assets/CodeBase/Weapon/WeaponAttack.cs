@@ -14,7 +14,6 @@ namespace CodeBase.Weapon
         [SerializeField] private PolygonCollider2D _attackCollider;
         
         private float _attackCooldown;
-        private float _effectiveDistance;
         private float _radius;
         private int _damage;
         private State _state;
@@ -44,12 +43,10 @@ namespace CodeBase.Weapon
             }
         }
 
-        public void Construct(WeaponAnimator animator, float effectiveDistance, float radius, int damage, float cooldown)
+        public void Construct(WeaponAnimator animator, float radius, int damage, float cooldown)
         {
             if (animator != null)
                 _animator = animator;
-    
-            _effectiveDistance = effectiveDistance;
             _radius = radius;
             _damage = damage;
             _attackCooldown = cooldown;
@@ -70,7 +67,6 @@ namespace CodeBase.Weapon
             
             if (_attackOrigin != null)
             {
-                // Створити колайдер на AttackOrigin
                 _attackCollider = _attackOrigin.GetComponent<PolygonCollider2D>();
                 if (_attackCollider == null)
                 {
@@ -78,7 +74,6 @@ namespace CodeBase.Weapon
                     _attackCollider.isTrigger = true;
                 }
                 
-                // ДОДАТИ TRIGGER HANDLER
                 var triggerHandler = _attackOrigin.GetComponent<AttackColliderTrigger>();
                 if (triggerHandler == null)
                 {
@@ -170,7 +165,7 @@ namespace CodeBase.Weapon
             return _triggeredTargets.Count > 0;
         }
         
-        public void OnTargetEntered(Collider2D other)
+        public void OnTargetStayed(Collider2D other)
         {
             if (!_triggeredTargets.Contains(other))
             {
@@ -178,6 +173,7 @@ namespace CodeBase.Weapon
                 Debug.Log($"Target entered sector: {other.name}");
             }
         }
+        
 
         public void OnTargetExited(Collider2D other)
         {
@@ -192,7 +188,7 @@ namespace CodeBase.Weapon
             float direction = Mathf.Sign(transform.lossyScale.x);
             return (Vector2)transform.position + 
                    Vector2.up * 0.5f + 
-                   Vector2.right * _effectiveDistance * direction;
+                   Vector2.right * _radius * direction;
         }
 
         private void OnDrawGizmos()

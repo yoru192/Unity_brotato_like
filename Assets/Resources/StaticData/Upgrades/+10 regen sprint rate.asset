@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 58427bc6f71a47e09b1593b961834d72, type: 3}
   m_Name: +10 regen sprint rate
   m_EditorClassIdentifier: Assembly-CSharp::CodeBase.StaticData.UpgradeStaticData
-  upgradeName: + 30 regen sprint rate
+  upgradeName: + 20 regen sprint rate
   description: 
   icon: {fileID: 0}
   modifierType: 7
-  value: 30
-  weight: 100
+  value: 20
+  weight: 1

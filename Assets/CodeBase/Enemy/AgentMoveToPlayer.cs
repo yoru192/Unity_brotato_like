@@ -1,5 +1,4 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.AI;
 
 namespace CodeBase.Enemy
@@ -34,15 +33,15 @@ namespace CodeBase.Enemy
         {
             if (_heroTransform == null || _agent == null)
                 return;
-            
+        
             if (!_agent.isOnNavMesh)
             {
-                Debug.Log($"{gameObject.name} is NOT on NavMesh! Position: {transform.position}");
                 return;
             }
-
-            float distance = Vector2.Distance(transform.position, _heroTransform.position);
             
+            FlipTowardsTarget();
+    
+            float distance = Vector2.Distance(transform.position, _heroTransform.position);
             if (distance >= MinimalDistance)
             {
                 _agent.SetDestination(_heroTransform.position);
@@ -52,5 +51,22 @@ namespace CodeBase.Enemy
                 _agent.ResetPath();
             }
         }
+        
+        private void FlipTowardsTarget()
+        {
+            if (_heroTransform == null) return;
+    
+            float direction = _heroTransform.position.x - transform.position.x;
+    
+            if (direction > 0)
+            {
+                transform.localScale = new Vector3(1, 1, 1);
+            }
+            else if (direction < 0)
+            {
+                transform.localScale = new Vector3(-1, 1, 1);
+            }
+        }
+        
     }
 }
