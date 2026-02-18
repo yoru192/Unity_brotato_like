@@ -56,6 +56,7 @@ MonoBehaviour:
   spawnInterval: 2
   maxAlive: 50
   currentWave: 0
+  waveBudget: 0
 --- !u!114 &447936452215725716
 MonoBehaviour:
   m_ObjectHideFlags: 0

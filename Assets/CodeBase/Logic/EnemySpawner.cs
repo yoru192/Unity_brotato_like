@@ -104,10 +104,21 @@ namespace CodeBase.Logic
         {
             _spawnedEnemies.RemoveAll(enemy => enemy == null);
         }
+        
+        public void DestroyAllEnemies()
+        {
+            foreach (var enemy in _spawnedEnemies)
+            {
+                if (enemy != null)
+                    Destroy(enemy);
+            }
+            _spawnedEnemies.Clear();
+        }
 
         public int GetAliveEnemiesCount()
         {
             return _spawnedEnemies.Count;
         }
+        
     }
 }
