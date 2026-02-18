@@ -15,5 +15,6 @@ namespace CodeBase.StaticData
         List<UpgradeStaticData> GetAllUpgrades();
         AbilityStaticData ForAbility(AbilityTypeId abilityId);
         PlayerStaticData GetPlayer();
+        WaveControllerStaticData GetWaveController();
     }
 }

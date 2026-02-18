@@ -15,6 +15,7 @@ namespace CodeBase.StaticData
         private Dictionary<AbilityTypeId, AbilityStaticData> _abilities;
         private List<UpgradeStaticData> _upgrades;
         private PlayerStaticData _player;
+        private WaveControllerStaticData _waveController;
         
         
 
@@ -31,6 +32,7 @@ namespace CodeBase.StaticData
             _upgrades = Resources.LoadAll<UpgradeStaticData>("StaticData/Upgrades")
                 .ToList();
             _player = Resources.Load<PlayerStaticData>("StaticData/Player");
+            _waveController = Resources.Load<WaveControllerStaticData>("StaticData/WaveController");
         }
         
         public LevelStaticData ForLevel(string sceneKey) =>
@@ -53,5 +55,7 @@ namespace CodeBase.StaticData
         public List<UpgradeStaticData> GetAllUpgrades() => _upgrades;
         
         public PlayerStaticData GetPlayer() => _player;
+        
+        public WaveControllerStaticData GetWaveController() => _waveController;
     }
 }

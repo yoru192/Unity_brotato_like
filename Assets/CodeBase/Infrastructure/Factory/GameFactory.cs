@@ -184,7 +184,8 @@ namespace CodeBase.Infrastructure.Factory
         public async Task<GameObject> CreateSpawner(List<Vector2> spawnPositions)
         {
             GameObject spawner = await InstantiateRegistered(AssetsAddress.SpawnerPath, Vector3.zero);
-    
+            spawner.GetComponent<WaveController>().Construct(_staticData.GetWaveController());
+            
             EnemySpawner enemySpawner = spawner.GetComponent<EnemySpawner>();
             if (enemySpawner != null)
                 enemySpawner.Construct(this, spawnPositions);
