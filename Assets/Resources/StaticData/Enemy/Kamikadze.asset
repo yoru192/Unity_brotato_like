@@ -15,7 +15,7 @@ MonoBehaviour:
   enemyTypeId: 2
   health: 3
   damage: 2
-  moveSpeed: 3.5
+  moveSpeed: 2.5
   cooldown: 2
   radius: 2
   xpReward: 22

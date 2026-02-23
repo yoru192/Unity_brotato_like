@@ -26,8 +26,10 @@ namespace CodeBase.UI
         [SerializeField] private TextMeshProUGUI _balanceAmount;
         [SerializeField] private TextMeshProUGUI _hpAmount;
         [SerializeField] private TextMeshProUGUI _xpAmount;
-        [SerializeField] private TextMeshProUGUI _weaponDamage;
-        [SerializeField] private TextMeshProUGUI _weaponCooldown;
+        [SerializeField] private TextMeshProUGUI _meleeDamage;
+        [SerializeField] private TextMeshProUGUI _meleeCooldown;
+        [SerializeField] private TextMeshProUGUI _rangedDamage;
+        [SerializeField] private TextMeshProUGUI _rangedShootRate;
         [SerializeField] private TextMeshProUGUI _staminaRegenRate;
         [SerializeField] private TextMeshProUGUI _moveSpeed;
         
@@ -38,14 +40,12 @@ namespace CodeBase.UI
         private IBalanceService _balanceService;
         private PlayerHealth _health;
         private WeaponStaticData _weaponData;
-        private State _state;
         private IUpgradeService _upgradeService;
-        private PlayerMovement _playerMovement;
         private PlayerStaticData _playerData;
 
         public void Construct( IBalanceService balanceService, IProgressService progressService, 
             IPersistentProgressService persistentProgressService, 
-            PlayerStamina playerStamina, PlayerHealth health, WeaponStaticData weaponData, IUpgradeService upgradeService, PlayerMovement playerMovement, PlayerStaticData playerData )
+            PlayerStamina playerStamina, PlayerHealth health, WeaponStaticData weaponData, IUpgradeService upgradeService, PlayerStaticData playerData )
         {
             _playerData  = playerData;
             _balanceService = balanceService;
@@ -55,7 +55,6 @@ namespace CodeBase.UI
             _weaponData = weaponData;
             _upgradeService = upgradeService;
             _health = health;
-            _playerMovement = playerMovement;
             Subscribe();
             UpdateLevel();
             UpdateXpBar();
@@ -135,8 +134,11 @@ namespace CodeBase.UI
 
         private void UpgradeWeaponHud()
         {
-            _weaponDamage.text = $"Weapon damage - {_state?.weaponDamage ?? _weaponData.damage}";
-            _weaponCooldown.text = $"Weapon cooldown - {_state?.weaponCooldown ?? _weaponData.cooldown}";
+            var state = _persistentProgressService.Progress.playerState;
+            _meleeDamage.text = $"Melee damage - {(state?.MeleeWeaponState.weaponDamage == 0 ? _weaponData.damage : state?.MeleeWeaponState.weaponDamage)}";
+            _meleeCooldown.text = $"Melee cooldown - {(state?.MeleeWeaponState.weaponCooldown == 0 ? _weaponData.cooldown : state?.MeleeWeaponState.weaponCooldown)}";
+            _rangedDamage.text = $"Ranged damage - {(state?.RangedWeaponState.weaponDamage == 0 ? _weaponData.damage : state?.RangedWeaponState.weaponDamage)}";
+            _rangedShootRate.text = $"Ranged shoot rate - {(state?.RangedWeaponState.weaponCooldown == 0 ? _weaponData.cooldown : state?.RangedWeaponState.weaponCooldown)}";
         }
 
         private void OnXpGained(int amount)
@@ -178,11 +180,12 @@ namespace CodeBase.UI
 
         public void LoadProgress(PlayerProgress progress)
         {
-            _state = progress.playerState;
-            if (_state.weaponDamage == 0 && _weaponData.damage > 0)
-                _state.weaponDamage = _weaponData.damage;
-            if (_state.weaponCooldown == 0 && _weaponData.cooldown > 0)
-                _state.weaponCooldown = _weaponData.cooldown;
+            var melee = progress.playerState.MeleeWeaponState;
+            if (melee.weaponDamage == 0 && _weaponData.damage > 0)
+                melee.weaponDamage = _weaponData.damage;
+            if (melee.weaponCooldown == 0 && _weaponData.cooldown > 0)
+                melee.weaponCooldown = _weaponData.cooldown;
         }
+
     }
 }

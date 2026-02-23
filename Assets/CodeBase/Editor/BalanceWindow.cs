@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using CodeBase.Enemy;
 using CodeBase.Player.Movement;
@@ -48,7 +49,7 @@ namespace CodeBase.Editor
 
         private void OnGUI()
         {
-            _tab = (Tab)GUILayout.Toolbar((int)_tab, new[] { "Player", "Enemy", "Weapon",  "Upgrade" });
+            _tab = (Tab)GUILayout.Toolbar((int)_tab, new[] { "Player", "Enemy", "Weapon", "Upgrade" });
             GUILayout.Space(10);
 
             switch (_tab)
@@ -59,7 +60,7 @@ namespace CodeBase.Editor
                 case Tab.Upgrade: DrawUpgrade(); break;
             }
         }
-        
+
         // ================= PLAYER =================
 
         private void DrawPlayer()
@@ -73,18 +74,37 @@ namespace CodeBase.Editor
             EditorGUI.BeginChangeCheck();
 
             GUILayout.Label("PLAYER", EditorStyles.boldLabel);
-            
+
             _player.maxStamina = EditorGUILayout.FloatField("Max Stamina", _player.maxStamina);
             _player.regenRateStamina = EditorGUILayout.FloatField("Stamina Regen", _player.regenRateStamina);
             _player.maxHealth = EditorGUILayout.FloatField("Max HP", _player.maxHealth);
             _player.moveSpeed = EditorGUILayout.FloatField("Move Speed", _player.moveSpeed);
+            GUILayout.Space(5);
+            GUILayout.Label("Start Weapons", EditorStyles.boldLabel);
+
+            if (_player.startWeapons == null)
+                _player.startWeapons = new List<WeaponTypeId>();
+
+            int newSize = EditorGUILayout.IntField("Size", _player.startWeapons.Count);
+
+            while (newSize > _player.startWeapons.Count)
+                _player.startWeapons.Add(default);
+
+            while (newSize < _player.startWeapons.Count)
+                _player.startWeapons.RemoveAt(_player.startWeapons.Count - 1);
+
+            for (int i = 0; i < _player.startWeapons.Count; i++)
+            {
+                _player.startWeapons[i] =
+                    (WeaponTypeId)EditorGUILayout.EnumPopup($"Element {i}", _player.startWeapons[i]);
+            }
 
             if (EditorGUI.EndChangeCheck())
             {
                 EditorUtility.SetDirty(_player);
             }
         }
-        
+
         // ================= ENEMY =================
 
         private void DrawEnemy()
@@ -117,7 +137,7 @@ namespace CodeBase.Editor
                 EditorUtility.SetDirty(enemy);
             }
         }
-        
+
         // ================= WEAPON =================
 
         private void DrawWeapon()
@@ -135,18 +155,26 @@ namespace CodeBase.Editor
 
             EditorGUI.BeginChangeCheck();
 
-            GUILayout.Label("WEAPON SETTINGS", EditorStyles.boldLabel);
+            GUILayout.Label("GENERAL WEAPON SETTINGS", EditorStyles.boldLabel);
 
             weapon.damage = EditorGUILayout.IntField("Damage", weapon.damage);
-            weapon.cooldown = EditorGUILayout.FloatField("Cooldown", weapon.cooldown);
             weapon.radius = EditorGUILayout.FloatField("Radius", weapon.radius);
-
+            
+            GUILayout.Label("Only Melee", EditorStyles.boldLabel);
+            
+            weapon.attackAngle = EditorGUILayout.FloatField("Attack angle", weapon.attackAngle);
+            weapon.cooldown = EditorGUILayout.FloatField("Cooldown", weapon.cooldown);
+            
+            GUILayout.Label("Only Ranged", EditorStyles.boldLabel);
+            
+            weapon.projectileSpeed = EditorGUILayout.FloatField("Projectile speed", weapon.projectileSpeed);
+            weapon.shootRate = EditorGUILayout.FloatField("Shoot rate", weapon.shootRate);
             if (EditorGUI.EndChangeCheck())
             {
                 EditorUtility.SetDirty(weapon);
             }
         }
-        
+
         // ================= Upgrades =================
 
         private void DrawUpgrade()
@@ -157,46 +185,47 @@ namespace CodeBase.Editor
             {
                 CreateNewUpgrade();
             }
+
             GUILayout.EndHorizontal();
             GUILayout.Space(10);
-            
+
             if (_upgrades == null || _upgrades.Length == 0)
             {
                 EditorGUILayout.HelpBox("UpgradeStaticData not found", MessageType.Warning);
                 return;
             }
-            
+
             EditorGUI.BeginChangeCheck();
             _selectedUpgradeType = (StatModifierType)EditorGUILayout.EnumPopup("Upgrade Type", _selectedUpgradeType);
             if (EditorGUI.EndChangeCheck())
             {
                 _selectedUpgradeIndex = 0;
             }
-            
+
             var filteredUpgrades = _upgrades.Where(u => u.modifierType == _selectedUpgradeType).ToArray();
-            
+
             if (filteredUpgrades.Length == 0)
             {
                 EditorGUILayout.HelpBox($"No upgrades found for type: {_selectedUpgradeType}", MessageType.Info);
                 return;
             }
-            
+
             string[] upgradeNames = filteredUpgrades.Select(u => u.upgradeName).ToArray();
             _selectedUpgradeIndex = EditorGUILayout.Popup("Select Upgrade", _selectedUpgradeIndex, upgradeNames);
             _selectedUpgradeIndex = Mathf.Clamp(_selectedUpgradeIndex, 0, filteredUpgrades.Length - 1);
-            
+
             var upgrade = filteredUpgrades[_selectedUpgradeIndex];
-            
+
             EditorGUI.BeginChangeCheck();
-            
+
             GUILayout.Label("UPGRADE SETTINGS", EditorStyles.boldLabel);
-            
+
             upgrade.upgradeName = EditorGUILayout.TextField("Upgrade Name", upgrade.upgradeName);
             upgrade.description = EditorGUILayout.TextField("Description", upgrade.description);
             upgrade.icon = EditorGUILayout.ObjectField("Icon", upgrade.icon, typeof(Sprite), false) as Sprite;
             upgrade.value = EditorGUILayout.FloatField("Value", upgrade.value);
             upgrade.weight = EditorGUILayout.IntField("Weight", upgrade.weight);
-            
+
             if (EditorGUI.EndChangeCheck())
             {
                 EditorUtility.SetDirty(upgrade);
@@ -206,25 +235,26 @@ namespace CodeBase.Editor
         private void CreateNewUpgrade()
         {
             UpgradeStaticData newUpgrade = ScriptableObject.CreateInstance<UpgradeStaticData>();
-            
+
             newUpgrade.upgradeName = "New Upgrade";
             newUpgrade.description = "Description";
             newUpgrade.modifierType = _selectedUpgradeType;
             newUpgrade.value = 1f;
             newUpgrade.weight = 1;
-            
-            string path = "Assets/Resources/StaticData/Upgrades/Upgrade_" + _selectedUpgradeType + "_" + System.DateTime.Now.Ticks + ".asset";
+
+            string path = "Assets/Resources/StaticData/Upgrades/Upgrade_" + _selectedUpgradeType + "_" +
+                          System.DateTime.Now.Ticks + ".asset";
             path = AssetDatabase.GenerateUniqueAssetPath(path);
-            
+
             AssetDatabase.CreateAsset(newUpgrade, path);
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
-            
+
             EditorUtility.FocusProjectWindow();
             Selection.activeObject = newUpgrade;
-            
+
             Load();
-            
+
             Debug.Log($"Created new upgrade at: {path}");
         }
     }

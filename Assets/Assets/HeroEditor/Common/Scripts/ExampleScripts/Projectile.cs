@@ -3,9 +3,6 @@ using UnityEngine;
 
 namespace Assets.HeroEditor.Common.Scripts.ExampleScripts
 {
-    /// <summary>
-    /// General behaviour for projectiles: bullets, rockets and other.
-    /// </summary>
     public class Projectile : MonoBehaviour
     {
         public List<Renderer> Renderers;

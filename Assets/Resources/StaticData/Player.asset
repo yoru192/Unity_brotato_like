@@ -16,3 +16,4 @@ MonoBehaviour:
   regenRateStamina: 10
   maxHealth: 100
   moveSpeed: 7
+  startWeapons: 0000000001000000

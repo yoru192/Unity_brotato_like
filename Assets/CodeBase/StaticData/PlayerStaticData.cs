@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using CodeBase.StaticData.Weapon;
+using UnityEngine;
 
 namespace CodeBase.StaticData
 {
@@ -9,5 +11,7 @@ namespace CodeBase.StaticData
         public float regenRateStamina;
         public float maxHealth;
         public float moveSpeed;
+        
+        public List<WeaponTypeId> startWeapons = new() { WeaponTypeId.Melee };
     }
 }

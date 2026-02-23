@@ -16,7 +16,6 @@ namespace CodeBase.Infrastructure.Factory
         Task WarmUp();
         void Cleanup();
         Task<GameObject> CreatePlayer(Vector3 at);
-        Task CreateWeapon(WeaponTypeId weaponId, Transform parent);
         Task<GameObject> CreateEnemy(EnemyTypeId enemyId, Transform parent);
         Task<GameObject> CreateSpawner(List<Vector2> spawnPositions);
         Task<GameObject> CreateHud();

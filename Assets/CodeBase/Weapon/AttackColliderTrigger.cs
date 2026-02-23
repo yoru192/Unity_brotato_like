@@ -1,36 +1,26 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace CodeBase.Weapon
 {
     public class AttackColliderTrigger : MonoBehaviour
     {
-        private WeaponAttack _weaponAttack;
+        private IAttackColliderHandler _handler;
         private int _layerMask;
-        
-        public void Initialize(WeaponAttack weaponAttack, int layerMask)
+
+        public void Initialize(IAttackColliderHandler handler, int layerMask)
         {
-            _weaponAttack = weaponAttack;
+            _handler = handler;
             _layerMask = layerMask;
         }
 
-        private void OnTriggerStay2D(Collider2D other)
+        private void OnTriggerEnter2D(Collider2D other)
         {
-            if (_weaponAttack != null)
-            {
-                if (((1 << other.gameObject.layer) & _layerMask) != 0)
-                {
-                    _weaponAttack.OnTargetStayed(other);
-                }
-            }
+            if (_handler == null) return;
+            if (((1 << other.gameObject.layer) & _layerMask) != 0)
+                _handler.OnTargetEnter(other);
         }
 
-        private void OnTriggerExit2D(Collider2D other)
-        {
-            if (_weaponAttack != null)
-            {
-                _weaponAttack.OnTargetExited(other);
-            }
-        }
+        private void OnTriggerExit2D(Collider2D other) =>
+            _handler?.OnTargetExited(other);
     }
 }

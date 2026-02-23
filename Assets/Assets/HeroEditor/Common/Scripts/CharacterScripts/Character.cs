@@ -8,6 +8,7 @@ using Assets.HeroEditor.Common.Scripts.Common;
 using HeroEditor.Common;
 using HeroEditor.Common.Enums;
 using UnityEngine;
+using MeleeWeapon = CodeBase.Weapon.MeleeWeapon;
 
 namespace Assets.HeroEditor.Common.Scripts.CharacterScripts
 {

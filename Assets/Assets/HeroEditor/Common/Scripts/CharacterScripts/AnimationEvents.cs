@@ -7,7 +7,7 @@ namespace Assets.HeroEditor.Common.Scripts.CharacterScripts
 	/// Animation events. If you want to get animation callback, use it.
 	/// For example, if you want to know exact hit moment for attack animation, use custom event 'Hit' that is fired in most attack animations.
 	/// </summary>
-	public class AnimationEvents : MonoBehaviour
+	public class  AnimationEvents : MonoBehaviour
     {
 		/// <summary>
 		/// Subscribe it to get animation callback.

@@ -14,14 +14,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CodeBase.StaticData.WaveControllerStaticData
   waveValueMultiplier: 15
   maxEnemiesPerWave: 50
-  initialSpawnTimer: 10
+  initialSpawnTimer: 3
   waveDuration: 25
-  spawnInterval: 1
+  spawnInterval: 3.5
   maxAlive: 20
   enemyConfigs:
   - enemyTypeId: 0
     cost: 1
   - enemyTypeId: 1
-    cost: 2
+    cost: 4
   - enemyTypeId: 2
     cost: 3

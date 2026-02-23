@@ -1,4 +1,4 @@
-﻿using Assets.HeroEditor.FantasyHeroes.TestRoom.Scripts;
+﻿/*using Assets.HeroEditor.FantasyHeroes.TestRoom.Scripts;
 using Assets.HeroEditor.Common.Scripts.CharacterScripts;
 using UnityEngine;
 
@@ -37,4 +37,4 @@ namespace Assets.HeroEditor.FantasyHeroes.TestRoom.Scarecrow
             }
         }
     }
-}
+}*/
