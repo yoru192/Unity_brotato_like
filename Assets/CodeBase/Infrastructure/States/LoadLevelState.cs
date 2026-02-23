@@ -76,9 +76,6 @@ namespace CodeBase.Infrastructure.States
         private async Task<GameObject> InitPlayer(LevelStaticData levelData)
         {
             GameObject player = await _gameFactory.CreatePlayer(levelData.initialHeroPosition);
-            WeaponHolder weaponHolder = player.GetComponentInChildren<WeaponHolder>();
-            if (weaponHolder != null)
-                weaponHolder.Construct(_gameFactory);
             player.GetComponent<PlayerDeath>().Construct(_stateMachine);
             
             return player;

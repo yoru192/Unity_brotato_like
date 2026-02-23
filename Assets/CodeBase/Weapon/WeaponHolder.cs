@@ -1,40 +1,25 @@
-﻿using System.Threading.Tasks;
-using CodeBase.Data;
-using CodeBase.Infrastructure.Factory;
-using CodeBase.Infrastructure.Services.PersistentProgress;
-using CodeBase.StaticData;
+﻿using System.Collections.Generic;
 using CodeBase.StaticData.Weapon;
 using UnityEngine;
 
 namespace CodeBase.Weapon
 {
-    public class WeaponHolder : MonoBehaviour, ISavedProgress
+    public class WeaponHolder : MonoBehaviour
     {
-        public WeaponTypeId weaponTypeId;
-        private IGameFactory _factory;
-        private bool _isWeaponSpawned = false;
+        private readonly List<WeaponBase> _weapons = new();
+        private readonly Dictionary<WeaponTypeId, WeaponBase> _weaponMap = new();
 
-        public void Construct(IGameFactory factory)
-        {
-            _factory = factory;
-        }
+        public IReadOnlyList<WeaponBase> Weapons => _weapons;
 
-        public async void LoadProgress(PlayerProgress progress)
+        public void AddWeapon(WeaponTypeId id, WeaponBase weapon)
         {
-            if (!_isWeaponSpawned)
-            {
-                await Spawn();
-                _isWeaponSpawned = true;
-            }
-        }
-        public void UpdateProgress(PlayerProgress progress)
-        {
+            _weapons.Add(weapon);
+            _weaponMap[id] = weapon;
         }
 
-        private async Task Spawn()
-        {
-            await _factory.CreateWeapon(weaponTypeId, transform);
-        }
+        public bool HasWeapon(WeaponTypeId id) => _weaponMap.ContainsKey(id);
+
+        public WeaponBase GetWeapon(WeaponTypeId id) =>
+            _weaponMap.TryGetValue(id, out var weapon) ? weapon : null;
     }
-
 }

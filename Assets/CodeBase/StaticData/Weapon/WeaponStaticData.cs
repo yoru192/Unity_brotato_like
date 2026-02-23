@@ -9,9 +9,16 @@ namespace CodeBase.StaticData.Weapon
         public WeaponTypeId weaponTypeId;
         [Range(1,30)]
         public int damage;
-        public float cooldown;
-        [Range(0.1f, 2f)]
-        public float radius = 0.5f;
+        [Range(0.1f, 100f)]
+        public float radius;
         public AssetReferenceGameObject prefabReference;
+        
+        [Header("Ranged Only")]
+        public float projectileSpeed = 8f;
+        public float shootRate = 1f;
+        [Header("Melee Only")]
+        [Range(10f, 360f)]
+        public float attackAngle;
+        public float cooldown;
     }
 }

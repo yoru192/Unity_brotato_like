@@ -16406,7 +16406,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4751709135678431289}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: ProjectileTransform
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -17009,7 +17009,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5168923352397760594}
   - component: {fileID: 7241902693907213682}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: Shadow
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -22351,8 +22351,8 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 3998298162414330284}
-  - {fileID: 2341294425543032456}
   - {fileID: 5372548288744447236}
+  - {fileID: 2341294425543032456}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &7561002723474774693
@@ -22518,7 +22518,7 @@ MonoBehaviour:
   WeaponType: 0
   HideEars: 0
   FullHair: 0
-  MeleeWeapon: {fileID: 6180910367921083750}
+  MeleeWeapon: {fileID: 0}
   Firearm: {fileID: 1273908971300915620}
   LayerManager: {fileID: 92934365523909709}
   ShowHelmet: 1
@@ -24108,6 +24108,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6206257089389692322}
   - component: {fileID: 4819313123055950986}
+  - component: {fileID: 2400984621027334226}
   m_Layer: 0
   m_Name: HandR
   m_TagString: Untagged
@@ -24194,6 +24195,18 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
+--- !u!114 &2400984621027334226
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4424324130837808523}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8382882b00054c04a888e426aed91d59, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CodeBase.Weapon.WeaponHolder
 --- !u!1 &4541912842556525972
 GameObject:
   m_ObjectHideFlags: 0
@@ -25451,8 +25464,6 @@ GameObject:
   m_Component:
   - component: {fileID: 649944580397985754}
   - component: {fileID: 2894840311298306737}
-  - component: {fileID: 6180910367921083750}
-  - component: {fileID: 5764531466888118794}
   m_Layer: 0
   m_Name: MeleeWeapon
   m_TagString: Untagged
@@ -25535,35 +25546,6 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
---- !u!114 &6180910367921083750
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5805373787473532012}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 67bdb88bfca3491eb2d33868fd2caa10, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  AnimationEvents: {fileID: 5678965978496411084}
-  Edge: {fileID: 6099373282376921208}
---- !u!114 &5764531466888118794
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5805373787473532012}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 45af4cde525549a48a02d44d732b8c87, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::CodeBase.Weapon.WeaponAttack
-  _attackOrigin: {fileID: 2341294425543032456}
-  _attackAngle: 160
-  _attackCollider: {fileID: 0}
 --- !u!1 &5913437616743240939
 GameObject:
   m_ObjectHideFlags: 0
@@ -26732,7 +26714,7 @@ GameObject:
   - component: {fileID: 7097850515665816410}
   - component: {fileID: 5678965978496411084}
   - component: {fileID: 7610305856748552383}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: Animation
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -27414,7 +27396,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2341294425543032456}
-  - component: {fileID: 4433887836976656494}
+  - component: {fileID: 3750877259445025011}
   m_Layer: 0
   m_Name: 'AttackOrigin '
   m_TagString: Untagged
@@ -27430,14 +27412,14 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7828923010711400754}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0.0000000015716068, w: 1}
   m_LocalPosition: {x: 1.1, y: 1, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 4386336055901622934}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &4433887836976656494
+--- !u!114 &3750877259445025011
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

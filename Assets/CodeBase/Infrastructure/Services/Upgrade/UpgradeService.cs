@@ -54,7 +54,6 @@ namespace CodeBase.Infrastructure.Services.Upgrade
                     );
                     OnUpgradeHP?.Invoke();
                     break;
-            
                 case StatModifierType.CurrentHealth:
                     PlayerState.currentHealth = Mathf.Min(
                         PlayerState.currentHealth + upgrade.value, 
@@ -62,7 +61,6 @@ namespace CodeBase.Infrastructure.Services.Upgrade
                     );
                     OnUpgradeHP?.Invoke();
                     break;
-            
                 case StatModifierType.MaxHealthPercent:
                     float bonus = PlayerState.maxHealth * (upgrade.value / 100f);
                     PlayerState.maxHealth += bonus;
@@ -73,14 +71,14 @@ namespace CodeBase.Infrastructure.Services.Upgrade
                     PlayerState.moveSpeed += upgrade.value;
                     OnUpgradeMoveSpeed?.Invoke();
                     break;
-                
                 case StatModifierType.Damage:
-                    PlayerState.weaponDamage += upgrade.value;
+                    PlayerState.MeleeWeaponState.weaponDamage += upgrade.value;
+                    PlayerState.RangedWeaponState.weaponDamage += upgrade.value;
                     OnUpgradeWeapon?.Invoke();
                     break;
-            
                 case StatModifierType.Cooldown:
-                    PlayerState.weaponCooldown += upgrade.value;
+                    PlayerState.MeleeWeaponState.weaponCooldown += upgrade.value;
+                    PlayerState.RangedWeaponState.weaponCooldown += upgrade.value;
                     OnUpgradeWeapon?.Invoke();
                     break;
                 case StatModifierType.MaxStamina:
