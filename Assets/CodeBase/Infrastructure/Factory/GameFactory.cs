@@ -148,6 +148,8 @@ namespace CodeBase.Infrastructure.Factory
             if (enemy.TryGetComponent<EnemyAttack>(out var attack))
                 attack.Construct(PlayerGameObject.transform, enemy.GetComponent<EnemyAnimator>(),
                     enemyData.cooldown, enemyData.radius, enemyData.damage);
+            if(enemy.TryGetComponent<EnemyRangerAttack>(out var rangerAttack))
+                rangerAttack.Construct(enemyData.damage, enemyData.cooldown, enemyData.projectileSpeed, enemyData.radius);
 
             enemy.GetComponent<EnemyDeath>().Construct(_balanceService, _progress, enemyData);
             enemy.GetComponent<ActorUI>().Construct(health);
