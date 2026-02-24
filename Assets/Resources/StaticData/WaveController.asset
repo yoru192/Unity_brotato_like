@@ -20,8 +20,10 @@ MonoBehaviour:
   maxAlive: 20
   enemyConfigs:
   - enemyTypeId: 0
-    cost: 1
+    cost: 3
   - enemyTypeId: 1
-    cost: 4
+    cost: 3
   - enemyTypeId: 2
+    cost: 3
+  - enemyTypeId: 3
     cost: 3

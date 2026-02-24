@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace CodeBase.Player
 {
-    public class PlayerHealth : MonoBehaviour, ISavedProgress
+    public class PlayerHealth : MonoBehaviour, ISavedProgress, IHealth
     {
         public event Action HealthChanged;
         private PlayerStaticData _playerData;

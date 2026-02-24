@@ -15,7 +15,7 @@ namespace CodeBase.StaticData.Enemy
         public float moveSpeed;
         [Range(0.1f, 10)] 
         public float cooldown;
-        [Range(.5f,10f)]
+        [Range(.5f,100f)]
         public float radius = .5f;
         [Range(1, 50)] 
         public int xpReward;
@@ -23,5 +23,7 @@ namespace CodeBase.StaticData.Enemy
         public int balanceReward;
         public AssetReferenceGameObject prefabReference;
         public Vector3 spriteScale;
+        [Header("Only Ranger")]
+        public float projectileSpeed;
     }
 }

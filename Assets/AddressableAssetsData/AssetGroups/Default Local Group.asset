@@ -50,6 +50,11 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9296682d07c9b414c99e2a995faa9d1d
+    m_Address: Ranger
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: ad9327ae309f1cf4cb5090f6b46c0a9c
     m_Address: Tank
     m_ReadOnly: 0
