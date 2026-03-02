@@ -1,5 +1,36 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &8085848553072445979
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3545341756790832764}
+  m_Layer: 0
+  m_Name: SortPoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3545341756790832764
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8085848553072445979}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: -0.42, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 3949384189174402918}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &5106173922537243090
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -175,6 +206,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 8076011716896018100, guid: 79171cc7afbd7524da1e002766f5d634, type: 3}
       insertIndex: -1
       addedObject: {fileID: 4004688042126531473}
+    - targetCorrespondingSourceObject: {fileID: 8076011716896018100, guid: 79171cc7afbd7524da1e002766f5d634, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 3545341756790832764}
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 8060626389315759474, guid: 79171cc7afbd7524da1e002766f5d634, type: 3}
       insertIndex: -1
@@ -306,6 +340,10 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 6
       objectReference: {fileID: 0}
+    - target: {fileID: 3022413966413578453, guid: 958d885750f8cc640a306692cc1adb3a, type: 3}
+      propertyPath: m_SortingOrder
+      value: 100
+      objectReference: {fileID: 0}
     - target: {fileID: 3555356457654712698, guid: 958d885750f8cc640a306692cc1adb3a, type: 3}
       propertyPath: m_Layer
       value: 0
@@ -389,6 +427,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 2880459104827774263, guid: 958d885750f8cc640a306692cc1adb3a, type: 3}
       insertIndex: -1
       addedObject: {fileID: 6638405437271292384}
+    - targetCorrespondingSourceObject: {fileID: 2880459104827774263, guid: 958d885750f8cc640a306692cc1adb3a, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2873667039668783536}
   m_SourcePrefab: {fileID: 100100000, guid: 958d885750f8cc640a306692cc1adb3a, type: 3}
 --- !u!4 &4004688042126531473 stripped
 Transform:
@@ -413,3 +454,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyGFX
   followerEntity: {fileID: 7077774002601737260}
+--- !u!114 &2873667039668783536
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8998775219319946581}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7533e3d5a00b44bc92a180559e6af952, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CodeBase.Logic.YSorting
+  _sortPoint: {fileID: 3545341756790832764}
+  _multiplier: 100

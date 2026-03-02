@@ -1,5 +1,36 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &1263906233373817962
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2348098847145705987}
+  m_Layer: 0
+  m_Name: SortPoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2348098847145705987
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1263906233373817962}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: -0.52, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 3953298390206436969}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &937533691000156874
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -104,6 +135,10 @@ PrefabInstance:
       propertyPath: followerEntity
       value: 
       objectReference: {fileID: 7073648661585601827}
+    - target: {fileID: 5348429189093309385, guid: c830dfed47304bb40b15a4b5cb03625e, type: 3}
+      propertyPath: m_SortingOrder
+      value: 100
+      objectReference: {fileID: 0}
     - target: {fileID: 7177135224091433179, guid: c830dfed47304bb40b15a4b5cb03625e, type: 3}
       propertyPath: m_Layer
       value: 0
@@ -115,13 +150,35 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 117150395161187363, guid: c830dfed47304bb40b15a4b5cb03625e, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 6535934264162577580}
   m_SourcePrefab: {fileID: 100100000, guid: c830dfed47304bb40b15a4b5cb03625e, type: 3}
 --- !u!4 &910565250316068584 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 117150395161187362, guid: c830dfed47304bb40b15a4b5cb03625e, type: 3}
   m_PrefabInstance: {fileID: 937533691000156874}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &910565250316068585 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 117150395161187363, guid: c830dfed47304bb40b15a4b5cb03625e, type: 3}
+  m_PrefabInstance: {fileID: 937533691000156874}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &6535934264162577580
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 910565250316068585}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7533e3d5a00b44bc92a180559e6af952, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CodeBase.Logic.YSorting
+  _sortPoint: {fileID: 2348098847145705987}
+  _multiplier: 100
 --- !u!1001 &5102347680287955165
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -336,6 +393,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 8076011716896018100, guid: 79171cc7afbd7524da1e002766f5d634, type: 3}
       insertIndex: -1
       addedObject: {fileID: 910565250316068584}
+    - targetCorrespondingSourceObject: {fileID: 8076011716896018100, guid: 79171cc7afbd7524da1e002766f5d634, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2348098847145705987}
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 79171cc7afbd7524da1e002766f5d634, type: 3}
 --- !u!223 &2280946405099508562 stripped

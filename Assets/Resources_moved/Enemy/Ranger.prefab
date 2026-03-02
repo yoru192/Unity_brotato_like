@@ -1,5 +1,36 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &7780554852362584265
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6464563311079517453}
+  m_Layer: 6
+  m_Name: SortPoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6464563311079517453
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7780554852362584265}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: -0.88, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2621990159258856546}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &258325479027653104
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -8,6 +39,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 2621990159258856546}
     m_Modifications:
+    - target: {fileID: 4867315556631442157, guid: ff3197dfbdd49e1478902b7756ef4b18, type: 3}
+      propertyPath: m_SortingOrder
+      value: 200
+      objectReference: {fileID: 0}
     - target: {fileID: 5923401707093281111, guid: ff3197dfbdd49e1478902b7756ef4b18, type: 3}
       propertyPath: m_Name
       value: MohawkBat
@@ -59,6 +94,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 5923401707093281111, guid: ff3197dfbdd49e1478902b7756ef4b18, type: 3}
       insertIndex: -1
       addedObject: {fileID: 3831505824019221583}
+    - targetCorrespondingSourceObject: {fileID: 5923401707093281111, guid: ff3197dfbdd49e1478902b7756ef4b18, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 6605319716099435266}
   m_SourcePrefab: {fileID: 100100000, guid: ff3197dfbdd49e1478902b7756ef4b18, type: 3}
 --- !u!1 &5882237535850918055 stripped
 GameObject:
@@ -78,6 +116,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CodeBase.Enemy.EnemyGFX
   followerEntity: {fileID: 8112500401169456936}
+--- !u!114 &6605319716099435266
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5882237535850918055}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7533e3d5a00b44bc92a180559e6af952, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CodeBase.Logic.YSorting
+  _sortPoint: {fileID: 6464563311079517453}
+  _multiplier: 100
+  _baseOrder: 5000
 --- !u!4 &7943372031900256654 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7901925505112223870, guid: ff3197dfbdd49e1478902b7756ef4b18, type: 3}
@@ -91,6 +144,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: -6564687137703182850, guid: 79171cc7afbd7524da1e002766f5d634, type: 3}
+      propertyPath: movement.follower.speed
+      value: 2.5
+      objectReference: {fileID: 0}
     - target: {fileID: 8060626389315759474, guid: 79171cc7afbd7524da1e002766f5d634, type: 3}
       propertyPath: m_Name
       value: Ranger
@@ -143,6 +200,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 8076011716896018100, guid: 79171cc7afbd7524da1e002766f5d634, type: 3}
       insertIndex: -1
       addedObject: {fileID: 7943372031900256654}
+    - targetCorrespondingSourceObject: {fileID: 8076011716896018100, guid: 79171cc7afbd7524da1e002766f5d634, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 6464563311079517453}
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 8060626389315759474, guid: 79171cc7afbd7524da1e002766f5d634, type: 3}
       insertIndex: -1
@@ -171,6 +231,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CodeBase.Enemy.EnemyRangerAttack
   _projectilePrefab: {fileID: 6980605287808460766, guid: 01b3f53450909a04cbf60bbc9039cdb4, type: 3}
+  _arcHeight: 2
+  _speedCurve:
+    serializedVersion: 2
+    m_Curve: []
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!114 &8112500401169456936 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: -6564687137703182850, guid: 79171cc7afbd7524da1e002766f5d634, type: 3}

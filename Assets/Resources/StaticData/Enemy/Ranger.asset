@@ -15,7 +15,7 @@ MonoBehaviour:
   enemyTypeId: 3
   health: 5
   damage: 2
-  moveSpeed: 1.75
+  moveSpeed: 7.85
   cooldown: 2.5
   radius: 13
   xpReward: 27
@@ -27,4 +27,4 @@ MonoBehaviour:
     m_SubObjectGUID: 
     m_EditorAssetChanged: 1
   spriteScale: {x: 0.45, y: 0.45, z: 1}
-  projectileSpeed: 10
+  projectileSpeed: 30
