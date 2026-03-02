@@ -21,7 +21,7 @@ MonoBehaviour:
     m_SubObjectType: 
     m_SubObjectGUID: 
     m_EditorAssetChanged: 0
-  projectileSpeed: 15
+  projectileSpeed: 30
   shootRate: 1.5
   attackAngle: 10
   cooldown: 1

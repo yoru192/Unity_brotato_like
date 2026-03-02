@@ -2,26 +2,35 @@
 using CodeBase.Infrastructure.Services.PersistentProgress;
 using UnityEngine;
 
-namespace CodeBase.Weapon
+namespace CodeBase.Weapon.RangeWeapon
 {
     public class RangedAttack : WeaponBase, ISavedProgress
     {
         private State _state;
         private float _detectionRadius;
         private float _shootRate;
-        private float _projectileSpeed;
+        private float _projectileMaxMoveSpeed;
+        private float _damage;
+
         [SerializeField] private GameObject _projectilePrefab;
+
+        [Header("Arc")]
+        [Tooltip("Висота дуги снаряда у world units.")]
+        [SerializeField] private float _arcHeight = 2f;
+
+        [Header("Speed Curve (опційно)")]
+        [Tooltip("Крива швидкості снаряда. Залиш пустою для постійної швидкості.")]
+        [SerializeField] private AnimationCurve _speedCurve;
 
         private float _shootTimer;
         private int _hittableLayer;
-        private float _damage;
 
         public int Damage
         {
             get => (int)(_state?.RangedWeaponState.weaponDamage ?? _damage);
             set
             {
-                if(_state != null && _state.RangedWeaponState.weaponDamage != value)
+                if (_state != null && _state.RangedWeaponState.weaponDamage != value)
                     _state.RangedWeaponState.weaponDamage = value;
             }
         }
@@ -31,7 +40,7 @@ namespace CodeBase.Weapon
             get => _state?.RangedWeaponState.weaponCooldown ?? _shootRate;
             set
             {
-                if(_state != null && _state.RangedWeaponState.weaponCooldown != value)
+                if (_state != null && _state.RangedWeaponState.weaponCooldown != value)
                     _state.RangedWeaponState.weaponCooldown = value;
             }
         }
@@ -39,10 +48,9 @@ namespace CodeBase.Weapon
         public void Construct(int damage, float shootRate, float projectileSpeed, float radius)
         {
             _damage = damage;
-            _shootRate  = shootRate;
-            _projectileSpeed = projectileSpeed;
+            _shootRate = shootRate;
+            _projectileMaxMoveSpeed = projectileSpeed;
             _detectionRadius = radius;
-            
         }
 
         private void Awake()
@@ -50,7 +58,6 @@ namespace CodeBase.Weapon
             _hittableLayer = 1 << LayerMask.NameToLayer("Hittable");
             _shootTimer = _shootRate;
         }
-        
 
         private void Update()
         {
@@ -60,8 +67,19 @@ namespace CodeBase.Weapon
             Transform nearestTarget = FindNearestTarget();
             if (nearestTarget == null) return;
 
-            _shootTimer = _shootRate;
+            _shootTimer = Cooldown;
             SpawnProjectile(nearestTarget);
+        }
+
+        private void SpawnProjectile(Transform target)
+        {
+            var go = Instantiate(_projectilePrefab, transform.position, Quaternion.identity);
+            var projectile = go.GetComponent<Projectile>();
+
+            projectile.InitializeProjectile(target, _projectileMaxMoveSpeed, _arcHeight, Damage);
+
+            if (_speedCurve != null && _speedCurve.keys.Length > 0)
+                projectile.InitializeSpeedCurve(_speedCurve);
         }
 
         private Transform FindNearestTarget()
@@ -85,25 +103,17 @@ namespace CodeBase.Weapon
             return nearest;
         }
 
-        private void SpawnProjectile(Transform target)
-        {
-            var go = Instantiate(_projectilePrefab, transform.position, Quaternion.identity);
-            var projectile = go.GetComponent<Projectile>();
-            projectile.InitializeProjectile(target, _projectileSpeed, Damage);
-        }
-
         private void OnDrawGizmosSelected()
         {
             Gizmos.color = Color.yellow;
             Gizmos.DrawWireSphere(transform.position, _detectionRadius);
         }
 
-
         public void LoadProgress(PlayerProgress progress)
         {
             _state = progress.playerState;
             if (_state.RangedWeaponState.weaponDamage == 0 && _damage > 0)
-                _state.RangedWeaponState.weaponDamage = _damage;
+                _state.RangedWeaponState.weaponDamage = (int)_damage;
             if (_state.RangedWeaponState.weaponCooldown == 0 && _shootRate > 0)
                 _state.RangedWeaponState.weaponCooldown = _shootRate;
         }

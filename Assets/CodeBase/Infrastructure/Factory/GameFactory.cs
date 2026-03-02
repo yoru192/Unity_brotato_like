@@ -18,6 +18,7 @@ using CodeBase.StaticData.Weapon;
 using CodeBase.UI;
 using CodeBase.UI.Elements;
 using CodeBase.Weapon;
+using CodeBase.Weapon.RangeWeapon;
 using Pathfinding;
 using UnityEngine;
 

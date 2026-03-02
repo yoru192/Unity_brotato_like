@@ -44,7 +44,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c73a93c99213408a92fd06275b607553, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CodeBase.Weapon.RangedAttack
-  _detectionRadius: 10
-  _shootRate: 1
-  _projectileSpeed: 8
-  _projectilePrefab: {fileID: 6980605287808460766, guid: 01b3f53450909a04cbf60bbc9039cdb4, type: 3}
+  _projectilePrefab: {fileID: 6980605287808460766, guid: 1c521097ab56a5846bb6aded96790561, type: 3}
+  _arcHeight: 2
+  _speedCurve:
+    serializedVersion: 2
+    m_Curve: []
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
