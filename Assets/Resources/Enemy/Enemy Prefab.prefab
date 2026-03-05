@@ -362,11 +362,10 @@ GameObject:
   - component: {fileID: 4173870866153844631}
   - component: {fileID: 8917251076411101279}
   - component: {fileID: 3876068065906934969}
-  - component: {fileID: 2757357787194303796}
-  - component: {fileID: 6523538016570807638}
   - component: {fileID: 6439101464423264672}
   - component: {fileID: 3782353845396844249}
   - component: {fileID: -6564687137703182850}
+  - component: {fileID: 3537980000282725608}
   m_Layer: 6
   m_Name: Enemy Prefab
   m_TagString: Untagged
@@ -539,40 +538,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CodeBase.Enemy.EnemyDeath
   health: {fileID: 4173870866153844631}
---- !u!114 &2757357787194303796
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8060626389315759474}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 132ee5cffdfa4590b5edc265ccacf2c7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::CodeBase.Enemy.EnemyAnimator
---- !u!95 &6523538016570807638
-Animator:
-  serializedVersion: 7
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8060626389315759474}
-  m_Enabled: 1
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 001716bd981022e47a8501c2147123d3, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_StabilizeFeet: 0
-  m_AnimatePhysics: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorStateOnDisable: 0
-  m_WriteDefaultValuesOnDisable: 0
 --- !u!114 &6439101464423264672
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -742,3 +707,15 @@ MonoBehaviour:
   movementPlaneSourceBacking: 0
   syncPosition: 1
   syncRotation: 0
+--- !u!114 &3537980000282725608
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8060626389315759474}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 58a02d446a554974b204555c09170975, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CodeBase.Enemy.EnemyMover

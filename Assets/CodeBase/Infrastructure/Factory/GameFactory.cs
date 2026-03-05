@@ -147,7 +147,7 @@ namespace CodeBase.Infrastructure.Factory
                 kamikadzeAttack.Construct(PlayerGameObject.transform, enemyData.damage);
 
             if (enemy.TryGetComponent<EnemyAttack>(out var attack))
-                attack.Construct(PlayerGameObject.transform, enemy.GetComponent<EnemyAnimator>(),
+                attack.Construct(PlayerGameObject.transform,
                     enemyData.cooldown, enemyData.radius, enemyData.damage);
             if(enemy.TryGetComponent<EnemyRangerAttack>(out var rangerAttack))
                 rangerAttack.Construct(enemyData.damage, enemyData.cooldown, enemyData.projectileSpeed, enemyData.radius);

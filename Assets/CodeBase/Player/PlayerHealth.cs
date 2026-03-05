@@ -58,7 +58,6 @@ namespace CodeBase.Player
             
             Current -= damage;
             HealthChanged?.Invoke();
-            Debug.Log($"Current HP: {Current}");
         }
         
     }

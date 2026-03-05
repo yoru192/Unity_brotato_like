@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections;
-using CodeBase.Infrastructure.Services;
+using Assets.FantasyMonsters.Common.Scripts;
 using CodeBase.Infrastructure.Services.Balance;
 using CodeBase.Infrastructure.Services.ProgressService;
-using CodeBase.StaticData;
 using CodeBase.StaticData.Enemy;
+using Pathfinding;
 using UnityEngine;
 
 namespace CodeBase.Enemy
@@ -13,19 +13,23 @@ namespace CodeBase.Enemy
     public class EnemyDeath : MonoBehaviour
     {
         public EnemyHealth health;
+        public event Action OnDying;
+
         private IProgressService _progressService;
         private EnemyStaticData _enemyData;
         private IBalanceService _balanceService;
-        public event Action OnDying;
+        private Monster _monster;
 
-        public void Construct( IBalanceService balanceService,IProgressService progressService, EnemyStaticData enemyData)
+        public void Construct(IBalanceService balanceService, IProgressService progressService, EnemyStaticData enemyData)
         {
             _balanceService = balanceService;
             _progressService = progressService;
             _enemyData = enemyData;
         }
+
         private void Start()
         {
+            _monster = GetComponentInChildren<Monster>();
             health.HealthChanged += HealthChanged;
         }
 
@@ -33,6 +37,7 @@ namespace CodeBase.Enemy
         {
             health.HealthChanged -= HealthChanged;
         }
+
         private void HealthChanged()
         {
             if (health.Current <= 0)
@@ -43,10 +48,29 @@ namespace CodeBase.Enemy
         {
             health.HealthChanged -= HealthChanged;
             OnDying?.Invoke();
+
             _progressService.AddXp(_enemyData.xpReward);
             _balanceService.AddBalance(_enemyData.balanceReward);
+            if (TryGetComponent<IAstarAI>(out var ai)) ai.isStopped = true;
+            if (TryGetComponent<EnemyAttack>(out var attack)) attack.enabled = false;
+            if (TryGetComponent<EnemyMover>(out var mover)) mover.enabled = false;
+            _monster.Die();
+            StartCoroutine(DestroyAfterAnimation());
+        }
+
+        private IEnumerator DestroyAfterAnimation()
+        {
+            yield return null;
+
+            var animator = _monster.Animator;
+            while (true)
+            {
+                var state = animator.GetCurrentAnimatorStateInfo(0);
+                if (state.IsName("Death") && state.normalizedTime >= 1f)
+                    break;
+                yield return null;
+            }
             Destroy(gameObject);
         }
-        
     }
 }
