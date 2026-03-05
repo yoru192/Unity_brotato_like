@@ -137,8 +137,8 @@ namespace CodeBase.UI
             var state = _persistentProgressService.Progress.playerState;
             _meleeDamage.text = $"Melee damage - {(state?.MeleeWeaponState.weaponDamage == 0 ? _weaponData.damage : state?.MeleeWeaponState.weaponDamage)}";
             _meleeCooldown.text = $"Melee cooldown - {(state?.MeleeWeaponState.weaponCooldown == 0 ? _weaponData.cooldown : state?.MeleeWeaponState.weaponCooldown)}";
-            _rangedDamage.text = $"Ranged damage - {(state?.RangedWeaponState.weaponDamage == 0 ? _weaponData.damage : state?.RangedWeaponState.weaponDamage)}";
-            _rangedShootRate.text = $"Ranged shoot rate - {(state?.RangedWeaponState.weaponCooldown == 0 ? _weaponData.cooldown : state?.RangedWeaponState.weaponCooldown)}";
+            _rangedDamage.text = $"Ranged damage - {(state?.RangedWeaponState.weaponDamage == 0 ? "—" : state?.RangedWeaponState.weaponDamage)}";
+            _rangedShootRate.text = $"Ranged shoot rate - {(state?.RangedWeaponState.weaponCooldown == 0 ? "—" : state?.RangedWeaponState.weaponCooldown)}";
         }
 
         private void OnXpGained(int amount)

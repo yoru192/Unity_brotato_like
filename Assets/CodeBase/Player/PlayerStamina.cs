@@ -1,4 +1,5 @@
 ﻿using System;
+using Assets.HeroEditor.Common.Scripts.CharacterScripts;
 using CodeBase.Data;
 using CodeBase.Infrastructure.Services.PersistentProgress;
 using CodeBase.Infrastructure.Services.Upgrade;
@@ -14,7 +15,7 @@ namespace CodeBase.Player
         private IPersistentProgressService _persistentProgressService;
         private PlayerMovement _playerMovement;
         private PlayerControls _controls;
-        private float _normalSpeed = 5f;
+        private Character _character;
         private bool _isSprinting;
 
         private float _currentStamina;
@@ -39,15 +40,13 @@ namespace CodeBase.Player
         private void Awake()
         {
             _playerMovement = GetComponent<PlayerMovement>();
+            _character = GetComponent<Character>();
             _controls = new PlayerControls();
             _controls.Player.Sprint.performed += ctx => _isSprinting = true;
             _controls.Player.Sprint.canceled += ctx => _isSprinting = false;
         }
 
-        private void Start()
-        {
-            // _normalSpeed = _playerMovement.MoveSpeed;
-        }
+        private void Start() { }
 
         private void OnEnable()
         {
@@ -69,22 +68,23 @@ namespace CodeBase.Player
             {
                 _currentStamina -= _staminaUnregenRate * Time.deltaTime;
                 _currentStamina = Mathf.Max(0f, _currentStamina);
-                _playerMovement.MoveSpeed = _normalSpeed * sprintMultiplier;
+                _playerMovement.SpeedMultiplier = sprintMultiplier;
+                _playerMovement.IsSprinting = true;
+                _character.SetState(CharacterState.Run);
             }
             else
             {
+                _playerMovement.SpeedMultiplier = 1f;
+                _playerMovement.IsSprinting = false;
                 if (_currentStamina < _maxStamina)
                 {
                     _currentStamina += _staminaRegenRate * Time.deltaTime;
                     _currentStamina = Mathf.Min(_maxStamina, _currentStamina);
                 }
-                _playerMovement.MoveSpeed = _normalSpeed;
             }
-            
+
             if (!Mathf.Approximately(previousStamina, _currentStamina))
-            {
                 OnStaminaChanged?.Invoke();
-            }
         }
 
         private void UpgradeStamina()

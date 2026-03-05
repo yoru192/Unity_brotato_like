@@ -41,7 +41,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: -6564687137703182850, guid: 79171cc7afbd7524da1e002766f5d634, type: 3}
       propertyPath: movement.stopDistance
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: -4926311014338796958, guid: 79171cc7afbd7524da1e002766f5d634, type: 3}
       propertyPath: m_WalkableMask
@@ -468,3 +468,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CodeBase.Logic.YSorting
   _sortPoint: {fileID: 3545341756790832764}
   _multiplier: 100
+  _baseOrder: 5000

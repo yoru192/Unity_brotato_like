@@ -14,6 +14,7 @@ namespace CodeBase.Player.Movement
         private Vector2 _moveInput;
         private IPersistentProgressService _persistentProgress;
         private PlayerStaticData _playerData;
+        private State _state;
 
         public void Construct(IPersistentProgressService persistentProgress, PlayerStaticData playerData)
         {
@@ -21,27 +22,10 @@ namespace CodeBase.Player.Movement
             _playerData = playerData;
         }
         
-        
-        public float MoveSpeed
-        {
-            get
-            {
-                if (_persistentProgress?.Progress?.playerState == null)
-                    return _playerData != null ? _playerData.moveSpeed : 0f;
+        public bool IsSprinting { get; set; }
+        public float SpeedMultiplier { get; set; } = 1f;
 
-                return _persistentProgress.Progress.playerState.moveSpeed == 0
-                    ? _playerData.moveSpeed
-                    : _persistentProgress.Progress.playerState.moveSpeed;
-            }
-            set
-            {
-                if (_persistentProgress?.Progress?.playerState == null)
-                    return;
-
-                if (_persistentProgress.Progress.playerState.moveSpeed != value)
-                    _persistentProgress.Progress.playerState.moveSpeed = value;
-            }
-        }
+        private float BaseMoveSpeed => _state?.moveSpeed > 0 ? _state.moveSpeed : _playerData?.moveSpeed > 0 ? _playerData.moveSpeed : 1f;
 
 
         private void Awake()
@@ -67,8 +51,7 @@ namespace CodeBase.Player.Movement
         private void FixedUpdate()
         {
             Vector2 movement = _moveInput.normalized;
-            if(MoveSpeed > 0)
-                _rb.linearVelocity = movement * MoveSpeed;
+            _rb.linearVelocity = movement * (BaseMoveSpeed * SpeedMultiplier);
         }
 
         private void Update()
@@ -80,17 +63,13 @@ namespace CodeBase.Player.Movement
         private void UpdateCharacterState()
         {
             if (_character == null) return;
-
             if (_character.GetState() >= CharacterState.DeathB) return;
+            if (IsSprinting) return;
 
             if (_rb.linearVelocity.magnitude > 0.1f)
-            {
-                _character.SetState(CharacterState.Run);
-            }
+                _character.SetState(CharacterState.Walk);
             else
-            {
                 _character.SetState(CharacterState.Idle);
-            }
         }
 
         private void UpdateDirection()
@@ -104,14 +83,14 @@ namespace CodeBase.Player.Movement
 
         public void LoadProgress(PlayerProgress progress)
         {
-            if (progress.playerState.moveSpeed > 0)
-                MoveSpeed = progress.playerState.moveSpeed;
+            _state = progress.playerState;
+            if (_state.moveSpeed == 0 && _playerData.moveSpeed > 0)
+                _state.moveSpeed = _playerData.moveSpeed;
         }
-
 
         public void UpdateProgress(PlayerProgress progress)
         {
-            progress.playerState.moveSpeed = MoveSpeed;
+            progress.playerState.moveSpeed = BaseMoveSpeed;
         }
     }
 }

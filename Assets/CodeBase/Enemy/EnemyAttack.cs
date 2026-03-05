@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using Assets.FantasyMonsters.Common.Scripts;
 using CodeBase.Logic;
 using CodeBase.Player;
 using UnityEngine;
@@ -7,7 +8,8 @@ namespace CodeBase.Enemy
 {
     public class EnemyAttack : MonoBehaviour
     {
-        private EnemyAnimator _animator;
+        private EnemyMover _mover;
+        private Monster _monster;
         private float _attackCooldown;
         private float _radius;
         private int _damage;
@@ -19,11 +21,10 @@ namespace CodeBase.Enemy
         private bool _attackIsActive;
         private Collider2D _enemyCollider;
 
-        public void Construct(Transform playerTransform, EnemyAnimator animator, float attackCooldown,
+        public void Construct(Transform playerTransform, float attackCooldown,
             float radius, int damage)
         {
             _playerTransform = playerTransform;
-            _animator = animator;
             _attackCooldown = attackCooldown;
             _radius = radius;
             _damage = damage;
@@ -34,7 +35,24 @@ namespace CodeBase.Enemy
         {
             _layerMask = 1 << LayerMask.NameToLayer("Player");
             _enemyCollider = GetComponent<Collider2D>();
+            _monster = GetComponentInChildren<Monster>();
+            _mover = GetComponent<EnemyMover>();
+            _monster.OnEvent += HandleAnimationEvent;
         }
+
+        private void HandleAnimationEvent(string eventName)
+        {
+            switch (eventName)
+            {
+                case "Attack":
+                    OnAttack();
+                    break;
+                case "AttackEnded":
+                    OnAttackEnded();
+                    break;
+            }
+        }
+
 
         private void Update()
         {
@@ -62,6 +80,7 @@ namespace CodeBase.Enemy
         {
             _currentAttackCooldown = _attackCooldown;
             _isAttacking = false;
+            _mover.SetAttacking(false);
         }
 
         private bool Hit(out Collider2D hit)
@@ -104,8 +123,9 @@ namespace CodeBase.Enemy
 
         private void StartAttack()
         {
-            _animator.PlayAttack();
+            _monster.Attack();
             _isAttacking = true;
+            _mover.SetAttacking(true);
         }
         
         private void OnDrawGizmosSelected()

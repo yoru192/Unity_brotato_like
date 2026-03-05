@@ -1,5 +1,4 @@
-﻿using CodeBase.Logic;
-using CodeBase.Player;
+﻿using CodeBase.Player;
 using UnityEngine;
 
 namespace CodeBase.Enemy
