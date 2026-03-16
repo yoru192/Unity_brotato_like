@@ -3,6 +3,7 @@ using System.Collections;
 using Assets.FantasyMonsters.Common.Scripts;
 using CodeBase.Infrastructure.Services.Balance;
 using CodeBase.Infrastructure.Services.ProgressService;
+using CodeBase.Logic;
 using CodeBase.StaticData.Enemy;
 using Pathfinding;
 using UnityEngine;
@@ -19,21 +20,29 @@ namespace CodeBase.Enemy
         private EnemyStaticData _enemyData;
         private IBalanceService _balanceService;
         private Monster _monster;
+        
+        public bool IsConstructed { get; set; }
 
         public void Construct(IBalanceService balanceService, IProgressService progressService, EnemyStaticData enemyData)
         {
             _balanceService = balanceService;
             _progressService = progressService;
             _enemyData = enemyData;
-        }
-
-        private void Start()
-        {
+            
             _monster = GetComponentInChildren<Monster>();
             health.HealthChanged += HealthChanged;
         }
+        
+        private void OnEnable()
+        {
+            if (IsConstructed)
+            {
+                _monster = GetComponentInChildren<Monster>();
+                health.HealthChanged += HealthChanged;
+            }
+        }
 
-        private void OnDestroy()
+        private void OnDisable()
         {
             health.HealthChanged -= HealthChanged;
         }
@@ -51,9 +60,11 @@ namespace CodeBase.Enemy
 
             _progressService.AddXp(_enemyData.xpReward);
             _balanceService.AddBalance(_enemyData.balanceReward);
-            if (TryGetComponent<IAstarAI>(out var ai)) ai.isStopped = true;
-            if (TryGetComponent<EnemyAttack>(out var attack)) attack.enabled = false;
-            if (TryGetComponent<EnemyMover>(out var mover)) mover.enabled = false;
+            
+           if (TryGetComponent<IAstarAI>(out var ai)) ai.isStopped = true;
+           if (TryGetComponent<EnemyAttack>(out var attack)) attack.enabled = false;
+           if (TryGetComponent<EnemyMover>(out var mover)) mover.enabled = false;
+            
             _monster.Die();
             StartCoroutine(DestroyAfterAnimation());
         }
@@ -70,7 +81,8 @@ namespace CodeBase.Enemy
                     break;
                 yield return null;
             }
-            Destroy(gameObject);
+            
+            ObjectPoolManager.ReturnObjectToPool(gameObject, ObjectPoolManager.PoolType.Enemy);
         }
     }
 }

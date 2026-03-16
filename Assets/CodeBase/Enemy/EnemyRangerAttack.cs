@@ -1,4 +1,5 @@
-﻿using CodeBase.Weapon.RangeWeapon;
+﻿using CodeBase.Logic;
+using CodeBase.Weapon.RangeWeapon;
 using UnityEngine;
 
 namespace CodeBase.Enemy
@@ -59,13 +60,15 @@ namespace CodeBase.Enemy
 
         private void SpawnProjectile(Transform target)
         {
-            var go = Instantiate(_projectilePrefab, transform.position, Quaternion.identity);
+            var go = ObjectPoolManager.SpawnObject(_projectilePrefab, transform.position, Quaternion.identity, ObjectPoolManager.PoolType.Projectile);
             var projectile = go.GetComponent<Projectile>();
 
             projectile.InitializeProjectile(target, _projectileSpeed, _arcHeight, _damage);
             
             if (_speedCurve != null && _speedCurve.keys.Length > 0)
                 projectile.InitializeSpeedCurve(_speedCurve);
+            
+            projectile.Launch();
         }
     }
 }

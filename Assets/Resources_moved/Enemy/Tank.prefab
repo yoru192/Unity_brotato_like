@@ -519,6 +519,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CodeBase.Logic.YSorting
   _sortPoint: {fileID: 5005133922277377152}
   _multiplier: 100
+  _baseOrder: 5000
 --- !u!4 &2858118581433484401 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 117150395161187362, guid: 882efb70f3ba0194cad0695302ae5810, type: 3}

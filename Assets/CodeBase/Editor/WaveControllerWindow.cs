@@ -190,7 +190,7 @@ namespace CodeBase.Editor
             GUI.backgroundColor = new Color(1f, 0.8f, 0.3f);
             if (GUILayout.Button("↺ Restart Wave", GUILayout.Height(30)))
             {
-                _runtimeSpawner.DestroyAllEnemies();
+                _runtimeSpawner.ReturnAllEnemies();
                 _runtimeController.GenerateWave();
             }
                

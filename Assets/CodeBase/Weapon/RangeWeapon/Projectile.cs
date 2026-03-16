@@ -61,8 +61,9 @@ namespace CodeBase.Weapon.RangeWeapon
         
         private Vector3 _targetVelocityAtShot;
         
-        private void Start()
+        public void Launch()
         {
+            _t = 0f;
             _startPoint = transform.position;
 
             switch (_trackingMode)
@@ -156,8 +157,8 @@ namespace CodeBase.Weapon.RangeWeapon
                 {
                     _target.GetComponentInParent<IHealth>()?.TakeDamage(_damage);
                 }
-
-                Destroy(gameObject);
+                
+                ObjectPoolManager.ReturnObjectToPool(gameObject, ObjectPoolManager.PoolType.Projectile);
             }
         }
         
@@ -184,6 +185,7 @@ namespace CodeBase.Weapon.RangeWeapon
             _arcHeight = arcHeight;
             _damage = damage;
             _fixedTargetPosition = target.position;
+            _speedCurve = null;
             
             var rb = target.GetComponentInParent<Rigidbody2D>();
             if (rb != null)

@@ -1,4 +1,5 @@
-﻿using CodeBase.Player;
+﻿using CodeBase.Logic;
+using CodeBase.Player;
 using UnityEngine;
 
 namespace CodeBase.Enemy
@@ -70,7 +71,7 @@ namespace CodeBase.Enemy
             }
             
             SpawnExplosion();
-            Destroy(gameObject);
+            ObjectPoolManager.ReturnObjectToPool(gameObject, ObjectPoolManager.PoolType.Enemy);
         }
 
         private void SpawnExplosion()

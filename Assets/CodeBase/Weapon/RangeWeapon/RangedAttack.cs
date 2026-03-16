@@ -1,5 +1,6 @@
 ﻿using CodeBase.Data;
 using CodeBase.Infrastructure.Services.PersistentProgress;
+using CodeBase.Logic;
 using UnityEngine;
 
 namespace CodeBase.Weapon.RangeWeapon
@@ -73,13 +74,15 @@ namespace CodeBase.Weapon.RangeWeapon
 
         private void SpawnProjectile(Transform target)
         {
-            var go = Instantiate(_projectilePrefab, transform.position, Quaternion.identity);
+            var go = ObjectPoolManager.SpawnObject(_projectilePrefab, transform.position, Quaternion.identity, ObjectPoolManager.PoolType.Projectile);
             var projectile = go.GetComponent<Projectile>();
 
             projectile.InitializeProjectile(target, _projectileMaxMoveSpeed, _arcHeight, Damage);
 
             if (_speedCurve != null && _speedCurve.keys.Length > 0)
                 projectile.InitializeSpeedCurve(_speedCurve);
+            
+            projectile.Launch();
         }
 
         private Transform FindNearestTarget()
