@@ -48,8 +48,10 @@ namespace CodeBase.Infrastructure.Factory
             _upgradeService = upgradeService;
         }
 
-        public async Task WarmUp() { }
-        
+        public async Task WarmUp()
+        {
+        }
+
 
         public async Task<GameObject> CreatePlayer(Vector3 at)
         {
@@ -60,11 +62,11 @@ namespace CodeBase.Infrastructure.Factory
             PlayerGameObject.GetComponent<PlayerMovement>().Construct(_persistentProgress, playerData);
             PlayerGameObject.GetComponent<PlayerStamina>().Construct(_persistentProgress, _upgradeService, playerData);
             PlayerGameObject.GetComponent<PlayerHealth>().Construct(playerData, _persistentProgress);
-            
+
             WeaponHolder weaponHolder = PlayerGameObject.GetComponentInChildren<WeaponHolder>();
             foreach (WeaponTypeId weaponId in playerData.startWeapons)
                 await CreateAndEquipWeapon(weaponHolder, weaponId);
-            
+
             AbilityController abilityController = PlayerGameObject.AddComponent<AbilityController>();
             PlayerAbilityInput abilityInput = PlayerGameObject.AddComponent<PlayerAbilityInput>();
 
@@ -82,30 +84,31 @@ namespace CodeBase.Infrastructure.Factory
             abilityInput.Construct(abilityController);
             return PlayerGameObject;
         }
-        
+
         private async Task CreateAndEquipWeapon(WeaponHolder holder, WeaponTypeId weaponId)
         {
             WeaponStaticData data = _staticData.ForWeapon(weaponId);
             GameObject prefab = await _assets.Load<GameObject>(data.prefabReference);
             GameObject weaponGo = Object.Instantiate(prefab, holder.transform);
-            
+
             RegisterProgressWatchers(weaponGo);
 
             switch (weaponId)
             {
                 case WeaponTypeId.Melee:
                     weaponGo.GetComponent<MeleeWeapon>()
-                            .Construct(data.damage, data.cooldown, data.radius, data.attackAngle);
+                        .Construct(data.damage, data.cooldown, data.radius, data.attackAngle);
                     break;
 
                 case WeaponTypeId.Ranged:
                     weaponGo.GetComponent<RangedAttack>()
-                            .Construct(data.damage, data.shootRate, data.projectileSpeed, data.radius);
+                        .Construct(data.damage, data.shootRate, data.projectileSpeed, data.radius);
                     break;
             }
 
             holder.AddWeapon(weaponId, weaponGo.GetComponent<WeaponBase>());
         }
+
         public async Task<GameObject> CreateHud()
         {
             WeaponStaticData weaponData = _staticData.ForWeapon(WeaponTypeId.Melee);
@@ -137,29 +140,57 @@ namespace CodeBase.Infrastructure.Factory
         {
             EnemyStaticData enemyData = _staticData.ForEnemy(enemyId);
             GameObject prefab = await _assets.Load<GameObject>(enemyData.prefabReference);
-            GameObject enemy = InstantiateRegisteredAsync(prefab, parent.transform.position);
 
+            // Перевіряємо чи вже є пул для цього префабу
+            bool isFirstSpawn = !ObjectPoolManager.HasPool(prefab); // ← додамо цей метод нижче
+
+            GameObject enemy = ObjectPoolManager.SpawnObject(
+                prefab,
+                parent.transform.position,
+                Quaternion.identity,
+                ObjectPoolManager.PoolType.Enemy
+            );
+
+            // Construct — тільки при першому створенні об'єкту
+            if (isFirstSpawn || !enemy.GetComponent<EnemyDeath>().IsConstructed)
+            {
+                SetupEnemy(enemy, enemyData);
+            }
+
+            // Скидаємо здоров'я та стан щоразу
             IHealth health = enemy.GetComponent<IHealth>();
             health.Current = enemyData.health;
             health.Max = enemyData.health;
 
-            if (enemy.TryGetComponent<EnemyKamikadzeAttack>(out var kamikadzeAttack))
-                kamikadzeAttack.Construct(PlayerGameObject.transform, enemyData.damage);
-
-            if (enemy.TryGetComponent<EnemyAttack>(out var attack))
-                attack.Construct(PlayerGameObject.transform,
-                    enemyData.cooldown, enemyData.radius, enemyData.damage);
-            if(enemy.TryGetComponent<EnemyRangerAttack>(out var rangerAttack))
-                rangerAttack.Construct(enemyData.damage, enemyData.cooldown, enemyData.projectileSpeed, enemyData.radius);
-
-            enemy.GetComponent<EnemyDeath>().Construct(_balanceService, _progress, enemyData);
-            enemy.GetComponent<ActorUI>().Construct(health);
             enemy.GetComponent<AIDestinationSetter>().target = PlayerGameObject.transform;
-            enemy.GetComponentInChildren<EnemyGFX>().Construct(enemyData.spriteScale);
+
+            // Викликаємо OnSpawn на всіх IPoolable
+            foreach (var poolable in enemy.GetComponentsInChildren<IPoolable>())
+                poolable.OnSpawn();
 
             return enemy;
         }
-        
+
+        private void SetupEnemy(GameObject enemy, EnemyStaticData enemyData)
+        {
+            RegisterProgressWatchers(enemy);
+
+            if (enemy.TryGetComponent<EnemyKamikadzeAttack>(out var kamikadze))
+                kamikadze.Construct(PlayerGameObject.transform, enemyData.damage);
+
+            if (enemy.TryGetComponent<EnemyAttack>(out var attack))
+                attack.Construct(PlayerGameObject.transform, enemyData.cooldown, enemyData.radius, enemyData.damage);
+
+            if (enemy.TryGetComponent<EnemyRangerAttack>(out var ranger))
+                ranger.Construct(enemyData.damage, enemyData.cooldown, enemyData.projectileSpeed, enemyData.radius);
+
+            enemy.GetComponent<EnemyDeath>().Construct(_balanceService, _progress, enemyData);
+            enemy.GetComponent<ActorUI>().Construct(enemy.GetComponent<IHealth>());
+            enemy.GetComponentInChildren<EnemyGFX>().Construct(enemyData.spriteScale);
+
+            enemy.GetComponent<EnemyDeath>().IsConstructed = true;
+        }
+
         public async Task<GameObject> CreateSpawner(List<Vector2> spawnPositions)
         {
             GameObject spawner = await InstantiateRegistered(AssetsAddress.SpawnerPath, Vector3.zero);

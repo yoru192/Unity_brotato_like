@@ -179,6 +179,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CodeBase.Logic.YSorting
   _sortPoint: {fileID: 2348098847145705987}
   _multiplier: 100
+  _baseOrder: 5000
 --- !u!1001 &5102347680287955165
 PrefabInstance:
   m_ObjectHideFlags: 0

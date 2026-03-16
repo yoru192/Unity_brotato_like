@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using CodeBase.Infrastructure.Factory;
-using CodeBase.StaticData;
 using CodeBase.StaticData.Enemy;
 using UnityEngine;
 
@@ -99,18 +98,18 @@ namespace CodeBase.Logic
             Debug.LogWarning($"Could not find spawn point with minimum distance {minDistanceFromPlayer} from player after {maxAttempts} attempts");
             return _spawnPositions[Random.Range(0, _spawnPositions.Count)];
         }
-
+        
         public void CleanupDeadEnemies()
         {
-            _spawnedEnemies.RemoveAll(enemy => enemy == null);
+            _spawnedEnemies.RemoveAll(enemy => enemy == null || !enemy.activeInHierarchy);
         }
         
-        public void DestroyAllEnemies()
+        public void ReturnAllEnemies()
         {
             foreach (var enemy in _spawnedEnemies)
             {
-                if (enemy != null)
-                    Destroy(enemy);
+                if (enemy != null && enemy.activeInHierarchy)
+                    ObjectPoolManager.ReturnObjectToPool(enemy, ObjectPoolManager.PoolType.Enemy);
             }
             _spawnedEnemies.Clear();
         }
@@ -119,6 +118,5 @@ namespace CodeBase.Logic
         {
             return _spawnedEnemies.Count;
         }
-        
     }
 }

@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace CodeBase.UI.Elements
 {
-    public class ActorUI : MonoBehaviour
+    public class ActorUI : MonoBehaviour, IPoolable
     {
         public HpBar HpBar;
         private IHealth _health;
@@ -39,5 +39,12 @@ namespace CodeBase.UI.Elements
                 _health.HealthChanged -= UpdateHpBar;
             }
         }
+
+        public void OnSpawn()
+        {
+            HpBar.SetValue(_health.Current, _health.Max);
+        }
+
+        public void OnDespawn() { }
     }
 }
