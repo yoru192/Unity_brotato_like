@@ -223,6 +223,7 @@ namespace CodeBase.Editor
             upgrade.upgradeName = EditorGUILayout.TextField("Upgrade Name", upgrade.upgradeName);
             upgrade.description = EditorGUILayout.TextField("Description", upgrade.description);
             upgrade.icon = EditorGUILayout.ObjectField("Icon", upgrade.icon, typeof(Sprite), false) as Sprite;
+            upgrade.background = EditorGUILayout.ObjectField("Background", upgrade.background, typeof(Sprite), false) as Sprite;
             upgrade.value = EditorGUILayout.FloatField("Value", upgrade.value);
             upgrade.weight = EditorGUILayout.IntField("Weight", upgrade.weight);
 
