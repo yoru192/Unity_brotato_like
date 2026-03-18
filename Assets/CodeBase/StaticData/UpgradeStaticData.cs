@@ -10,6 +10,7 @@ namespace CodeBase.StaticData
         public string upgradeName;
         [TextArea] public string description;
         public Sprite icon;
+        public Sprite background;
     
         [Header("Effect")]
         public StatModifierType modifierType;
@@ -17,6 +18,7 @@ namespace CodeBase.StaticData
     
         [Header("Optional")]
         public int weight = 1;
+
     }
 
     public enum StatModifierType

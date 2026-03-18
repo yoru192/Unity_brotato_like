@@ -11,6 +11,7 @@ namespace CodeBase.UI.Elements
     {
         [SerializeField] private Button button;
         [SerializeField] private Image icon;
+        [SerializeField] private Image background;
         [SerializeField] private TextMeshProUGUI nameText;
         [SerializeField] private TextMeshProUGUI descriptionText;
 
@@ -26,7 +27,10 @@ namespace CodeBase.UI.Elements
         {
             _upgradeData = upgradeData;
             _onClick = onClick;
-    
+            
+            if (background != null && upgradeData.background != null)
+                background.sprite = upgradeData.background;
+            
             if (icon != null && upgradeData.icon != null)
                 icon.sprite = upgradeData.icon;
         
