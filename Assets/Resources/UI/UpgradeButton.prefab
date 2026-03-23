@@ -487,5 +487,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CodeBase.UI.Elements.UpgradeButton
   button: {fileID: 4851563213308990070}
   icon: {fileID: 8655039050894742689}
+  background: {fileID: 1099448754076764277}
   nameText: {fileID: 1813541798886701484}
   descriptionText: {fileID: 5091925784076725878}
