@@ -3,10 +3,12 @@ using CodeBase.Infrastructure.AssetManagement;
 using CodeBase.Infrastructure.Factory;
 using CodeBase.Infrastructure.Services;
 using CodeBase.Infrastructure.Services.Balance;
+using CodeBase.Infrastructure.Services.Buff;
 using CodeBase.Infrastructure.Services.Inputs;
 using CodeBase.Infrastructure.Services.PersistentProgress;
 using CodeBase.Infrastructure.Services.ProgressService;
 using CodeBase.Infrastructure.Services.SaveLoad;
+using CodeBase.Infrastructure.Services.ShopService;
 using CodeBase.Infrastructure.Services.Upgrade;
 using CodeBase.Player;
 using CodeBase.StaticData;
@@ -20,12 +22,15 @@ namespace CodeBase.Infrastructure.States
         private readonly GameStateMachine _stateMachine;
         private readonly SceneLoader _sceneLoader;
         private readonly AllServices _services;
+        private ICoroutineRunner _coroutineRunner;
 
-        public BootstrapState(GameStateMachine stateMachine, SceneLoader sceneLoader, AllServices services)
+        public BootstrapState(GameStateMachine stateMachine, SceneLoader sceneLoader, AllServices services,
+            ICoroutineRunner coroutineRunner)
         {
             _stateMachine = stateMachine;
             _sceneLoader = sceneLoader;
             _services = services;
+            _coroutineRunner = coroutineRunner;
             
             RegisterServices();
         }
@@ -58,13 +63,23 @@ namespace CodeBase.Infrastructure.States
             _services.RegisterSingle<IUpgradeService>(new UpgradeService(
                 _services.Single<IStaticDataService>(),
                 _services.Single<IPersistentProgressService>()));
+            _services.RegisterSingle<IBuffService>(new BuffService(
+                _coroutineRunner,
+                _services.Single<IPersistentProgressService>()));
+            _services.RegisterSingle<IShopService>(new ShopService(
+                _services.Single<IStaticDataService>(),
+                _services.Single<IUpgradeService>(),
+                                _coroutineRunner,
+                _services.Single<IBuffService>()));
             _services.RegisterSingle<IGameFactory>(new GameFactory(
                 _services.Single<IAssets>(),
                 _services.Single<IStaticDataService>(),
                 _services.Single<IBalanceService>(),
                 _services.Single<IProgressService>(),
                 _services.Single<IPersistentProgressService>(),
-                _services.Single<IUpgradeService>()));
+                _services.Single<IUpgradeService>(),
+                _services.Single<IShopService>(),
+                _services.Single<IBuffService>()));
             _services.RegisterSingle<ISaveLoadService>( new SaveLoadService(
                 _services.Single<IPersistentProgressService>(),
                 _services.Single<IGameFactory>()));

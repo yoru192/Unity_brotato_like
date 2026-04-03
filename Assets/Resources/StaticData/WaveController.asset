@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9fb975c6dfe746a8a1276b2452c86ab2, type: 3}
   m_Name: WaveController
   m_EditorClassIdentifier: Assembly-CSharp::CodeBase.StaticData.WaveControllerStaticData
-  waveValueMultiplier: 15
+  waveValueMultiplier: 30
   maxEnemiesPerWave: 50
   initialSpawnTimer: 3
   waveDuration: 25
@@ -20,10 +20,10 @@ MonoBehaviour:
   maxAlive: 20
   enemyConfigs:
   - enemyTypeId: 0
-    cost: 3
+    cost: 2
   - enemyTypeId: 1
-    cost: 3
+    cost: 2
   - enemyTypeId: 2
-    cost: 3
+    cost: 2
   - enemyTypeId: 3
-    cost: 3
+    cost: 2

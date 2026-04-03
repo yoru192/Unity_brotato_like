@@ -580,7 +580,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: AstarPathfindingProject::Pathfinding.FollowerEntity
   version: 1073741839
   shape:
-    radius: 0.5
+    radius: 1
     height: 2
   movement:
     follower:
@@ -595,8 +595,8 @@ MonoBehaviour:
       allowRotatingOnSpotBacking: 0
     debugFlags: 64
     stopDistance: 5
-    rotationSmoothing: 0
-    positionSmoothing: 0
+    rotationSmoothing: 0.5
+    positionSmoothing: 0.5
     groundMask:
       serializedVersion: 2
       m_Bits: 4294967295
@@ -690,14 +690,14 @@ MonoBehaviour:
       - 1
       - 1
       tagEntryCosts: 0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-  enableLocalAvoidanceBacking: 0
+  enableLocalAvoidanceBacking: 1
   enableGravityBacking: 1
   rvoSettingsBacking:
-    agentTimeHorizon: 1
+    agentTimeHorizon: 5
     obstacleTimeHorizon: 0.5
     maxNeighbours: 10
-    layer: 1
-    collidesWith: -1
+    layer: 1073741824
+    collidesWith: 1073741824
     priority: 0.5
     debug: 0
     locked: 0

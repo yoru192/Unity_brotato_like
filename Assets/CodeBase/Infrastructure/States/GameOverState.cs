@@ -1,5 +1,6 @@
 ﻿using CodeBase.Infrastructure.Services.PersistentProgress;
 using CodeBase.Infrastructure.Factory;
+using CodeBase.Infrastructure.Services.ShopService;
 using CodeBase.UI;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -13,11 +14,13 @@ namespace CodeBase.Infrastructure.States
         private readonly IGameStateMachine _stateMachine;
         private readonly IPersistentProgressService _progressService;
         private readonly IGameFactory _gameFactory;
+        private readonly IShopService _shopService;
 
-        public GameOverState(IGameStateMachine stateMachine, IGameFactory gameFactory)
+        public GameOverState(IGameStateMachine stateMachine, IGameFactory gameFactory, IShopService shopService)
         {
             _stateMachine = stateMachine;
             _gameFactory = gameFactory;
+            _shopService = shopService;
         }
 
         public void Enter()
@@ -27,6 +30,7 @@ namespace CodeBase.Infrastructure.States
 
         public void Exit()
         {
+            _shopService.StopShopTimer();
         }
 
         private async void ShowGameOverUI()

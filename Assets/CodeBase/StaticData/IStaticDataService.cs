@@ -16,5 +16,6 @@ namespace CodeBase.StaticData
         AbilityStaticData ForAbility(AbilityTypeId abilityId);
         PlayerStaticData GetPlayer();
         WaveControllerStaticData GetWaveController();
+        List<ShopItemStaticData> GetAllShopItems();
     }
 }

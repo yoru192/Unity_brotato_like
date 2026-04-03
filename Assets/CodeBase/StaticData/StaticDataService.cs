@@ -14,10 +14,10 @@ namespace CodeBase.StaticData
         private Dictionary<EnemyTypeId, EnemyStaticData> _enemies;
         private Dictionary<AbilityTypeId, AbilityStaticData> _abilities;
         private List<UpgradeStaticData> _upgrades;
+        private List<ShopItemStaticData> _shopItems;
         private PlayerStaticData _player;
         private WaveControllerStaticData _waveController;
-        
-        
+
 
         public void Load()
         {
@@ -30,6 +30,8 @@ namespace CodeBase.StaticData
             _abilities = Resources.LoadAll<AbilityStaticData>("StaticData/Abilities")
                 .ToDictionary(x => x.abilityTypeId, x => x);
             _upgrades = Resources.LoadAll<UpgradeStaticData>("StaticData/Upgrades")
+                .ToList();
+            _shopItems = Resources.LoadAll<ShopItemStaticData>("StaticData/ShopItems")
                 .ToList();
             _player = Resources.Load<PlayerStaticData>("StaticData/Player");
             _waveController = Resources.Load<WaveControllerStaticData>("StaticData/WaveController");
@@ -53,6 +55,7 @@ namespace CodeBase.StaticData
                 ? staticData
                 : null;
         public List<UpgradeStaticData> GetAllUpgrades() => _upgrades;
+        public List<ShopItemStaticData> GetAllShopItems() => _shopItems;
         
         public PlayerStaticData GetPlayer() => _player;
         

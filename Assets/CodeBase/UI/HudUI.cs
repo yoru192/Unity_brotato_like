@@ -1,11 +1,13 @@
 ﻿using System;
 using CodeBase.Data;
 using CodeBase.Infrastructure.Services.Balance;
+using CodeBase.Infrastructure.Services.Buff;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using CodeBase.Infrastructure.Services.PersistentProgress;
 using CodeBase.Infrastructure.Services.ProgressService;
+using CodeBase.Infrastructure.Services.ShopService;
 using CodeBase.Infrastructure.Services.Upgrade;
 using CodeBase.Logic;
 using CodeBase.Player;
@@ -39,22 +41,36 @@ namespace CodeBase.UI
         private PlayerStamina _playerStamina;
         private IBalanceService _balanceService;
         private PlayerHealth _health;
-        private WeaponStaticData _weaponData;
+        private WeaponStaticData _meleeWeaponData;
+        private WeaponStaticData _rangedWeaponData;
         private IUpgradeService _upgradeService;
         private PlayerStaticData _playerData;
+        private IShopService _shopService;
+        private IBuffService _buffService;
 
         public void Construct( IBalanceService balanceService, IProgressService progressService, 
             IPersistentProgressService persistentProgressService, 
-            PlayerStamina playerStamina, PlayerHealth health, WeaponStaticData weaponData, IUpgradeService upgradeService, PlayerStaticData playerData )
+            PlayerStamina playerStamina,
+            PlayerHealth health,
+            WeaponStaticData meleeWeaponData,
+            WeaponStaticData rangedWeaponData,
+            IUpgradeService upgradeService,
+            PlayerStaticData playerData,
+            IShopService shopService,
+            IBuffService buffService)
         {
             _playerData  = playerData;
             _balanceService = balanceService;
             _playerStamina = playerStamina;
             _progressService = progressService;
             _persistentProgressService = persistentProgressService;
-            _weaponData = weaponData;
+            _meleeWeaponData = meleeWeaponData;
+            _rangedWeaponData = rangedWeaponData;
             _upgradeService = upgradeService;
             _health = health;
+            _shopService = shopService;
+            _buffService = buffService;
+            
             Subscribe();
             UpdateLevel();
             UpdateXpBar();
@@ -69,28 +85,35 @@ namespace CodeBase.UI
 
         private void Subscribe()
         {
-            _balanceService.OnBalanceGained += OnBalanceGained;
+            _balanceService.OnBalanceChanged += OnBalanceGained;
             _progressService.OnLevelUp += OnLevelUp;
             _progressService.OnXpGained += OnXpGained;
             _playerStamina.OnStaminaChanged += UpdateStamina;
             _health.HealthChanged += UpdateHpBar;
-            _upgradeService.OnUpgradeWeapon += UpgradeWeaponHud;
+            _upgradeService.OnUpgradeWeapon += UpdateWeaponHud;
             _upgradeService.OnUpgradeHP += UpdateHpBar;
-            _upgradeService.OnUpgradeMoveSpeed += UpgradeMoveSpeed;
+            _upgradeService.OnUpgradeMoveSpeed += UpdateMoveSpeed;
             _upgradeService.OnUpgradeStamina += UpdateStaminaStat;
+            _buffService.OnWeaponBuffChanged += UpdateWeaponHud;
+            _buffService.OnHealthBuffChanged += UpdateHpBar;
+            _buffService.OnSpeedBuffChanged += UpdateMoveSpeed;
+
         }
 
         private void Unsubscribe()
         {
-            _balanceService.OnBalanceGained -= OnBalanceGained;
+            _balanceService.OnBalanceChanged -= OnBalanceGained;
             _progressService.OnLevelUp -= OnLevelUp;
             _progressService.OnXpGained -= OnXpGained;
             _playerStamina.OnStaminaChanged -= UpdateStamina;
             _health.HealthChanged -= UpdateHpBar;
-            _upgradeService.OnUpgradeWeapon -= UpgradeWeaponHud;
+            _upgradeService.OnUpgradeWeapon -= UpdateWeaponHud;
             _upgradeService.OnUpgradeHP -= UpdateHpBar;
-            _upgradeService.OnUpgradeMoveSpeed -= UpgradeMoveSpeed;
+            _upgradeService.OnUpgradeMoveSpeed -= UpdateMoveSpeed;
             _upgradeService.OnUpgradeStamina -= UpdateStaminaStat;
+            _buffService.OnWeaponBuffChanged -= UpdateWeaponHud;
+            _buffService.OnHealthBuffChanged -= UpdateHpBar;
+            _buffService.OnSpeedBuffChanged  -= UpdateMoveSpeed;
         }
 
         private void UpdateHpBar()
@@ -107,8 +130,8 @@ namespace CodeBase.UI
 
         private void UpdateStats()
         {
-            UpgradeWeaponHud();
-            UpgradeMoveSpeed();
+            UpdateWeaponHud();
+            UpdateMoveSpeed();
             UpdateStaminaStat();
         }
         private void UpdateStamina()
@@ -121,7 +144,7 @@ namespace CodeBase.UI
             }
         }
 
-        private void UpgradeMoveSpeed()
+        private void UpdateMoveSpeed()
         {
             _moveSpeed.text = $"Move speed - {(_persistentProgressService.Progress.playerState.moveSpeed == 0 ? _playerData.moveSpeed : _persistentProgressService.Progress.playerState.moveSpeed)}";
         }
@@ -132,13 +155,13 @@ namespace CodeBase.UI
             _staminaRegenRate.text = $"Stamina regen rate - {(regen == 0 ? _playerData.regenRateStamina : regen)}";
         }
 
-        private void UpgradeWeaponHud()
+        private void UpdateWeaponHud()
         {
             var state = _persistentProgressService.Progress.playerState;
-            _meleeDamage.text = $"Melee damage - {(state?.MeleeWeaponState.weaponDamage == 0 ? _weaponData.damage : state?.MeleeWeaponState.weaponDamage)}";
-            _meleeCooldown.text = $"Melee cooldown - {(state?.MeleeWeaponState.weaponCooldown == 0 ? _weaponData.cooldown : state?.MeleeWeaponState.weaponCooldown)}";
-            _rangedDamage.text = $"Ranged damage - {(state?.RangedWeaponState.weaponDamage == 0 ? "—" : state?.RangedWeaponState.weaponDamage)}";
-            _rangedShootRate.text = $"Ranged shoot rate - {(state?.RangedWeaponState.weaponCooldown == 0 ? "—" : state?.RangedWeaponState.weaponCooldown)}";
+            _meleeDamage.text = $"Melee damage - {(state?.MeleeWeaponState.weaponDamage == 0 ? _meleeWeaponData.damage : state?.MeleeWeaponState.weaponDamage)}";
+            _meleeCooldown.text = $"Melee cooldown - {(state?.MeleeWeaponState.weaponCooldown == 0 ? _meleeWeaponData.cooldown : state?.MeleeWeaponState.weaponCooldown)}";
+            _rangedDamage.text = $"Ranged damage - {(state?.RangedWeaponState.weaponDamage == 0 ? _rangedWeaponData.damage : state?.RangedWeaponState.weaponDamage)}";
+            _rangedShootRate.text = $"Ranged shoot rate - {(state?.RangedWeaponState.weaponCooldown == 0 ? _rangedWeaponData.cooldown : state?.RangedWeaponState.weaponCooldown)}";
         }
 
         private void OnXpGained(int amount)
@@ -168,7 +191,7 @@ namespace CodeBase.UI
             _levelText.text = $"lvl {_persistentProgressService.Progress.playerState.currentLevel}";
         }
 
-        private void OnBalanceGained(int obj)
+        private void OnBalanceGained()
         {
             UpdateBalanceAmount();
         }
@@ -181,10 +204,10 @@ namespace CodeBase.UI
         public void LoadProgress(PlayerProgress progress)
         {
             var melee = progress.playerState.MeleeWeaponState;
-            if (melee.weaponDamage == 0 && _weaponData.damage > 0)
-                melee.weaponDamage = _weaponData.damage;
-            if (melee.weaponCooldown == 0 && _weaponData.cooldown > 0)
-                melee.weaponCooldown = _weaponData.cooldown;
+            if (melee.weaponDamage == 0 && _meleeWeaponData.damage > 0)
+                melee.weaponDamage = _meleeWeaponData.damage;
+            if (melee.weaponCooldown == 0 && _meleeWeaponData.cooldown > 0)
+                melee.weaponCooldown = _meleeWeaponData.cooldown;
         }
 
     }

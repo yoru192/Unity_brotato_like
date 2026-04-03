@@ -1,5 +1,4 @@
 ﻿using System;
-using CodeBase.Data;
 using CodeBase.StaticData;
 using TMPro;
 using UnityEngine;

@@ -21,5 +21,6 @@ namespace CodeBase.Infrastructure.Factory
         Task<GameObject> CreateHud();
         Task<GameObject> CreateGameOverScreen();
         Task<GameObject> CreateUpgradeScreen();
+        Task<GameObject> CreateShopScreen();
     }
 }

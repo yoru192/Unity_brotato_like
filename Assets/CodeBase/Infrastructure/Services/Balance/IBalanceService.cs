@@ -4,7 +4,9 @@ namespace CodeBase.Infrastructure.Services.Balance
 {
     public interface IBalanceService : IService
     {
-        event Action <int> OnBalanceGained;
+        event Action OnBalanceChanged;
+        int CurrentBalance { get; }
         void AddBalance(int amount);
+        bool TryRemoveBalance(int amount);
     }
 }

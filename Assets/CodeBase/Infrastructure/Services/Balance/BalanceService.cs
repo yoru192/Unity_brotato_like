@@ -7,7 +7,9 @@ namespace CodeBase.Infrastructure.Services.Balance
     {
         private readonly IPersistentProgressService _persistentProgressService;
         
-        public event Action <int> OnBalanceGained;
+        public int CurrentBalance => 
+            _persistentProgressService.Progress.playerState.currentBalance;
+        public event Action OnBalanceChanged;
 
         public BalanceService(IPersistentProgressService  persistentProgressService)
         {
@@ -17,8 +19,18 @@ namespace CodeBase.Infrastructure.Services.Balance
         public void AddBalance(int amount)
         {
             _persistentProgressService.Progress.playerState.currentBalance += amount;
-            OnBalanceGained?.Invoke(amount);
+            OnBalanceChanged?.Invoke();
         }
-        
+
+        public bool TryRemoveBalance(int amount)
+        {
+            if (_persistentProgressService.Progress.playerState.currentBalance >= amount)
+            {
+                _persistentProgressService.Progress.playerState.currentBalance -= amount;
+                OnBalanceChanged?.Invoke();
+                return true;
+            }
+            return false;
+        }
     }
 }

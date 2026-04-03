@@ -8,5 +8,6 @@
         public const string HudPath = "Hud";
         public const string GameOverScreenPath = "GameOverScreen";
         public const string UpgradeScreenPath = "UpgradeScreen";
+        public const string ShopScreenPath = "ShopScreen";
     }
 }
