@@ -40,11 +40,6 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 53bf6328472223d46bc48a2f8f0d6b5c
-    m_Address: GameOverScreen
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 877efcf27d4544e4bac9003d00517123
     m_Address: UpgradeScreen
     m_ReadOnly: 0
@@ -70,7 +65,7 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: dd4e39d1bd5dbb349b59c68f4427bfc1
+  - m_GUID: f55c69bf3c18b4b4cadbe8e16b53d5d3
     m_Address: Hud
     m_ReadOnly: 0
     m_SerializedLabels: []
