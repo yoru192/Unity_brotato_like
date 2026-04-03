@@ -193,15 +193,7 @@ PrefabInstance:
       value: 3
       objectReference: {fileID: 0}
     - target: {fileID: -6564687137703182850, guid: 79171cc7afbd7524da1e002766f5d634, type: 3}
-      propertyPath: rvoSettingsBacking.locked
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: -6564687137703182850, guid: 79171cc7afbd7524da1e002766f5d634, type: 3}
       propertyPath: enableLocalAvoidanceBacking
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: -6564687137703182850, guid: 79171cc7afbd7524da1e002766f5d634, type: 3}
-      propertyPath: movement.follower.allowRotatingOnSpotBacking
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1982796779103414458, guid: 79171cc7afbd7524da1e002766f5d634, type: 3}

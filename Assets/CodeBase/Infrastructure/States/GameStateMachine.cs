@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using CodeBase.Infrastructure.Factory;
 using CodeBase.Infrastructure.Services;
+using CodeBase.Infrastructure.Services.Balance;
 using CodeBase.Infrastructure.Services.PersistentProgress;
 using CodeBase.Infrastructure.Services.ProgressService;
 using CodeBase.Infrastructure.Services.SaveLoad;
+using CodeBase.Infrastructure.Services.ShopService;
 using CodeBase.Infrastructure.Services.Upgrade;
 using CodeBase.Logic;
 using CodeBase.Player;
@@ -17,11 +19,12 @@ namespace CodeBase.Infrastructure.States
         private readonly Dictionary<Type, IExitableState> _states;
         private IExitableState _activeState;
 
-        public GameStateMachine(SceneLoader sceneLoader, LoadingCurtain curtain, AllServices services)
+        public GameStateMachine(SceneLoader sceneLoader, LoadingCurtain curtain, AllServices services,
+            ICoroutineRunner coroutineRunner)
         {
             _states = new Dictionary<Type, IExitableState>
             {
-                [typeof(BootstrapState)] = new BootstrapState(this, sceneLoader, services),
+                [typeof(BootstrapState)] = new BootstrapState(this, sceneLoader, services, coroutineRunner),
                 [typeof(LoadLevelState)] = new LoadLevelState(this,
                     sceneLoader,
                     curtain,
@@ -34,9 +37,10 @@ namespace CodeBase.Infrastructure.States
                     services.Single<IPersistentProgressService>(), 
                     services.Single<ISaveLoadService>(),
                     services.Single<IStaticDataService>().GetPlayer()),
+                [typeof(ShopState)] = new ShopState(services.Single<IShopService>(), services.Single<IGameFactory>(),this, services.Single<IBalanceService>()),
                 [typeof(UpgradeState)] = new UpgradeState(this,services.Single<IGameFactory>(),services.Single<IUpgradeService>()),
-                [typeof(GameLoopState)] = new GameLoopState(this,services.Single<IProgressService>()),
-                [typeof(GameOverState)] = new GameOverState(this, services.Single<IGameFactory>()),
+                [typeof(GameLoopState)] = new GameLoopState(this,services.Single<IProgressService>(), services.Single<IShopService>()),
+                [typeof(GameOverState)] = new GameOverState(this, services.Single<IGameFactory>(), services.Single<IShopService>()),
             };
         }
         public void Enter<TState>() where TState : class, IState

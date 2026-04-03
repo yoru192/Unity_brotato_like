@@ -12,8 +12,6 @@ namespace CodeBase.Enemy
             Monster monster = GetComponentInChildren<Monster>();
             if (monster != null)
             {
-                monster.Animator.Rebind();
-                monster.Animator.Update(0f);
                 monster.SetState(MonsterState.Idle);
             }
 

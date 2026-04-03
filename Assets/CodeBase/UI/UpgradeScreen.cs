@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using CodeBase.Data;
 using CodeBase.StaticData;
 using CodeBase.UI.Elements;
 using UnityEngine;
@@ -27,9 +26,7 @@ namespace CodeBase.UI
                 _activeButtons.Add(button);
             }
         }
-
-
-
+        
         private void OnButtonClicked(UpgradeStaticData upgrade)
         {
             _onUpgradeSelected?.Invoke(upgrade);

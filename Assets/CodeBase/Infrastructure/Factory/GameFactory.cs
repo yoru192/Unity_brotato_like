@@ -5,8 +5,10 @@ using CodeBase.Ability.Concrete;
 using CodeBase.Enemy;
 using CodeBase.Infrastructure.AssetManagement;
 using CodeBase.Infrastructure.Services.Balance;
+using CodeBase.Infrastructure.Services.Buff;
 using CodeBase.Infrastructure.Services.PersistentProgress;
 using CodeBase.Infrastructure.Services.ProgressService;
+using CodeBase.Infrastructure.Services.ShopService;
 using CodeBase.Infrastructure.Services.Upgrade;
 using CodeBase.Logic;
 using CodeBase.Player;
@@ -36,9 +38,17 @@ namespace CodeBase.Infrastructure.Factory
         private readonly IPersistentProgressService _persistentProgress;
         private readonly IUpgradeService _upgradeService;
         private readonly IBalanceService _balanceService;
+        private readonly IShopService _shopService;
+        private readonly IBuffService _buffService;
 
-        public GameFactory(IAssets assets, IStaticDataService staticData, IBalanceService balanceService,
-            IProgressService progress, IPersistentProgressService progressService, IUpgradeService upgradeService)
+        public GameFactory(IAssets assets,
+            IStaticDataService staticData,
+            IBalanceService balanceService,
+            IProgressService progress,
+            IPersistentProgressService progressService,
+            IUpgradeService upgradeService,
+            IShopService shopService,
+            IBuffService buffService)
         {
             _assets = assets;
             _staticData = staticData;
@@ -46,6 +56,8 @@ namespace CodeBase.Infrastructure.Factory
             _progress = progress;
             _persistentProgress = progressService;
             _upgradeService = upgradeService;
+            _shopService = shopService;
+            _buffService = buffService;
         }
 
         public async Task WarmUp()
@@ -111,7 +123,8 @@ namespace CodeBase.Infrastructure.Factory
 
         public async Task<GameObject> CreateHud()
         {
-            WeaponStaticData weaponData = _staticData.ForWeapon(WeaponTypeId.Melee);
+            WeaponStaticData meleeWeaponData = _staticData.ForWeapon(WeaponTypeId.Melee);
+            WeaponStaticData rangedWeaponData = _staticData.ForWeapon(WeaponTypeId.Ranged);
             GameObject hud = await InstantiateRegistered(AssetsAddress.HudPath);
             hud.GetComponent<HudUI>().Construct(
                 _balanceService,
@@ -119,16 +132,14 @@ namespace CodeBase.Infrastructure.Factory
                 _persistentProgress,
                 PlayerGameObject.GetComponent<PlayerStamina>(),
                 PlayerGameObject.GetComponent<PlayerHealth>(),
-                weaponData,
+                meleeWeaponData,
+                rangedWeaponData,
                 _upgradeService,
-                _staticData.GetPlayer()
+                _staticData.GetPlayer(),
+                _shopService,
+                _buffService
             );
             return hud;
-        }
-
-        public async Task<GameObject> CreateGameOverScreen()
-        {
-            return await InstantiateRegistered(AssetsAddress.GameOverScreenPath);
         }
 
         public async Task<GameObject> CreateUpgradeScreen()
@@ -136,13 +147,22 @@ namespace CodeBase.Infrastructure.Factory
             return await InstantiateRegistered(AssetsAddress.UpgradeScreenPath);
         }
 
+        public async Task<GameObject> CreateShopScreen()
+        {
+            return await InstantiateRegistered(AssetsAddress.ShopScreenPath);
+        }
+
+        public async Task<GameObject> CreateGameOverScreen()
+        {
+            return await InstantiateRegistered(AssetsAddress.GameOverScreenPath);
+        }
+
         public async Task<GameObject> CreateEnemy(EnemyTypeId enemyId, Transform parent)
         {
             EnemyStaticData enemyData = _staticData.ForEnemy(enemyId);
             GameObject prefab = await _assets.Load<GameObject>(enemyData.prefabReference);
-
-            // Перевіряємо чи вже є пул для цього префабу
-            bool isFirstSpawn = !ObjectPoolManager.HasPool(prefab); // ← додамо цей метод нижче
+            
+            bool isFirstSpawn = !ObjectPoolManager.HasPool(prefab);
 
             GameObject enemy = ObjectPoolManager.SpawnObject(
                 prefab,
@@ -150,21 +170,18 @@ namespace CodeBase.Infrastructure.Factory
                 Quaternion.identity,
                 ObjectPoolManager.PoolType.Enemy
             );
-
-            // Construct — тільки при першому створенні об'єкту
+            
             if (isFirstSpawn || !enemy.GetComponent<EnemyDeath>().IsConstructed)
             {
                 SetupEnemy(enemy, enemyData);
             }
-
-            // Скидаємо здоров'я та стан щоразу
+            
             IHealth health = enemy.GetComponent<IHealth>();
             health.Current = enemyData.health;
             health.Max = enemyData.health;
 
             enemy.GetComponent<AIDestinationSetter>().target = PlayerGameObject.transform;
-
-            // Викликаємо OnSpawn на всіх IPoolable
+            
             foreach (var poolable in enemy.GetComponentsInChildren<IPoolable>())
                 poolable.OnSpawn();
 

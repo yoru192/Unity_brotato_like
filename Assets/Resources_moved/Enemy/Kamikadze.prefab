@@ -43,6 +43,10 @@ PrefabInstance:
       propertyPath: movement.stopDistance
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: -6564687137703182850, guid: 79171cc7afbd7524da1e002766f5d634, type: 3}
+      propertyPath: rvoSettingsBacking.priority
+      value: 0.8
+      objectReference: {fileID: 0}
     - target: {fileID: -4926311014338796958, guid: 79171cc7afbd7524da1e002766f5d634, type: 3}
       propertyPath: m_WalkableMask
       value: 1
