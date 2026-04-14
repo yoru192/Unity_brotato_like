@@ -42,7 +42,7 @@ namespace CodeBase.Infrastructure.States
             _loadingCurtain.Show();
             _gameFactory.Cleanup();
             _gameFactory.WarmUp();
-            _sceneLoader.Load(sceneName, OnLoaded);
+            _sceneLoader.Load(sceneName, OnLoaded, _loadingCurtain.SetProgress);
         }
 
         public void Exit() => 

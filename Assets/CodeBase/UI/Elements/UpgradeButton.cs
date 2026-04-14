@@ -1,5 +1,6 @@
 ﻿using System;
 using CodeBase.StaticData;
+using MoreMountains.Tools;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -38,6 +39,12 @@ namespace CodeBase.UI.Elements
         
             if (descriptionText != null)
                 descriptionText.text = upgradeData.description;
+            MMTwoSidedUI twoSided = GetComponent<MMTwoSidedUI>();
+            if (twoSided != null)
+            {
+                twoSided.Back.gameObject.SetActive(false);
+                twoSided.Front.gameObject.SetActive(true);
+            }
         }
         private void OnClick()
         {
