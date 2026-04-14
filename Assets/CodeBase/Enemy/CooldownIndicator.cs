@@ -5,26 +5,28 @@ namespace CodeBase.Enemy
     public class CooldownIndicator : MonoBehaviour
     {
         private Animator _animator;
-        private EnemyAttack _enemyAttack;
+        private IAttackWithCooldown _attack;
 
         private void Awake()
         {
             _animator = GetComponentInChildren<Animator>();
-            _enemyAttack = GetComponentInParent<EnemyAttack>();
+            
+            _attack = GetComponentInParent<EnemyAttack>() as IAttackWithCooldown
+                      ?? GetComponentInParent<EnemyRangerAttack>() as IAttackWithCooldown;
         }
 
         private void OnEnable()
         {
-            if (_enemyAttack == null) return;
-            _enemyAttack.OnCooldownStarted += OnCooldownStarted;
-            _enemyAttack.OnCooldownEnded += OnCooldownEnded;
+            if (_attack == null) return;
+            _attack.OnCooldownStarted += OnCooldownStarted;
+            _attack.OnCooldownEnded += OnCooldownEnded;
         }
 
         private void OnDisable()
         {
-            if (_enemyAttack == null) return;
-            _enemyAttack.OnCooldownStarted -= OnCooldownStarted;
-            _enemyAttack.OnCooldownEnded -= OnCooldownEnded;
+            if (_attack == null) return;
+            _attack.OnCooldownStarted -= OnCooldownStarted;
+            _attack.OnCooldownEnded -= OnCooldownEnded;
         }
 
         private void OnCooldownStarted() => _animator.SetBool("IsCooldown", false);
