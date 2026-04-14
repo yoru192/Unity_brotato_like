@@ -26974,6 +26974,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CodeBase.Player.YSorting
   _sortPoint: {fileID: 221442577249057632}
   _multiplier: 100
+  _baseOrder: 5000
 --- !u!1 &7519465243946463976
 GameObject:
   m_ObjectHideFlags: 0

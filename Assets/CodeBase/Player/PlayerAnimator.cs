@@ -1,4 +1,5 @@
 ﻿using Assets.HeroEditor.Common.Scripts.CharacterScripts;
+using CodeBase.Enemy;
 using UnityEngine;
 
 namespace CodeBase.Player
@@ -7,6 +8,7 @@ namespace CodeBase.Player
     {
         private Character _character;
         private Animator _animator;
+        private EnemyAttack _enemyAttack;
 
         private void Awake()
         {
