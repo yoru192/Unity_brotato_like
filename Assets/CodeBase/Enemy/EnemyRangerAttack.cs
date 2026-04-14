@@ -1,11 +1,15 @@
-﻿using CodeBase.Logic;
+﻿using System;
+using CodeBase.Logic;
 using CodeBase.Weapon.RangeWeapon;
 using UnityEngine;
 
 namespace CodeBase.Enemy
 {
-    public class EnemyRangerAttack : MonoBehaviour
+    public class EnemyRangerAttack : MonoBehaviour, IAttackWithCooldown
     {
+        public event Action OnCooldownStarted;
+        public event Action OnCooldownEnded;
+        
         private float _detectionRadius;
         private float _shootRate;
         private float _projectileSpeed;
@@ -43,12 +47,13 @@ namespace CodeBase.Enemy
         {
             _shootTimer -= Time.deltaTime;
             if (_shootTimer > 0f) return;
-
+            OnCooldownEnded?.Invoke();
             Transform target = FindTarget();
             if (target == null) return;
 
-            _shootTimer = _shootRate;
             SpawnProjectile(target);
+            _shootTimer = _shootRate;
+            OnCooldownStarted?.Invoke();
         }
 
         private Transform FindTarget()

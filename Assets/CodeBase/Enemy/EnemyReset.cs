@@ -23,13 +23,10 @@ namespace CodeBase.Enemy
 
             if (TryGetComponent<EnemyAttack>(out var attack))
                 attack.enabled = true;
-                attack.ResetState();
             if (TryGetComponent<EnemyMover>(out var mover))
                 mover.enabled = true;
             if (TryGetComponent<EnemyRangerAttack>(out var ranger))
                 ranger.enabled = true;
-            if (TryGetComponent<AttackIndicator>(out var indicator))
-                indicator.Hide();
         }
 
         public void OnDespawn() { }

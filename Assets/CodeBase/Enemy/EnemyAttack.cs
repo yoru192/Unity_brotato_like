@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace CodeBase.Enemy
 {
-    public class EnemyAttack : MonoBehaviour
+    public class EnemyAttack : MonoBehaviour, IAttackWithCooldown
     {
         public event Action OnCooldownStarted;
         public event Action OnCooldownEnded;
@@ -21,8 +21,8 @@ namespace CodeBase.Enemy
         private bool _isAttacking;
         private Collider2D[] _hits = new Collider2D[1];
         private int _layerMask;
+        private bool _attackIsActive;
         private Collider2D _enemyCollider;
-        private AttackIndicator _attackIndicator;
 
         public void Construct(Transform playerTransform, float attackCooldown,
             float radius, int damage)
@@ -40,20 +40,7 @@ namespace CodeBase.Enemy
             _enemyCollider = GetComponent<Collider2D>();
             _monster = GetComponentInChildren<Monster>();
             _mover = GetComponent<EnemyMover>();
-            
-            _attackIndicator = GetComponentInChildren<AttackIndicator>();
-        }
-        
-        private void OnEnable()
-        {
-            if (_monster != null)
-                _monster.OnEvent += HandleAnimationEvent;
-        }
-
-        private void OnDisable()
-        {
-            if (_monster != null)
-                _monster.OnEvent -= HandleAnimationEvent;
+            _monster.OnEvent += HandleAnimationEvent;
         }
 
         private void HandleAnimationEvent(string eventName)
@@ -62,11 +49,9 @@ namespace CodeBase.Enemy
             {
                 case "Attack":
                     OnAttack();
-                    _attackIndicator?.ShowStrike();
                     break;
                 case "AttackEnded":
                     OnAttackEnded();
-                    _attackIndicator?.Hide();
                     break;
             }
         }
@@ -90,7 +75,6 @@ namespace CodeBase.Enemy
                     OnCooldownEnded?.Invoke();
             }
         }
-        
 
         private void OnAttack()
         {
@@ -110,16 +94,17 @@ namespace CodeBase.Enemy
 
         private bool Hit(out Collider2D hit)
         {
-            Vector2 origin = _enemyCollider != null
-                ? _enemyCollider.bounds.center
-                : (Vector2)transform.position;
-
-            var hitAmount = Physics2D.OverlapCircleNonAlloc(origin, _radius, _hits, _layerMask);
+            var hitAmount = Physics2D.OverlapCircleNonAlloc(
+                transform.position, 
+                _radius,
+                _hits, 
+                _layerMask);
+            
             hit = _hits.FirstOrDefault();
             return hitAmount > 0;
         }
 
-        public bool CooldownIsUp()
+        private bool CooldownIsUp()
         {
             return _currentAttackCooldown <= 0f;
         }
@@ -150,16 +135,8 @@ namespace CodeBase.Enemy
             _monster.Attack();
             _isAttacking = true;
             _mover.SetAttacking(true);
-            _attackIndicator?.ShowWindup();
         }
-
-        public void ResetState()
-        {
-            _isAttacking = false;
-            _currentAttackCooldown = _attackCooldown;
-            _mover?.SetAttacking(false);
-        }
-
+        
         private void OnDrawGizmosSelected()
         {
             Collider2D enemyCol = _enemyCollider != null ? _enemyCollider : GetComponent<Collider2D>();
