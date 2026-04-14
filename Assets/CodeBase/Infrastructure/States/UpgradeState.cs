@@ -29,7 +29,6 @@ namespace CodeBase.Infrastructure.States
 
         public void Enter()
         {
-            Time.timeScale = 0f;
             ShowUpgradeOptions();
         }
 
@@ -43,8 +42,9 @@ namespace CodeBase.Infrastructure.States
 
         private async void ShowUpgradeOptions()
         {
-            List<UpgradeStaticData> options = _upgradeService.GenerateUpgradeOptions(3);
+            List<UpgradeStaticData> options = _upgradeService.GenerateUpgradeOptions(4);
             await CreateUpgradeUI(options);
+            Time.timeScale = 0f;
         }
 
         private async Task CreateUpgradeUI(List<UpgradeStaticData> options)
