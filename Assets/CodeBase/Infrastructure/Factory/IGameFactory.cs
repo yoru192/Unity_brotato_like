@@ -4,6 +4,7 @@ using CodeBase.Infrastructure.Services;
 using CodeBase.Infrastructure.Services.PersistentProgress;
 using CodeBase.StaticData;
 using CodeBase.StaticData.Enemy;
+using CodeBase.StaticData.Hero;
 using CodeBase.StaticData.Weapon;
 using UnityEngine;
 
@@ -15,7 +16,7 @@ namespace CodeBase.Infrastructure.Factory
         List<ISavedProgress> ProgressWriters { get; }
         Task WarmUp();
         void Cleanup();
-        Task<GameObject> CreatePlayer(Vector3 at);
+        Task<GameObject> CreatePlayer(Vector3 at, HeroTypeId heroType);
         Task<GameObject> CreateEnemy(EnemyTypeId enemyId, Transform parent);
         Task<GameObject> CreateSpawner(List<Vector2> spawnPositions);
         Task<GameObject> CreateHud();

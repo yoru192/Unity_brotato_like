@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dc309eec8fa4483d948bc2955e905bc1, type: 3}
+  m_Name: Unknown
+  m_EditorClassIdentifier: Assembly-CSharp::CodeBase.StaticData.Hero.HeroStaticData
+  heroTypeId: 0
+  HeroName: '?'
+  HeroClass: '?'
+  Description: '?'
+  HeroImage: {fileID: -5299584782662474197, guid: fda4d0f4cf656a748ac5e5dd4cd60649, type: 3}
+  Icon: {fileID: 21300000, guid: 17b39c5a0214948bc9fbd8027baf5037, type: 3}
+  maxStamina: 1
+  regenRateStamina: 1
+  maxHealth: 1
+  moveSpeed: 1
+  startWeapons: 00000000

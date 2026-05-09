@@ -1,4 +1,6 @@
 ﻿using System;
+using CodeBase.StaticData.Hero;
+using UnityEngine.Serialization;
 
 namespace CodeBase.Data
 {
@@ -6,6 +8,7 @@ namespace CodeBase.Data
     public class WorldData
     {
         public PositionOnLevel positionOnLevel;
+        public HeroTypeId selectedHero = HeroTypeId.Unknown;
         
         public WorldData(string initialLevel)
         {

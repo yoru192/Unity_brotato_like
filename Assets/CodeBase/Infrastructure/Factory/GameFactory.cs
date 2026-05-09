@@ -16,6 +16,7 @@ using CodeBase.Player.Movement;
 using CodeBase.StaticData;
 using CodeBase.StaticData.Ability;
 using CodeBase.StaticData.Enemy;
+using CodeBase.StaticData.Hero;
 using CodeBase.StaticData.Weapon;
 using CodeBase.UI;
 using CodeBase.UI.Elements;
@@ -65,18 +66,17 @@ namespace CodeBase.Infrastructure.Factory
         }
 
 
-        public async Task<GameObject> CreatePlayer(Vector3 at)
+        public async Task<GameObject> CreatePlayer(Vector3 at, HeroTypeId heroType)
         {
             PlayerGameObject = await InstantiateRegistered(AssetsAddress.PlayerPath, at);
-
-            PlayerStaticData playerData = _staticData.GetPlayer();
-
-            PlayerGameObject.GetComponent<PlayerMovement>().Construct(_persistentProgress, playerData);
-            PlayerGameObject.GetComponent<PlayerStamina>().Construct(_persistentProgress, _upgradeService, playerData);
-            PlayerGameObject.GetComponent<PlayerHealth>().Construct(playerData, _persistentProgress);
+            
+            HeroStaticData   heroData   = _staticData.ForHero(heroType);
+            PlayerGameObject.GetComponent<PlayerMovement>().Construct(heroData);
+            PlayerGameObject.GetComponent<PlayerStamina>().Construct(_persistentProgress, _upgradeService, heroData);
+            PlayerGameObject.GetComponent<PlayerHealth>().Construct(heroData, _persistentProgress);
 
             WeaponHolder weaponHolder = PlayerGameObject.GetComponentInChildren<WeaponHolder>();
-            foreach (WeaponTypeId weaponId in playerData.startWeapons)
+            foreach (WeaponTypeId weaponId in heroData.startWeapons)
                 await CreateAndEquipWeapon(weaponHolder, weaponId);
 
             AbilityController abilityController = PlayerGameObject.AddComponent<AbilityController>();
@@ -135,8 +135,7 @@ namespace CodeBase.Infrastructure.Factory
                 meleeWeaponData,
                 rangedWeaponData,
                 _upgradeService,
-                _staticData.GetPlayer(),
-                _shopService,
+                _staticData,
                 _buffService
             );
             return hud;

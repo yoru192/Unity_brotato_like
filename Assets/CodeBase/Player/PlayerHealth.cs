@@ -3,6 +3,7 @@ using CodeBase.Data;
 using CodeBase.Infrastructure.Services.PersistentProgress;
 using CodeBase.Logic;
 using CodeBase.StaticData;
+using CodeBase.StaticData.Hero;
 using UnityEngine;
 
 namespace CodeBase.Player
@@ -10,12 +11,12 @@ namespace CodeBase.Player
     public class PlayerHealth : MonoBehaviour, ISavedProgress, IHealth
     {
         public event Action HealthChanged;
-        private PlayerStaticData _playerData;
+        private HeroStaticData _playerData;
         private IPersistentProgressService _persistentProgressService;
 
         public float Current
         {
-            get => _persistentProgressService.Progress.playerState.currentHealth;
+            get => _persistentProgressService.Progress.playerState.currentHealth == 0 ? _playerData.maxHealth : _persistentProgressService.Progress.playerState.maxHealth;
             set
             {
                 if(!Mathf.Approximately(_persistentProgressService.Progress.playerState.currentHealth, value))
@@ -30,7 +31,7 @@ namespace CodeBase.Player
             get => _persistentProgressService.Progress.playerState.maxHealth == 0 ? _playerData.maxHealth : _persistentProgressService.Progress.playerState.maxHealth;
             set => _persistentProgressService.Progress.playerState.maxHealth = value;
         }
-        public void Construct(PlayerStaticData playerData, IPersistentProgressService persistentProgressService)
+        public void Construct(HeroStaticData playerData, IPersistentProgressService persistentProgressService)
         {
             _playerData = playerData;
             _persistentProgressService = persistentProgressService;

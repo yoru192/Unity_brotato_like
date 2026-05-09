@@ -37,6 +37,7 @@ namespace CodeBase.Infrastructure.States
         
         public void Enter()
         {
+            Debug.Log("Entering BootstrapState");
             _sceneLoader.Load(Initial, onLoaded: EnterLoadLevel);
         }
 

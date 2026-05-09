@@ -25,18 +25,17 @@ namespace CodeBase.Infrastructure.States
             _states = new Dictionary<Type, IExitableState>
             {
                 [typeof(BootstrapState)] = new BootstrapState(this, sceneLoader, services, coroutineRunner),
+                [typeof(LoadoutSelectState)] = new LoadoutSelectState(sceneLoader),
                 [typeof(LoadLevelState)] = new LoadLevelState(this,
                     sceneLoader,
                     curtain,
                     services.Single<IGameFactory>(),
                     services.Single<IPersistentProgressService>(),
-                    services.Single<IStaticDataService>(),
-                    services.Single<IProgressService>()),
+                    services.Single<IStaticDataService>()),
                 [typeof(LoadProgressState)] = new LoadProgressState(
                     this, 
                     services.Single<IPersistentProgressService>(), 
-                    services.Single<ISaveLoadService>(),
-                    services.Single<IStaticDataService>().GetPlayer()),
+                    services.Single<ISaveLoadService>()),
                 [typeof(ShopState)] = new ShopState(services.Single<IShopService>(), services.Single<IGameFactory>(),this, services.Single<IBalanceService>()),
                 [typeof(UpgradeState)] = new UpgradeState(this,services.Single<IGameFactory>(),services.Single<IUpgradeService>()),
                 [typeof(GameLoopState)] = new GameLoopState(this,services.Single<IProgressService>(), services.Single<IShopService>()),

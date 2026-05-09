@@ -14,7 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CodeBase.StaticData.UpgradeStaticData
   upgradeName: +2% HP
   description: 
-  icon: {fileID: 21300000, guid: 422458e28bc1caf46b0967289dc55226, type: 3}
+  icon: {fileID: -1920286554, guid: fc7d4998a6f3ce54a94e94a270800592, type: 3}
+  background: {fileID: 0}
   modifierType: 2
   value: 2
   weight: 1
