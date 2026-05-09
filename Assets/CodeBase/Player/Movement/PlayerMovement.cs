@@ -1,7 +1,7 @@
 ﻿using Assets.HeroEditor.Common.Scripts.CharacterScripts;
 using CodeBase.Data;
 using CodeBase.Infrastructure.Services.PersistentProgress;
-using CodeBase.StaticData;
+using CodeBase.StaticData.Hero;
 using UnityEngine;
 
 namespace CodeBase.Player.Movement
@@ -12,20 +12,18 @@ namespace CodeBase.Player.Movement
         private Character _character;
         private PlayerControls _controls;
         private Vector2 _moveInput;
-        private IPersistentProgressService _persistentProgress;
-        private PlayerStaticData _playerData;
+        private HeroStaticData _heroData;
         private State _state;
 
-        public void Construct(IPersistentProgressService persistentProgress, PlayerStaticData playerData)
+        public void Construct(HeroStaticData heroData)
         {
-            _persistentProgress = persistentProgress;
-            _playerData = playerData;
+            _heroData = heroData;
         }
         
         public bool IsSprinting { get; set; }
         public float SpeedMultiplier { get; set; } = 1f;
 
-        private float BaseMoveSpeed => _state?.moveSpeed > 0 ? _state.moveSpeed : _playerData?.moveSpeed > 0 ? _playerData.moveSpeed : 1f;
+        private float BaseMoveSpeed => _state?.moveSpeed > 0 ? _state.moveSpeed : _heroData?.moveSpeed > 0 ? _heroData.moveSpeed : 1f;
 
 
         private void Awake()
@@ -84,8 +82,8 @@ namespace CodeBase.Player.Movement
         public void LoadProgress(PlayerProgress progress)
         {
             _state = progress.playerState;
-            if (_state.moveSpeed == 0 && _playerData.moveSpeed > 0)
-                _state.moveSpeed = _playerData.moveSpeed;
+            if (_state.moveSpeed == 0 && _heroData.moveSpeed > 0)
+                _state.moveSpeed = _heroData.moveSpeed;
         }
 
         public void UpdateProgress(PlayerProgress progress)

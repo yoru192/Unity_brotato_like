@@ -9,10 +9,12 @@ namespace CodeBase.Infrastructure
         public LoadingCurtain curtainPrefab;
         
         private Game _game;
-
+        
         private void Awake()
         {
-            _game = new Game(this, Instantiate(curtainPrefab));
+            var curtain = Instantiate(curtainPrefab);
+            curtain.gameObject.SetActive(false);
+            _game = new Game(this, curtain);
             _game.stateMachine.Enter<BootstrapState>();
             DontDestroyOnLoad(this);
         }

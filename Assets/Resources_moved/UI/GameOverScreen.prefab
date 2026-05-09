@@ -483,6 +483,10 @@ PrefabInstance:
       propertyPath: 'm_ActiveFontFeatures.Array.data[0]'
       value: 1801810542
       objectReference: {fileID: 0}
+    - target: {fileID: 6929157571336454373, guid: 90ebb2ed8e6a34dd3b4a980fd67f5cc4, type: 3}
+      propertyPath: m_Color.a
+      value: 0.88235295
+      objectReference: {fileID: 0}
     - target: {fileID: 6929157571687443492, guid: 90ebb2ed8e6a34dd3b4a980fd67f5cc4, type: 3}
       propertyPath: m_AnchoredPosition.x
       value: 180

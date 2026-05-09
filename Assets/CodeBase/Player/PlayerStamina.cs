@@ -5,6 +5,7 @@ using CodeBase.Infrastructure.Services.PersistentProgress;
 using CodeBase.Infrastructure.Services.Upgrade;
 using CodeBase.Player.Movement;
 using CodeBase.StaticData;
+using CodeBase.StaticData.Hero;
 using UnityEngine;
 
 namespace CodeBase.Player
@@ -24,16 +25,16 @@ namespace CodeBase.Player
         private float _staminaRegenRate;
         private float _staminaUnregenRate = 10f;
         private IUpgradeService _upgradeService;
-        private PlayerStaticData _playerData;
+        private HeroStaticData _heroData;
 
         public float CurrentStamina => _currentStamina;
         public float MaxStamina => _maxStamina;
 
-        public void Construct(IPersistentProgressService persistentProgressService, IUpgradeService upgradeService, PlayerStaticData playerStaticData)
+        public void Construct(IPersistentProgressService persistentProgressService, IUpgradeService upgradeService, HeroStaticData heroStaticData)
         {
             _persistentProgressService = persistentProgressService;
             _upgradeService = upgradeService;
-            _playerData = playerStaticData;
+            _heroData = heroStaticData;
             _upgradeService.OnUpgradeStamina += UpgradeStamina;
         }
 
@@ -98,14 +99,14 @@ namespace CodeBase.Player
         {
             if (progress.playerState.maxStamina == 0)
             {
-                progress.playerState.maxStamina = _playerData.maxStamina;
-                progress.playerState.currentStamina = _playerData.maxStamina;
+                progress.playerState.maxStamina = _heroData.maxStamina;
+                progress.playerState.currentStamina = _heroData.maxStamina;
             }
 
             _maxStamina = progress.playerState.maxStamina;
             _currentStamina = progress.playerState.currentStamina;
             _staminaRegenRate =  progress.playerState.regenRateStamina == 0
-                ? _playerData.regenRateStamina
+                ? _heroData.regenRateStamina
                 : progress.playerState.regenRateStamina;
             OnStaminaChanged?.Invoke();
         }

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using CodeBase.Data;
 using CodeBase.StaticData.Enemy;
+using CodeBase.StaticData.Hero;
 using CodeBase.StaticData.Weapon;
 using UnityEngine;
 
@@ -13,9 +13,9 @@ namespace CodeBase.StaticData
         private Dictionary<WeaponTypeId, WeaponStaticData> _weapons;
         private Dictionary<EnemyTypeId, EnemyStaticData> _enemies;
         private Dictionary<AbilityTypeId, AbilityStaticData> _abilities;
+        private Dictionary<HeroTypeId, HeroStaticData> _heroes;
         private List<UpgradeStaticData> _upgrades;
         private List<ShopItemStaticData> _shopItems;
-        private PlayerStaticData _player;
         private WaveControllerStaticData _waveController;
 
 
@@ -29,11 +29,12 @@ namespace CodeBase.StaticData
                 .ToDictionary(x => x.enemyTypeId,  x => x);
             _abilities = Resources.LoadAll<AbilityStaticData>("StaticData/Abilities")
                 .ToDictionary(x => x.abilityTypeId, x => x);
+            _heroes = Resources.LoadAll<HeroStaticData>("StaticData/Heroes")
+                .ToDictionary(x => x.heroTypeId,  x => x);
             _upgrades = Resources.LoadAll<UpgradeStaticData>("StaticData/Upgrades")
                 .ToList();
             _shopItems = Resources.LoadAll<ShopItemStaticData>("StaticData/ShopItems")
                 .ToList();
-            _player = Resources.Load<PlayerStaticData>("StaticData/Player");
             _waveController = Resources.Load<WaveControllerStaticData>("StaticData/WaveController");
         }
         
@@ -54,10 +55,12 @@ namespace CodeBase.StaticData
             _abilities.TryGetValue(abilityId, out AbilityStaticData staticData)
                 ? staticData
                 : null;
+        public HeroStaticData ForHero(HeroTypeId heroId) =>
+            _heroes.TryGetValue(heroId, out HeroStaticData staticData)
+                ? staticData
+                : null;
         public List<UpgradeStaticData> GetAllUpgrades() => _upgrades;
         public List<ShopItemStaticData> GetAllShopItems() => _shopItems;
-        
-        public PlayerStaticData GetPlayer() => _player;
         
         public WaveControllerStaticData GetWaveController() => _waveController;
     }

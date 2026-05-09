@@ -7,6 +7,7 @@ using CodeBase.Infrastructure.Services.ProgressService;
 using CodeBase.Logic;
 using CodeBase.Player;
 using CodeBase.StaticData;
+using CodeBase.StaticData.Hero;
 using CodeBase.UI;
 using CodeBase.UI.Elements;
 using CodeBase.Weapon;
@@ -23,11 +24,10 @@ namespace CodeBase.Infrastructure.States
         private readonly IGameFactory _gameFactory;
         private readonly IPersistentProgressService _persistentProgressService;
         private readonly IStaticDataService _staticData;
-        private readonly IProgressService _progressService;
 
         public LoadLevelState(GameStateMachine gameStateMachine, SceneLoader sceneLoader, LoadingCurtain loadingCurtain,
             IGameFactory gameFactory, IPersistentProgressService persistentProgressService,
-            IStaticDataService staticData, IProgressService progressService)
+            IStaticDataService staticData)
         {
             _staticData = staticData;
             _persistentProgressService = persistentProgressService;
@@ -35,10 +35,10 @@ namespace CodeBase.Infrastructure.States
             _stateMachine = gameStateMachine;
             _sceneLoader = sceneLoader;
             _loadingCurtain = loadingCurtain;
-            _progressService = progressService;
         }
         public void Enter(string sceneName)
         {
+            Debug.Log("Entering LoadLevelState");
             _loadingCurtain.Show();
             _gameFactory.Cleanup();
             _gameFactory.WarmUp();
@@ -64,7 +64,10 @@ namespace CodeBase.Infrastructure.States
         private async Task InitGameWorld()
         {
             LevelStaticData levelData = LevelStaticData();
-            GameObject player = await InitPlayer(levelData);
+            
+            HeroTypeId heroType = _persistentProgressService.Progress.worldData.selectedHero;
+            
+            GameObject player = await InitPlayer(levelData, heroType);
             await InitSpawner(levelData);
             await InitHud();
             CameraFollow(player);
@@ -73,9 +76,9 @@ namespace CodeBase.Infrastructure.States
         private void CameraFollow(GameObject hero) =>
             Camera.main.GetComponent<CameraFollow>().Follow(hero);
         
-        private async Task<GameObject> InitPlayer(LevelStaticData levelData)
+        private async Task<GameObject> InitPlayer(LevelStaticData levelData, HeroTypeId heroType)
         {
-            GameObject player = await _gameFactory.CreatePlayer(levelData.initialHeroPosition);
+            GameObject player = await _gameFactory.CreatePlayer(levelData.initialHeroPosition, heroType);
             player.GetComponent<PlayerDeath>().Construct(_stateMachine);
             
             return player;

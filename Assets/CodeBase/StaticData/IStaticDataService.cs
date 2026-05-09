@@ -2,6 +2,7 @@
 using CodeBase.Data;
 using CodeBase.Infrastructure.Services;
 using CodeBase.StaticData.Enemy;
+using CodeBase.StaticData.Hero;
 using CodeBase.StaticData.Weapon;
 
 namespace CodeBase.StaticData
@@ -14,8 +15,8 @@ namespace CodeBase.StaticData
         EnemyStaticData ForEnemy(EnemyTypeId enemyId);
         List<UpgradeStaticData> GetAllUpgrades();
         AbilityStaticData ForAbility(AbilityTypeId abilityId);
-        PlayerStaticData GetPlayer();
         WaveControllerStaticData GetWaveController();
         List<ShopItemStaticData> GetAllShopItems();
+        HeroStaticData ForHero(HeroTypeId heroId);
     }
 }

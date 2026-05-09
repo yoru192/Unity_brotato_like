@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: +10 max health
   m_EditorClassIdentifier: Assembly-CSharp::CodeBase.StaticData.UpgradeStaticData
   upgradeName: +10 max HP
-  description: Description
+  description: 
   icon: {fileID: -2131673021, guid: fc7d4998a6f3ce54a94e94a270800592, type: 3}
   background: {fileID: 0}
   modifierType: 0

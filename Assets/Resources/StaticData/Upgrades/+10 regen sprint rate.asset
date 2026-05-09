@@ -14,7 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CodeBase.StaticData.UpgradeStaticData
   upgradeName: + 20 regen sprint rate
   description: 
-  icon: {fileID: 0}
+  icon: {fileID: -7231814426140239619, guid: fc7d4998a6f3ce54a94e94a270800592, type: 3}
+  background: {fileID: 0}
   modifierType: 7
   value: 20
   weight: 1

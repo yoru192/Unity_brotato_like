@@ -4,6 +4,7 @@ using CodeBase.Enemy;
 using CodeBase.Player.Movement;
 using CodeBase.StaticData;
 using CodeBase.StaticData.Enemy;
+using CodeBase.StaticData.Hero;
 using CodeBase.StaticData.Weapon;
 using CodeBase.Weapon;
 using UnityEditor;
@@ -23,14 +24,16 @@ namespace CodeBase.Editor
 
         private Tab _tab;
 
-        private PlayerStaticData _player;
+        private HeroStaticData[] _heroes;
         private EnemyStaticData[] _enemies;
         private WeaponStaticData[] _weapons;
         private UpgradeStaticData[] _upgrades;
 
+        private int _selectedHero;
         private int _selectedEnemy;
         private int _selectedWeapon;
         private int _selectedUpgradeIndex;
+        
         private StatModifierType _selectedUpgradeType;
 
         [MenuItem("Tools/Balance Window")]
@@ -40,7 +43,7 @@ namespace CodeBase.Editor
 
         private void Load()
         {
-            _player ??= Resources.Load<PlayerStaticData>("StaticData/Player");
+            _heroes = Resources.LoadAll<HeroStaticData>("StaticData/Heroes");
 
             _enemies = Resources.LoadAll<EnemyStaticData>("StaticData");
             _weapons = Resources.LoadAll<WeaponStaticData>("StaticData");
@@ -65,43 +68,48 @@ namespace CodeBase.Editor
 
         private void DrawPlayer()
         {
-            if (_player == null)
+            if (_heroes == null || _heroes.Length == 0)
             {
                 EditorGUILayout.HelpBox("PlayerStaticData not found", MessageType.Warning);
                 return;
             }
-
+            
+            string[] names = _heroes.Select(h => h.heroTypeId.ToString()).ToArray();
+            _selectedHero = EditorGUILayout.Popup("Hero", _selectedHero, names);
+            
+            var hero = _heroes[_selectedHero];
+            
             EditorGUI.BeginChangeCheck();
 
-            GUILayout.Label("PLAYER", EditorStyles.boldLabel);
+            GUILayout.Label("HERO SETTINGS", EditorStyles.boldLabel);
 
-            _player.maxStamina = EditorGUILayout.FloatField("Max Stamina", _player.maxStamina);
-            _player.regenRateStamina = EditorGUILayout.FloatField("Stamina Regen", _player.regenRateStamina);
-            _player.maxHealth = EditorGUILayout.FloatField("Max HP", _player.maxHealth);
-            _player.moveSpeed = EditorGUILayout.FloatField("Move Speed", _player.moveSpeed);
+            hero.maxStamina = EditorGUILayout.FloatField("Max Stamina", hero.maxStamina);
+            hero.regenRateStamina = EditorGUILayout.FloatField("Stamina Regen", hero.regenRateStamina);
+            hero.maxHealth = EditorGUILayout.FloatField("Max HP", hero.maxHealth);
+            hero.moveSpeed = EditorGUILayout.FloatField("Move Speed", hero.moveSpeed);
             GUILayout.Space(5);
             GUILayout.Label("Start Weapons", EditorStyles.boldLabel);
 
-            if (_player.startWeapons == null)
-                _player.startWeapons = new List<WeaponTypeId>();
+            if (hero.startWeapons == null)
+                hero.startWeapons = new List<WeaponTypeId>();
 
-            int newSize = EditorGUILayout.IntField("Size", _player.startWeapons.Count);
+            int newSize = EditorGUILayout.IntField("Size", hero.startWeapons.Count);
 
-            while (newSize > _player.startWeapons.Count)
-                _player.startWeapons.Add(default);
+            while (newSize > hero.startWeapons.Count)
+                hero.startWeapons.Add(default);
 
-            while (newSize < _player.startWeapons.Count)
-                _player.startWeapons.RemoveAt(_player.startWeapons.Count - 1);
+            while (newSize < hero.startWeapons.Count)
+                hero.startWeapons.RemoveAt(hero.startWeapons.Count - 1);
 
-            for (int i = 0; i < _player.startWeapons.Count; i++)
+            for (int i = 0; i < hero.startWeapons.Count; i++)
             {
-                _player.startWeapons[i] =
-                    (WeaponTypeId)EditorGUILayout.EnumPopup($"Element {i}", _player.startWeapons[i]);
+                hero.startWeapons[i] =
+                    (WeaponTypeId)EditorGUILayout.EnumPopup($"Element {i}", hero.startWeapons[i]);
             }
 
             if (EditorGUI.EndChangeCheck())
             {
-                EditorUtility.SetDirty(_player);
+                EditorUtility.SetDirty(hero);
             }
         }
 

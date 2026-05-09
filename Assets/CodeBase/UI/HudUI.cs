@@ -13,6 +13,7 @@ using CodeBase.Logic;
 using CodeBase.Player;
 using CodeBase.Player.Movement;
 using CodeBase.StaticData;
+using CodeBase.StaticData.Hero;
 using CodeBase.StaticData.Weapon;
 using UnityEngine.Serialization;
 
@@ -44,9 +45,9 @@ namespace CodeBase.UI
         private WeaponStaticData _meleeWeaponData;
         private WeaponStaticData _rangedWeaponData;
         private IUpgradeService _upgradeService;
-        private PlayerStaticData _playerData;
-        private IShopService _shopService;
+        private IStaticDataService _staticData;
         private IBuffService _buffService;
+        private HeroStaticData _heroData;
 
         public void Construct( IBalanceService balanceService, IProgressService progressService, 
             IPersistentProgressService persistentProgressService, 
@@ -55,11 +56,10 @@ namespace CodeBase.UI
             WeaponStaticData meleeWeaponData,
             WeaponStaticData rangedWeaponData,
             IUpgradeService upgradeService,
-            PlayerStaticData playerData,
-            IShopService shopService,
+            IStaticDataService staticData,
             IBuffService buffService)
         {
-            _playerData  = playerData;
+            _staticData  = staticData;
             _balanceService = balanceService;
             _playerStamina = playerStamina;
             _progressService = progressService;
@@ -68,8 +68,9 @@ namespace CodeBase.UI
             _rangedWeaponData = rangedWeaponData;
             _upgradeService = upgradeService;
             _health = health;
-            _shopService = shopService;
             _buffService = buffService;
+            
+            _heroData = _staticData.ForHero(_persistentProgressService.Progress.worldData.selectedHero);
             
             Subscribe();
             UpdateLevel();
@@ -146,13 +147,13 @@ namespace CodeBase.UI
 
         private void UpdateMoveSpeed()
         {
-            _moveSpeed.text = $"Move speed - {(_persistentProgressService.Progress.playerState.moveSpeed == 0 ? _playerData.moveSpeed : _persistentProgressService.Progress.playerState.moveSpeed)}";
+            _moveSpeed.text = $"Move speed - {(_persistentProgressService.Progress.playerState.moveSpeed == 0 ? _heroData.moveSpeed : _persistentProgressService.Progress.playerState.moveSpeed)}";
         }
 
         private void UpdateStaminaStat()
         {
             float regen = _persistentProgressService.Progress.playerState.regenRateStamina;
-            _staminaRegenRate.text = $"Stamina regen rate - {(regen == 0 ? _playerData.regenRateStamina : regen)}";
+            _staminaRegenRate.text = $"Stamina regen rate - {(regen == 0 ? _heroData.regenRateStamina : regen)}";
         }
 
         private void UpdateWeaponHud()
