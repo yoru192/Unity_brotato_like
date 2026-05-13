@@ -1,22 +1,21 @@
-﻿using CodeBase.Infrastructure.Services.PersistentProgress;
+using System;
+using System.Threading.Tasks;
 using CodeBase.Infrastructure.Factory;
 using CodeBase.Infrastructure.Services.ShopService;
 using CodeBase.UI;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 namespace CodeBase.Infrastructure.States
 {
-    public class GameOverState : IState
+    public class WinState : IState
     {
         private const string MenuScene = "Menu";
-        
+
         private readonly IGameStateMachine _stateMachine;
-        private readonly IPersistentProgressService _progressService;
         private readonly IGameFactory _gameFactory;
         private readonly IShopService _shopService;
 
-        public GameOverState(IGameStateMachine stateMachine, IGameFactory gameFactory, IShopService shopService)
+        public WinState(IGameStateMachine stateMachine, IGameFactory gameFactory, IShopService shopService)
         {
             _stateMachine = stateMachine;
             _gameFactory = gameFactory;
@@ -26,7 +25,7 @@ namespace CodeBase.Infrastructure.States
         public void Enter()
         {
             Time.timeScale = 0f;
-            ShowGameOverUI();
+            _ = ShowWinUI();
         }
 
         public void Exit()
@@ -35,10 +34,17 @@ namespace CodeBase.Infrastructure.States
             _shopService.StopShopTimer();
         }
 
-        private async void ShowGameOverUI()
+        private async Task ShowWinUI()
         {
-            GameObject gameOverScreen = await _gameFactory.CreateGameOverScreen();
-            gameOverScreen.GetComponent<GameOverUI>().Construct(this);
+            try
+            {
+                GameObject winScreen = await _gameFactory.CreateWinScreen();
+                winScreen.GetComponent<WinUI>().Construct(this);
+            }
+            catch (Exception e)
+            {
+                Debug.LogException(e);
+            }
         }
 
         public void Restart()
@@ -48,9 +54,7 @@ namespace CodeBase.Infrastructure.States
 
         public void ReturnToMenu()
         {
-            SceneManager.LoadScene(MenuScene);
+            UnityEngine.SceneManagement.SceneManager.LoadScene(MenuScene);
         }
-        
     }
-    
 }

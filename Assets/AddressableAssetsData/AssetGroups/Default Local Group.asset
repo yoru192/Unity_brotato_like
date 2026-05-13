@@ -20,6 +20,11 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 12c3b0b361e85a24d9323f32d5edae66
+    m_Address: WinScreen
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 2cc0c268e2166134b89d380864c957d6
     m_Address: WaveController
     m_ReadOnly: 0

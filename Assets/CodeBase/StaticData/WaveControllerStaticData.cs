@@ -9,6 +9,7 @@ namespace CodeBase.StaticData
     public class WaveControllerStaticData : ScriptableObject
     {
         [Header("Wave Settings")]
+        public int maxWaves = 20;
         public int waveValueMultiplier = 10;
         public int maxEnemiesPerWave = 50;
         public float initialSpawnTimer;

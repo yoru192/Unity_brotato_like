@@ -32,6 +32,7 @@ namespace CodeBase.Infrastructure.Factory
         public List<ISavedProgressReader> ProgressReaders { get; } = new();
         public List<ISavedProgress> ProgressWriters { get; } = new();
         public GameObject PlayerGameObject { get; set; }
+        public WaveController WaveController { get; private set; }
 
         private readonly IAssets _assets;
         private readonly IStaticDataService _staticData;
@@ -72,7 +73,8 @@ namespace CodeBase.Infrastructure.Factory
             
             HeroStaticData   heroData   = _staticData.ForHero(heroType);
             PlayerGameObject.GetComponent<PlayerMovement>().Construct(heroData);
-            PlayerGameObject.GetComponent<PlayerStamina>().Construct(_persistentProgress, _upgradeService, heroData);
+            PlayerGameObject.GetComponent<PlayerStamina>()
+                .Construct(_persistentProgress, _upgradeService, heroData);
             PlayerGameObject.GetComponent<PlayerHealth>().Construct(heroData, _persistentProgress);
 
             WeaponHolder weaponHolder = PlayerGameObject.GetComponentInChildren<WeaponHolder>();
@@ -119,6 +121,16 @@ namespace CodeBase.Infrastructure.Factory
             }
 
             holder.AddWeapon(weaponId, weaponGo.GetComponent<WeaponBase>());
+
+            var ownedWeapons = _persistentProgress.Progress.playerState.OwnedWeapons;
+            if (!ownedWeapons.Contains(weaponId))
+                ownedWeapons.Add(weaponId);
+        }
+
+        public async Task EquipWeapon(WeaponTypeId weaponId)
+        {
+            WeaponHolder holder = PlayerGameObject.GetComponentInChildren<WeaponHolder>();
+            await CreateAndEquipWeapon(holder, weaponId);
         }
 
         public async Task<GameObject> CreateHud()
@@ -156,16 +168,21 @@ namespace CodeBase.Infrastructure.Factory
             return await InstantiateRegistered(AssetsAddress.GameOverScreenPath);
         }
 
-        public async Task<GameObject> CreateEnemy(EnemyTypeId enemyId, Transform parent)
+        public async Task<GameObject> CreateWinScreen()
+        {
+            return await InstantiateRegistered(AssetsAddress.WinScreenPath);
+        }
+
+        public async Task<GameObject> CreateEnemy(EnemyTypeId enemyId, Vector2 position)
         {
             EnemyStaticData enemyData = _staticData.ForEnemy(enemyId);
             GameObject prefab = await _assets.Load<GameObject>(enemyData.prefabReference);
-            
+
             bool isFirstSpawn = !ObjectPoolManager.HasPool(prefab);
 
             GameObject enemy = ObjectPoolManager.SpawnObject(
                 prefab,
-                parent.transform.position,
+                position,
                 Quaternion.identity,
                 ObjectPoolManager.PoolType.Enemy
             );
@@ -210,7 +227,8 @@ namespace CodeBase.Infrastructure.Factory
         public async Task<GameObject> CreateSpawner(List<Vector2> spawnPositions)
         {
             GameObject spawner = await InstantiateRegistered(AssetsAddress.SpawnerPath, Vector3.zero);
-            spawner.GetComponent<WaveController>().Construct(_staticData.GetWaveController());
+            WaveController = spawner.GetComponent<WaveController>();
+            WaveController.Construct(_staticData.GetWaveController());
 
             EnemySpawner enemySpawner = spawner.GetComponent<EnemySpawner>();
             if (enemySpawner != null)

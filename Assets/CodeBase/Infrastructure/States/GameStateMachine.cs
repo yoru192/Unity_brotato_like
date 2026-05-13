@@ -38,8 +38,9 @@ namespace CodeBase.Infrastructure.States
                     services.Single<ISaveLoadService>()),
                 [typeof(ShopState)] = new ShopState(services.Single<IShopService>(), services.Single<IGameFactory>(),this, services.Single<IBalanceService>()),
                 [typeof(UpgradeState)] = new UpgradeState(this,services.Single<IGameFactory>(),services.Single<IUpgradeService>()),
-                [typeof(GameLoopState)] = new GameLoopState(this,services.Single<IProgressService>(), services.Single<IShopService>()),
+                [typeof(GameLoopState)] = new GameLoopState(this, services.Single<IProgressService>(), services.Single<IShopService>(), services.Single<IGameFactory>()),
                 [typeof(GameOverState)] = new GameOverState(this, services.Single<IGameFactory>(), services.Single<IShopService>()),
+                [typeof(WinState)] = new WinState(this, services.Single<IGameFactory>(), services.Single<IShopService>()),
             };
         }
         public void Enter<TState>() where TState : class, IState
