@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe482f41f29e4da0b3d4e115d3edfbc8, type: 3}
+  m_Name: '[Weapon] Bow'
+  m_EditorClassIdentifier: Assembly-CSharp::CodeBase.StaticData.ShopItemStaticData
+  itemName: Bow
+  itemDescription: 
+  itemIcon: {fileID: 21300000, guid: f049b8f6e6c70664abce7e9de8fc5a5c, type: 3}
+  itemBackground: {fileID: 0}
+  itemPrice: 30
+  effect:
+    category: 2
+    value: 1
+    buffType: 0
+    upgradeType: 0
+    weaponTypeId: 1
+  duration: 0
+  weight: 1

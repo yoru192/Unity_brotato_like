@@ -30,6 +30,9 @@ namespace CodeBase.Editor
                 case ShopItemCategory.Upgrade:
                     EditorGUI.PropertyField(r, prop.FindPropertyRelative("upgradeType"));
                     break;
+                case ShopItemCategory.Weapon:
+                    EditorGUI.PropertyField(r, prop.FindPropertyRelative("weaponTypeId"));
+                    break;
             }
 
             EditorGUI.EndProperty();

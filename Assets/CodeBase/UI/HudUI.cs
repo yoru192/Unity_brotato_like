@@ -145,25 +145,22 @@ namespace CodeBase.UI
             }
         }
 
-        private void UpdateMoveSpeed()
-        {
-            _moveSpeed.text = $"Move speed - {(_persistentProgressService.Progress.playerState.moveSpeed == 0 ? _heroData.moveSpeed : _persistentProgressService.Progress.playerState.moveSpeed)}";
-        }
+        private void UpdateMoveSpeed() =>
+            _moveSpeed.text = $"Move speed - {Stat(_persistentProgressService.Progress.playerState.moveSpeed, _heroData.moveSpeed)}";
 
-        private void UpdateStaminaStat()
-        {
-            float regen = _persistentProgressService.Progress.playerState.regenRateStamina;
-            _staminaRegenRate.text = $"Stamina regen rate - {(regen == 0 ? _heroData.regenRateStamina : regen)}";
-        }
+        private void UpdateStaminaStat() =>
+            _staminaRegenRate.text = $"Stamina regen rate - {Stat(_persistentProgressService.Progress.playerState.regenRateStamina, _heroData.regenRateStamina)}";
 
         private void UpdateWeaponHud()
         {
             var state = _persistentProgressService.Progress.playerState;
-            _meleeDamage.text = $"Melee damage - {(state?.MeleeWeaponState.weaponDamage == 0 ? _meleeWeaponData.damage : state?.MeleeWeaponState.weaponDamage)}";
-            _meleeCooldown.text = $"Melee cooldown - {(state?.MeleeWeaponState.weaponCooldown == 0 ? _meleeWeaponData.cooldown : state?.MeleeWeaponState.weaponCooldown)}";
-            _rangedDamage.text = $"Ranged damage - {(state?.RangedWeaponState.weaponDamage == 0 ? _rangedWeaponData.damage : state?.RangedWeaponState.weaponDamage)}";
-            _rangedShootRate.text = $"Ranged shoot rate - {(state?.RangedWeaponState.weaponCooldown == 0 ? _rangedWeaponData.cooldown : state?.RangedWeaponState.weaponCooldown)}";
+            _meleeDamage.text = $"Melee damage - {Stat(state.MeleeWeaponState.weaponDamage, _meleeWeaponData.damage)}";
+            _meleeCooldown.text = $"Melee cooldown - {Stat(state.MeleeWeaponState.weaponCooldown, _meleeWeaponData.cooldown)}";
+            _rangedDamage.text = $"Ranged damage - {Stat(state.RangedWeaponState.weaponDamage, _rangedWeaponData.damage)}";
+            _rangedShootRate.text = $"Ranged shoot rate - {Stat(state.RangedWeaponState.weaponCooldown, _rangedWeaponData.cooldown)}";
         }
+
+        private static float Stat(float value, float defaultValue) => value == 0 ? defaultValue : value;
 
         private void OnXpGained(int amount)
         {

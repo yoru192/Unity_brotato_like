@@ -1,4 +1,5 @@
 ﻿using System;
+using CodeBase.Common;
 using CodeBase.Logic;
 using CodeBase.Weapon.RangeWeapon;
 using UnityEngine;
@@ -15,17 +16,7 @@ namespace CodeBase.Enemy
         private float _projectileSpeed;
         private float _damage;
 
-        [SerializeField] private GameObject _projectilePrefab;
-
-        [Header("Arc")]
-        [Tooltip("Висота дуги снаряда у world units.")]
-        [SerializeField] private float _arcHeight = 2f;
-
-        [Header("Speed Curve (опційно)")]
-        [Tooltip("Крива швидкості снаряда. X=прогрес польоту, Y=множник швидкості. " +
-                 "Залиш пустою для постійної швидкості.")]
-        [SerializeField] private AnimationCurve _speedCurve;
-
+        private ProjectileLauncher _launcher;
         private float _shootTimer;
         private int _playerLayer;
 
@@ -39,7 +30,8 @@ namespace CodeBase.Enemy
 
         private void Awake()
         {
-            _playerLayer = 1 << LayerMask.NameToLayer("Player");
+            _launcher = GetComponent<ProjectileLauncher>();
+            _playerLayer = PhysicsLayers.PlayerMask;
             _shootTimer = _shootRate;
         }
 
@@ -63,17 +55,7 @@ namespace CodeBase.Enemy
             return hit.transform;
         }
 
-        private void SpawnProjectile(Transform target)
-        {
-            var go = ObjectPoolManager.SpawnObject(_projectilePrefab, transform.position, Quaternion.identity, ObjectPoolManager.PoolType.Projectile);
-            var projectile = go.GetComponent<Projectile>();
-
-            projectile.InitializeProjectile(target, _projectileSpeed, _arcHeight, _damage);
-            
-            if (_speedCurve != null && _speedCurve.keys.Length > 0)
-                projectile.InitializeSpeedCurve(_speedCurve);
-            
-            projectile.Launch();
-        }
+        private void SpawnProjectile(Transform target) =>
+            _launcher.Launch(target, _projectileSpeed, _damage);
     }
 }

@@ -70,8 +70,9 @@ namespace CodeBase.Infrastructure.States
             _services.RegisterSingle<IShopService>(new ShopService(
                 _services.Single<IStaticDataService>(),
                 _services.Single<IUpgradeService>(),
-                                _coroutineRunner,
-                _services.Single<IBuffService>()));
+                _coroutineRunner,
+                _services.Single<IBuffService>(),
+                _services.Single<IPersistentProgressService>()));
             _services.RegisterSingle<IGameFactory>(new GameFactory(
                 _services.Single<IAssets>(),
                 _services.Single<IStaticDataService>(),

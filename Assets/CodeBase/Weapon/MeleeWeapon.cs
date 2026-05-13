@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using CodeBase.Common;
 using CodeBase.Data;
 using CodeBase.Infrastructure.Services.PersistentProgress;
 using CodeBase.Logic;
@@ -60,7 +61,7 @@ namespace CodeBase.Weapon
                 _animator.AnimationEvents.OnCustomEvent += OnAnimationEvent;
             }
             _attackOrigin = transform.root.GetComponentInChildren<AttackColliderTrigger>().transform;
-            var layerMask = 1 << LayerMask.NameToLayer("Hittable");
+            var layerMask = PhysicsLayers.HittableMask;
 
             _attackCollider = _attackOrigin.gameObject.AddComponent<PolygonCollider2D>();
             _attackCollider.isTrigger = true;
@@ -122,8 +123,8 @@ namespace CodeBase.Weapon
         {
             switch (eventName)
             {
-                case "Hit":        OnAttackHit();   break;
-                case "AttackEnd":  OnAttackEnded(); break;
+                case AnimationEventNames.Hit:       OnAttackHit();   break;
+                case AnimationEventNames.AttackEnd: OnAttackEnded(); break;
             }
         }
 

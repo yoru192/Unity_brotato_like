@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using CodeBase.StaticData.Weapon;
 using UnityEngine;
 
 namespace CodeBase.Data
@@ -8,6 +10,7 @@ namespace CodeBase.Data
     {
         public MeleeWeaponState MeleeWeaponState = new MeleeWeaponState();
         public RangedWeaponState RangedWeaponState = new RangedWeaponState();
+        public List<WeaponTypeId> OwnedWeapons = new List<WeaponTypeId>();
         public float currentStamina;
         public float maxStamina;
         public float regenRateStamina;

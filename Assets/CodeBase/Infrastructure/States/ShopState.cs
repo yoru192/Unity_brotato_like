@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using CodeBase.Infrastructure.Factory;
 using CodeBase.Infrastructure.Services.Balance;
@@ -6,6 +7,7 @@ using CodeBase.Infrastructure.Services.ShopService;
 using CodeBase.StaticData;
 using CodeBase.UI;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace CodeBase.Infrastructure.States
 {
@@ -32,7 +34,7 @@ namespace CodeBase.Infrastructure.States
         public void Enter()
         {
             Time.timeScale = 0f;
-            ShowShopItemsOptions();
+            _ = ShowShopItemsOptions();
         }
 
         public void Exit()
@@ -42,12 +44,17 @@ namespace CodeBase.Infrastructure.States
                 Object.Destroy(_shopUI);
         }
 
-        private async void ShowShopItemsOptions()
+        private async Task ShowShopItemsOptions()
         {
-            List<ShopItemStaticData> options = _shopService.GenerateShopItemOptions(4);
-            await CreateShopUI(options);
-            
-            if (_shopUI == null) return;
+            try
+            {
+                List<ShopItemStaticData> options = _shopService.GenerateShopItemOptions(4);
+                await CreateShopUI(options);
+            }
+            catch (Exception e)
+            {
+                Debug.LogException(e);
+            }
         }
 
         private async Task CreateShopUI(List<ShopItemStaticData> options)
@@ -65,15 +72,24 @@ namespace CodeBase.Infrastructure.States
             }
         }
         
-        private void OnShopItemSelected(ShopItemStaticData selectedUpgrade)
+        private async void OnShopItemSelected(ShopItemStaticData selectedUpgrade)
         {
             if (!_balanceService.TryRemoveBalance(selectedUpgrade.itemPrice))
-            {
                 return;
-            }
 
-            _shopService.ApplyShopItem(selectedUpgrade);
-            _gameStateMachine.Enter<GameLoopState>();
+            try
+            {
+                _shopService.ApplyShopItem(selectedUpgrade);
+
+                if (selectedUpgrade.effect.category == ShopItemCategory.Weapon)
+                    await _gameFactory.EquipWeapon(selectedUpgrade.effect.weaponTypeId);
+
+                _gameStateMachine.Enter<GameLoopState>();
+            }
+            catch (Exception e)
+            {
+                Debug.LogException(e);
+            }
         }
     }
 }

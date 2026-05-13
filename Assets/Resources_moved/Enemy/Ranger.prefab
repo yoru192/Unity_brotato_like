@@ -207,6 +207,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 8060626389315759474, guid: 79171cc7afbd7524da1e002766f5d634, type: 3}
       insertIndex: -1
       addedObject: {fileID: -8449272499302630864}
+    - targetCorrespondingSourceObject: {fileID: 8060626389315759474, guid: 79171cc7afbd7524da1e002766f5d634, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 6875168299430619839}
   m_SourcePrefab: {fileID: 100100000, guid: 79171cc7afbd7524da1e002766f5d634, type: 3}
 --- !u!4 &2621990159258856546 stripped
 Transform:
@@ -230,6 +233,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a1d25e4bb9bf4bdea3a2127d30dd5921, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CodeBase.Enemy.EnemyRangerAttack
+--- !u!114 &6875168299430619839
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4300364833578373028}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b9e3843fd074dc40be61a9929057f42, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CodeBase.Weapon.RangeWeapon.ProjectileLauncher
   _projectilePrefab: {fileID: 6980605287808460766, guid: 01b3f53450909a04cbf60bbc9039cdb4, type: 3}
   _arcHeight: 2
   _speedCurve:

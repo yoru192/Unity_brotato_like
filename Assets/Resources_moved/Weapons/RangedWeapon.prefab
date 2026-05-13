@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6845573635971641654}
   - component: {fileID: 6295059458053206107}
+  - component: {fileID: 1402084675951671653}
   m_Layer: 0
   m_Name: RangedWeapon
   m_TagString: Untagged
@@ -44,6 +45,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c73a93c99213408a92fd06275b607553, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CodeBase.Weapon.RangedAttack
+--- !u!114 &1402084675951671653
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7635015494670604553}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b9e3843fd074dc40be61a9929057f42, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CodeBase.Weapon.RangeWeapon.ProjectileLauncher
   _projectilePrefab: {fileID: 6980605287808460766, guid: 1c521097ab56a5846bb6aded96790561, type: 3}
   _arcHeight: 2
   _speedCurve:

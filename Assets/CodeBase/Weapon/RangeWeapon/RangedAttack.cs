@@ -1,4 +1,5 @@
-﻿using CodeBase.Data;
+﻿using CodeBase.Common;
+using CodeBase.Data;
 using CodeBase.Infrastructure.Services.PersistentProgress;
 using CodeBase.Logic;
 using UnityEngine;
@@ -13,16 +14,7 @@ namespace CodeBase.Weapon.RangeWeapon
         private float _projectileMaxMoveSpeed;
         private float _damage;
 
-        [SerializeField] private GameObject _projectilePrefab;
-
-        [Header("Arc")]
-        [Tooltip("Висота дуги снаряда у world units.")]
-        [SerializeField] private float _arcHeight = 2f;
-
-        [Header("Speed Curve (опційно)")]
-        [Tooltip("Крива швидкості снаряда. Залиш пустою для постійної швидкості.")]
-        [SerializeField] private AnimationCurve _speedCurve;
-
+        private ProjectileLauncher _launcher;
         private float _shootTimer;
         private int _hittableLayer;
 
@@ -56,7 +48,8 @@ namespace CodeBase.Weapon.RangeWeapon
 
         private void Awake()
         {
-            _hittableLayer = 1 << LayerMask.NameToLayer("Hittable");
+            _launcher = GetComponent<ProjectileLauncher>();
+            _hittableLayer = PhysicsLayers.HittableMask;
             _shootTimer = _shootRate;
         }
 
@@ -72,18 +65,8 @@ namespace CodeBase.Weapon.RangeWeapon
             SpawnProjectile(nearestTarget);
         }
 
-        private void SpawnProjectile(Transform target)
-        {
-            var go = ObjectPoolManager.SpawnObject(_projectilePrefab, transform.position, Quaternion.identity, ObjectPoolManager.PoolType.Projectile);
-            var projectile = go.GetComponent<Projectile>();
-
-            projectile.InitializeProjectile(target, _projectileMaxMoveSpeed, _arcHeight, Damage);
-
-            if (_speedCurve != null && _speedCurve.keys.Length > 0)
-                projectile.InitializeSpeedCurve(_speedCurve);
-            
-            projectile.Launch();
-        }
+        private void SpawnProjectile(Transform target) =>
+            _launcher.Launch(target, _projectileMaxMoveSpeed, Damage);
 
         private Transform FindNearestTarget()
         {

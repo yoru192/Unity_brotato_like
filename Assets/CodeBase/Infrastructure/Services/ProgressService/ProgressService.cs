@@ -25,9 +25,13 @@ namespace CodeBase.Infrastructure.Services.ProgressService
             Debug.Log($"Current Xp: {_persistentProgressService.Progress.playerState.currentXp}");
         }
 
+        private const int BaseXp = 50;
+        private const float XpGrowthFactor = 1.3f;
+
         public int CalculateXpForNextLevel()
         {
-            return 50;
+            int level = _persistentProgressService.Progress.playerState.currentLevel;
+            return Mathf.RoundToInt(BaseXp * Mathf.Pow(XpGrowthFactor, level - 1));
         }
 
         private void CheckLevelUp()

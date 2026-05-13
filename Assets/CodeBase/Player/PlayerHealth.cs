@@ -16,7 +16,7 @@ namespace CodeBase.Player
 
         public float Current
         {
-            get => _persistentProgressService.Progress.playerState.currentHealth == 0 ? _playerData.maxHealth : _persistentProgressService.Progress.playerState.maxHealth;
+            get => _persistentProgressService.Progress.playerState.currentHealth == 0 ? _playerData.maxHealth : _persistentProgressService.Progress.playerState.currentHealth;
             set
             {
                 if(!Mathf.Approximately(_persistentProgressService.Progress.playerState.currentHealth, value))

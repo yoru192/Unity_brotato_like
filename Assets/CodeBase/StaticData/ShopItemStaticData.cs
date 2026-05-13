@@ -23,5 +23,5 @@ namespace CodeBase.StaticData
 
 }
 
-    public enum ShopItemCategory { Buff, Upgrade }
+    public enum ShopItemCategory { Buff, Upgrade, Weapon }
     public enum BuffType { MaxHealth, MoveSpeed, Damage, }

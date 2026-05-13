@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using CodeBase.Infrastructure.Services.Buff;
+using CodeBase.Infrastructure.Services.PersistentProgress;
 using CodeBase.Infrastructure.Services.Upgrade;
 using CodeBase.StaticData;
 using UnityEngine;
@@ -20,18 +21,21 @@ namespace CodeBase.Infrastructure.Services.ShopService
         private readonly IUpgradeService _upgradeService;
         private readonly ICoroutineRunner _coroutineRunner;
         private readonly IBuffService _buffService;
+        private readonly IPersistentProgressService _persistentProgress;
 
         private Coroutine _shopTimerCoroutine;
 
         public ShopService(IStaticDataService staticDataService,
             IUpgradeService upgradeService,
             ICoroutineRunner coroutineRunner,
-            IBuffService buffService)
+            IBuffService buffService,
+            IPersistentProgressService persistentProgress)
         {
             _staticData = staticDataService;
             _upgradeService = upgradeService;
             _coroutineRunner = coroutineRunner;
             _buffService = buffService;
+            _persistentProgress = persistentProgress;
         }
 
         public void StartShopTimer()
@@ -60,13 +64,16 @@ namespace CodeBase.Infrastructure.Services.ShopService
         
         public List<ShopItemStaticData> GenerateShopItemOptions(int count = 3)
         {
-            List<ShopItemStaticData> allShopItems = _staticData.GetAllShopItems();
+            var ownedWeapons = _persistentProgress.Progress.playerState.OwnedWeapons;
+            List<ShopItemStaticData> allShopItems = _staticData.GetAllShopItems()
+                .Where(item => item.effect.category != ShopItemCategory.Weapon
+                               || !ownedWeapons.Contains(item.effect.weaponTypeId))
+                .ToList();
 
             List<ShopItemStaticData> selected = new List<ShopItemStaticData>();
-            for (int i = 0; i < count; i++)
+            for (int i = 0; i < count && allShopItems.Count > 0; i++)
             {
-                ShopItemStaticData shopItem = GetWeightedRandom(allShopItems);
-                selected.Add(shopItem);
+                selected.Add(GetWeightedRandom(allShopItems));
             }
 
             return selected;
@@ -80,8 +87,10 @@ namespace CodeBase.Infrastructure.Services.ShopService
                     ApplyBuff(shopItem);
                     break;
                 case ShopItemCategory.Upgrade:
-                    UpgradeStaticData upgrade = ConvertToUpgrade(shopItem);
-                    _upgradeService.ApplyUpgrade(upgrade);
+                    _upgradeService.ApplyUpgrade(ConvertToUpgrade(shopItem));
+                    break;
+                case ShopItemCategory.Weapon:
+                    _persistentProgress.Progress.playerState.OwnedWeapons.Add(shopItem.effect.weaponTypeId);
                     break;
             }
         }

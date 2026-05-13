@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using CodeBase.Data;
 using CodeBase.Infrastructure.Factory;
@@ -6,6 +7,7 @@ using CodeBase.Infrastructure.Services.Upgrade;
 using CodeBase.StaticData;
 using CodeBase.UI;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace CodeBase.Infrastructure.States
 {
@@ -29,7 +31,7 @@ namespace CodeBase.Infrastructure.States
 
         public void Enter()
         {
-            ShowUpgradeOptions();
+            _ = ShowUpgradeOptions();
         }
 
         public void Exit()
@@ -40,11 +42,18 @@ namespace CodeBase.Infrastructure.States
                 Object.Destroy(_upgradeUI);
         }
 
-        private async void ShowUpgradeOptions()
+        private async Task ShowUpgradeOptions()
         {
-            List<UpgradeStaticData> options = _upgradeService.GenerateUpgradeOptions(4);
-            await CreateUpgradeUI(options);
-            Time.timeScale = 0f;
+            try
+            {
+                List<UpgradeStaticData> options = _upgradeService.GenerateUpgradeOptions(4);
+                await CreateUpgradeUI(options);
+                Time.timeScale = 0f;
+            }
+            catch (Exception e)
+            {
+                Debug.LogException(e);
+            }
         }
 
         private async Task CreateUpgradeUI(List<UpgradeStaticData> options)
