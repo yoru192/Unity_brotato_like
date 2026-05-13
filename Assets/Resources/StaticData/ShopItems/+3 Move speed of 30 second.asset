@@ -22,5 +22,6 @@ MonoBehaviour:
     value: 3
     buffType: 1
     upgradeType: 0
+    weaponTypeId: 0
   duration: 45
-  weight: 1
+  weight: 3

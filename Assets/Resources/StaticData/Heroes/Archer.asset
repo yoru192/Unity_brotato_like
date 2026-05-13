@@ -19,7 +19,7 @@ MonoBehaviour:
   HeroImage: {fileID: 21300000, guid: 3e4bce5241c7642d392b39886c15f562, type: 3}
   Icon: {fileID: 21300000, guid: 39ef3ee733c904f08a85268391803a80, type: 3}
   maxStamina: 105
-  regenRateStamina: 100
+  regenRateStamina: 20
   maxHealth: 50
   moveSpeed: 5
   startWeapons: 01000000

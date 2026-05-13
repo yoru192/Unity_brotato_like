@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Ranged
   m_EditorClassIdentifier: Assembly-CSharp::CodeBase.StaticData.Weapon.WeaponStaticData
   weaponTypeId: 1
-  damage: 1
+  damage: 2
   radius: 25
   prefabReference:
     m_AssetGUID: 49d54827c5f9c1b4c9f275be7fc85323

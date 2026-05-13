@@ -13,13 +13,13 @@ MonoBehaviour:
   m_Name: Tank
   m_EditorClassIdentifier: Assembly-CSharp::CodeBase.StaticData.EnemyStaticData
   enemyTypeId: 1
-  health: 12
-  damage: 4
-  moveSpeed: 1
-  cooldown: 4.5
+  health: 25
+  damage: 3
+  moveSpeed: 1.2
+  cooldown: 4
   radius: 3
-  xpReward: 22
-  balanceReward: 30
+  xpReward: 15
+  balanceReward: 10
   prefabReference:
     m_AssetGUID: ad9327ae309f1cf4cb5090f6b46c0a9c
     m_SubObjectName: 

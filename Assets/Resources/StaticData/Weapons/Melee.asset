@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: Melee
   m_EditorClassIdentifier: Assembly-CSharp::CodeBase.StaticData.WeaponStaticData
   weaponTypeId: 0
-  damage: 2
-  cooldown: 0.9
+  damage: 3
+  cooldown: 0.8
   radius: 1.7
   prefabReference:
     m_AssetGUID: 31fdfe8fc90b0434db327c5a23f84a90
