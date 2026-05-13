@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Linq;
 using Assets.FantasyMonsters.Common.Scripts;
+using CodeBase.Common;
+using CodeBase.Logic;
 using CodeBase.Player;
 using UnityEngine;
 
 namespace CodeBase.Enemy
 {
-    public class EnemyAttack : MonoBehaviour, IAttackWithCooldown
+    public class EnemyAttack : MonoBehaviour, IAttackWithCooldown, IPoolable
     {
         public event Action OnCooldownStarted;
         public event Action OnCooldownEnded;
@@ -36,7 +38,7 @@ namespace CodeBase.Enemy
 
         private void Awake()
         {
-            _layerMask = 1 << LayerMask.NameToLayer("Player");
+            _layerMask = PhysicsLayers.PlayerMask;
             _enemyCollider = GetComponent<Collider2D>();
             _monster = GetComponentInChildren<Monster>();
             _mover = GetComponent<EnemyMover>();
@@ -47,10 +49,10 @@ namespace CodeBase.Enemy
         {
             switch (eventName)
             {
-                case "Attack":
+                case AnimationEventNames.Attack:
                     OnAttack();
                     break;
-                case "AttackEnded":
+                case AnimationEventNames.AttackEnded:
                     OnAttackEnded();
                     break;
             }
@@ -136,6 +138,14 @@ namespace CodeBase.Enemy
             _isAttacking = true;
             _mover.SetAttacking(true);
         }
+
+        public void OnSpawn()
+        {
+            _isAttacking = false;
+            _currentAttackCooldown = _attackCooldown;
+        }
+
+        public void OnDespawn() { }
         
         private void OnDrawGizmosSelected()
         {

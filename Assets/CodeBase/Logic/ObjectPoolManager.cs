@@ -80,6 +80,8 @@ namespace CodeBase.Logic
 
         private static void OnReleaseObject(GameObject obj)
         {
+            foreach (var poolable in obj.GetComponentsInChildren<IPoolable>())
+                poolable.OnDespawn();
             obj.SetActive(false);
         }
 

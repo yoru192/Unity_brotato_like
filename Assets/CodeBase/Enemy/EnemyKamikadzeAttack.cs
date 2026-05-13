@@ -1,4 +1,5 @@
-﻿using CodeBase.Logic;
+﻿using CodeBase.Common;
+using CodeBase.Logic;
 using CodeBase.Player;
 using UnityEngine;
 
@@ -6,12 +7,13 @@ namespace CodeBase.Enemy
 {
     [RequireComponent(typeof(EnemyHealth))]
     [RequireComponent(typeof(EnemyDeath))]
-    public class EnemyKamikadzeAttack : MonoBehaviour
+    public class EnemyKamikadzeAttack : MonoBehaviour, IPoolable
     {
         private Transform _playerTransform;
         private int _explosionDamage;
         private bool _hasExploded;
         private EnemyDeath _enemyDeath;
+        private int _playerLayer;
         public GameObject explosionPrefab;
 
         public void Construct(Transform playerTransform, int damage)
@@ -23,6 +25,7 @@ namespace CodeBase.Enemy
         private void Awake()
         {
             _enemyDeath = GetComponent<EnemyDeath>();
+            _playerLayer = PhysicsLayers.Player;
         }
 
         private void Start()
@@ -38,7 +41,7 @@ namespace CodeBase.Enemy
 
         private void OnTriggerEnter2D(Collider2D collision)
         {
-            if (collision.gameObject.layer == LayerMask.NameToLayer("Player"))
+            if (collision.gameObject.layer == _playerLayer)
             {
                 Explode(collision.gameObject);
             }
@@ -82,6 +85,12 @@ namespace CodeBase.Enemy
                 Destroy(explosionEffect, 1f);
             }
         }
-        
+
+        public void OnSpawn()
+        {
+            _hasExploded = false;
+        }
+
+        public void OnDespawn() { }
     }
 }

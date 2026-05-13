@@ -20,6 +20,7 @@ namespace CodeBase.Logic
         private int _waveValueMultiplier;
         private int _maxEnemiesPerWave;
         private float _initialSpawnTimer;
+        private int _maxWaves;
 
         [Header("Wave Settings")]
         public List<EnemyWaveConfig> enemyConfigs = new List<EnemyWaveConfig>();
@@ -41,6 +42,7 @@ namespace CodeBase.Logic
         private bool _isWaveCompleting = false;
 
         public event Action OnWaveCompleted;
+        public event Action OnRunCompleted;
 
         public void Construct(WaveControllerStaticData waveControllerData)
         {
@@ -48,6 +50,7 @@ namespace CodeBase.Logic
             _waveValueMultiplier = _waveControllerData.waveValueMultiplier;
             _maxEnemiesPerWave   = _waveControllerData.maxEnemiesPerWave;
             _initialSpawnTimer   = _waveControllerData.initialSpawnTimer;
+            _maxWaves            = _waveControllerData.maxWaves;
             waveDuration         = _waveControllerData.waveDuration;
             spawnInterval        = _waveControllerData.spawnInterval;
             maxAlive             = _waveControllerData.maxAlive;
@@ -82,7 +85,8 @@ namespace CodeBase.Logic
 
             _spawner.CleanupDeadEnemies();
 
-            if ((waveTimer <= 0 && !_isWaveCompleting && _spawner.GetAliveEnemiesCount() <= 0) || currentWave == 0 && _initialSpawnTimer <= 0)
+            bool waveCleared = waveTimer <= 0 && enemiesToSpawn.Count == 0 && !_isSpawning && _spawner.GetAliveEnemiesCount() <= 0;
+            if ((!_isWaveCompleting && waveCleared) || (currentWave == 0 && _initialSpawnTimer <= 0))
                 CompleteWave();
         }
 
@@ -102,10 +106,7 @@ namespace CodeBase.Logic
                     enemiesToSpawn.Dequeue();
                     spawnTimer = spawnInterval;
                 }
-                else
-                {
-                    spawnTimer = spawnInterval;
-                }
+                // якщо відхилено через maxAlive — не чекаємо spawnInterval, пробуємо швидко
             }
             catch (Exception e)
             {
@@ -122,8 +123,16 @@ namespace CodeBase.Logic
         private void CompleteWave()
         {
             _isWaveCompleting = true;
-            OnWaveCompleted?.Invoke();
             currentWave++;
+
+            if (currentWave >= _maxWaves)
+            {
+                OnRunCompleted?.Invoke();
+                _isWaveCompleting = false;
+                return;
+            }
+
+            OnWaveCompleted?.Invoke();
             GenerateWave();
             _isWaveCompleting = false;
         }
@@ -141,51 +150,20 @@ namespace CodeBase.Logic
         private void GenerateEnemies()
         {
             List<EnemyTypeId> generatedEnemies = new List<EnemyTypeId>();
-            int minCost = enemyConfigs.Min(e => e.cost);
-            
+
             while (_waveValue > 0 && generatedEnemies.Count < _maxEnemiesPerWave)
             {
-                int randEnemyId = Random.Range(0, enemyConfigs.Count);
-                int randEnemyCost = enemyConfigs[randEnemyId].cost;
+                List<EnemyWaveConfig> affordable = enemyConfigs.Where(e => e.cost <= _waveValue).ToList();
+                if (affordable.Count == 0) break;
 
-                if (_waveValue - randEnemyCost >= 0)
-                {
-                    generatedEnemies.Add(enemyConfigs[randEnemyId].enemyTypeId);
-                    _waveValue -= randEnemyCost;
-                }
-                else
-                {
-                    if (_waveValue < minCost) break;
-                }
+                EnemyWaveConfig chosen = affordable[Random.Range(0, affordable.Count)];
+                generatedEnemies.Add(chosen.enemyTypeId);
+                _waveValue -= chosen.cost;
             }
 
             enemiesToSpawn.Clear();
             foreach (var enemy in generatedEnemies)
-            {
                 enemiesToSpawn.Enqueue(enemy);
-            }
         }
-        
-        public Dictionary<EnemyTypeId, float> GetSpawnStatistics()
-        {
-            var stats = new Dictionary<EnemyTypeId, float>();
-            if (enemyConfigs == null || enemyConfigs.Count == 0) return stats;
-
-            int totalBudget = currentWave * _waveValueMultiplier;
-            if (totalBudget == 0) return stats;
-
-            foreach (var config in enemyConfigs)
-            {
-                float countPerBudget = (float)totalBudget / config.cost;
-                stats[config.enemyTypeId] = countPerBudget;
-            }
-
-            float total = stats.Values.Sum();
-            foreach (var key in stats.Keys.ToList())
-                stats[key] = Mathf.Round(stats[key] / total * 100f);
-
-            return stats;
-        }
-
     }
 }

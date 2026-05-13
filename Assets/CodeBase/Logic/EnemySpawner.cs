@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using CodeBase.Enemy;
 using CodeBase.Infrastructure.Factory;
 using CodeBase.StaticData.Enemy;
 using UnityEngine;
@@ -41,27 +42,28 @@ namespace CodeBase.Logic
         public async Task<GameObject> TrySpawnEnemy(EnemyTypeId enemyTypeId, int maxAlive)
         {
             if (_spawnedEnemies.Count >= maxAlive)
-            {
                 return null;
-            }
 
             if (_spawnPositions == null || _spawnPositions.Count == 0)
-            {
                 return null;
-            }
 
             Vector2 spawnPosition = GetValidSpawnPosition();
-            
-            GameObject tempSpawnPoint = new GameObject("TempSpawnPoint");
-            tempSpawnPoint.transform.position = spawnPosition;
-            
-            GameObject enemy = await _gameFactory.CreateEnemy(enemyTypeId, tempSpawnPoint.transform);
-            
-            Destroy(tempSpawnPoint);
-            
+            GameObject enemy = await _gameFactory.CreateEnemy(enemyTypeId, spawnPosition);
+
             if (enemy != null)
             {
                 _spawnedEnemies.Add(enemy);
+
+                EnemyDeath death = enemy.GetComponent<EnemyDeath>();
+                if (death != null)
+                {
+                    void HandleDying()
+                    {
+                        _spawnedEnemies.Remove(enemy);
+                        death.OnDying -= HandleDying;
+                    }
+                    death.OnDying += HandleDying;
+                }
             }
 
             return enemy;

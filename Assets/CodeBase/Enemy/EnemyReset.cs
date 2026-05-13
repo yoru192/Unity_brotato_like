@@ -24,7 +24,10 @@ namespace CodeBase.Enemy
             if (TryGetComponent<EnemyAttack>(out var attack))
                 attack.enabled = true;
             if (TryGetComponent<EnemyMover>(out var mover))
+            {
+                mover.SetAttacking(false);
                 mover.enabled = true;
+            }
             if (TryGetComponent<EnemyRangerAttack>(out var ranger))
                 ranger.enabled = true;
         }
