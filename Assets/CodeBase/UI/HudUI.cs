@@ -35,7 +35,7 @@ namespace CodeBase.UI
         [SerializeField] private TextMeshProUGUI _rangedShootRate;
         [SerializeField] private TextMeshProUGUI _staminaRegenRate;
         [SerializeField] private TextMeshProUGUI _moveSpeed;
-        
+        [SerializeField] private TextMeshProUGUI _waveText;
 
         private IProgressService _progressService;
         private IPersistentProgressService _persistentProgressService;
@@ -48,6 +48,7 @@ namespace CodeBase.UI
         private IStaticDataService _staticData;
         private IBuffService _buffService;
         private HeroStaticData _heroData;
+        private WaveController _waveController;
 
         public void Construct( IBalanceService balanceService, IProgressService progressService, 
             IPersistentProgressService persistentProgressService, 
@@ -79,9 +80,18 @@ namespace CodeBase.UI
             UpdateStats();
         }
 
+        public void SetWaveController(WaveController waveController)
+        {
+            _waveController = waveController;
+            _waveController.OnWaveCompleted += UpdateWaveText;
+            UpdateWaveText();
+        }
+
         private void OnDestroy()
         {
             Unsubscribe();
+            if (_waveController != null)
+                _waveController.OnWaveCompleted -= UpdateWaveText;
         }
 
         private void Subscribe()
@@ -158,6 +168,13 @@ namespace CodeBase.UI
             _meleeCooldown.text = $"Melee cooldown - {Stat(state.MeleeWeaponState.weaponCooldown, _meleeWeaponData.cooldown)}";
             _rangedDamage.text = $"Ranged damage - {Stat(state.RangedWeaponState.weaponDamage, _rangedWeaponData.damage)}";
             _rangedShootRate.text = $"Ranged shoot rate - {Stat(state.RangedWeaponState.weaponCooldown, _rangedWeaponData.cooldown)}";
+        }
+
+        private void UpdateWaveText()
+        {
+            if (_waveText == null || _waveController == null) return;
+            int displayed = Mathf.Max(1, _waveController.currentWave);
+            _waveText.text = $"Wave {displayed}/{_waveController.MaxWaves}";
         }
 
         private static float Stat(float value, float defaultValue) => value == 0 ? defaultValue : value;

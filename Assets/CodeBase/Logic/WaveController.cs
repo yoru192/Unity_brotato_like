@@ -41,6 +41,8 @@ namespace CodeBase.Logic
         private bool _isSpawning = false;
         private bool _isWaveCompleting = false;
 
+        public int MaxWaves => _maxWaves;
+
         public event Action OnWaveCompleted;
         public event Action OnRunCompleted;
 
