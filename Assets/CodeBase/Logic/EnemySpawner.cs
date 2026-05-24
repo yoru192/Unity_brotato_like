@@ -17,26 +17,11 @@ namespace CodeBase.Logic
         private List<GameObject> _spawnedEnemies = new List<GameObject>();
         private List<Vector2> _spawnPositions;
 
-        public void Construct(IGameFactory gameFactory, List<Vector2> spawnPositions)
+        public void Construct(IGameFactory gameFactory, List<Vector2> spawnPositions, Transform playerTransform)
         {
             _gameFactory = gameFactory;
             _spawnPositions = spawnPositions;
-        }
-
-        private void Start()
-        {
-            if (player == null)
-            {
-                GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
-                if (playerObj != null)
-                {
-                    player = playerObj.transform;
-                }
-                else
-                {
-                    Debug.LogWarning("Player not assigned and no GameObject with 'Player' tag found!");
-                }
-            }
+            player = playerTransform;
         }
 
         public async Task<GameObject> TrySpawnEnemy(EnemyTypeId enemyTypeId, int maxAlive)

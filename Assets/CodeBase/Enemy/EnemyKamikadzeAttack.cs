@@ -11,15 +11,17 @@ namespace CodeBase.Enemy
     {
         private Transform _playerTransform;
         private int _explosionDamage;
+        private float _explosionRadius;
         private bool _hasExploded;
         private EnemyDeath _enemyDeath;
         private int _playerLayer;
         public GameObject explosionPrefab;
 
-        public void Construct(Transform playerTransform, int damage)
+        public void Construct(Transform playerTransform, int damage, float explosionRadius)
         {
             _playerTransform = playerTransform;
             _explosionDamage = damage;
+            _explosionRadius = explosionRadius;
         }
 
         private void Awake()
@@ -50,15 +52,14 @@ namespace CodeBase.Enemy
         private void OnEnemyDying()
         {
             if (_hasExploded) return;
-            
+
             if (_playerTransform != null)
             {
-                if (_playerTransform.TryGetComponent<PlayerHealth>(out var playerHealth))
-                {
+                float distance = Vector2.Distance(transform.position, _playerTransform.position);
+                if (distance <= _explosionRadius && _playerTransform.TryGetComponent<PlayerHealth>(out var playerHealth))
                     playerHealth.TakeDamage(_explosionDamage);
-                }
             }
-            
+
             _hasExploded = true;
             SpawnExplosion();
         }

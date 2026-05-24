@@ -1,4 +1,5 @@
-﻿using CodeBase.Infrastructure.Services.PersistentProgress;
+﻿using System;
+using System.Threading.Tasks;
 using CodeBase.Infrastructure.Factory;
 using CodeBase.Infrastructure.Services.ShopService;
 using CodeBase.UI;
@@ -10,9 +11,8 @@ namespace CodeBase.Infrastructure.States
     public class GameOverState : IState
     {
         private const string MenuScene = "Menu";
-        
+
         private readonly IGameStateMachine _stateMachine;
-        private readonly IPersistentProgressService _progressService;
         private readonly IGameFactory _gameFactory;
         private readonly IShopService _shopService;
 
@@ -26,7 +26,7 @@ namespace CodeBase.Infrastructure.States
         public void Enter()
         {
             Time.timeScale = 0f;
-            ShowGameOverUI();
+            _ = ShowGameOverUI();
         }
 
         public void Exit()
@@ -35,10 +35,17 @@ namespace CodeBase.Infrastructure.States
             _shopService.StopShopTimer();
         }
 
-        private async void ShowGameOverUI()
+        private async Task ShowGameOverUI()
         {
-            GameObject gameOverScreen = await _gameFactory.CreateGameOverScreen();
-            gameOverScreen.GetComponent<GameOverUI>().Construct(this);
+            try
+            {
+                GameObject gameOverScreen = await _gameFactory.CreateGameOverScreen();
+                gameOverScreen.GetComponent<GameOverUI>().Construct(this);
+            }
+            catch (Exception e)
+            {
+                Debug.LogException(e);
+            }
         }
 
         public void Restart()
