@@ -41,6 +41,7 @@ namespace CodeBase.Infrastructure.States
                 [typeof(GameLoopState)] = new GameLoopState(this, services.Single<IProgressService>(), services.Single<IShopService>(), services.Single<IGameFactory>()),
                 [typeof(GameOverState)] = new GameOverState(this, services.Single<IGameFactory>(), services.Single<IShopService>()),
                 [typeof(WinState)] = new WinState(this, services.Single<IGameFactory>(), services.Single<IShopService>()),
+                [typeof(PauseState)] = new PauseState(this, services.Single<IGameFactory>(), services.Single<IShopService>()),
             };
         }
         public void Enter<TState>() where TState : class, IState

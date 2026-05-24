@@ -35,6 +35,11 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 3b2815c86381c0a41b5603f00be24c7f
+    m_Address: PauseScreen
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 49d54827c5f9c1b4c9f275be7fc85323
     m_Address: RangedWeapon
     m_ReadOnly: 0

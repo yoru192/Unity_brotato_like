@@ -13,12 +13,12 @@ MonoBehaviour:
   m_Name: Kamikadze
   m_EditorClassIdentifier: Assembly-CSharp::CodeBase.StaticData.EnemyStaticData
   enemyTypeId: 2
-  health: 5
+  health: 1
   damage: 4
   moveSpeed: 3.5
   cooldown: 2
   radius: 2
-  xpReward: 7
+  xpReward: 50
   balanceReward: 5
   prefabReference:
     m_AssetGUID: d1d4b7c44ce59f14389b438a82980fa3
@@ -27,3 +27,4 @@ MonoBehaviour:
     m_SubObjectGUID: 
     m_EditorAssetChanged: 0
   spriteScale: {x: 0.4, y: 0.4, z: 1}
+  projectileSpeed: 0

@@ -16,6 +16,7 @@ namespace CodeBase.Infrastructure.Factory
         List<ISavedProgressReader> ProgressReaders { get; }
         List<ISavedProgress> ProgressWriters { get; }
         WaveController WaveController { get; }
+        PauseInputHandler PauseInputHandler { get; }
         Task WarmUp();
         void Cleanup();
         Task<GameObject> CreatePlayer(Vector3 at, HeroTypeId heroType);
@@ -24,6 +25,7 @@ namespace CodeBase.Infrastructure.Factory
         Task<GameObject> CreateHud();
         Task<GameObject> CreateGameOverScreen();
         Task<GameObject> CreateWinScreen();
+        Task<GameObject> CreatePauseScreen();
         Task<GameObject> CreateUpgradeScreen();
         Task<GameObject> CreateShopScreen();
         Task EquipWeapon(WeaponTypeId weaponId);

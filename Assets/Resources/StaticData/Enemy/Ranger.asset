@@ -13,12 +13,12 @@ MonoBehaviour:
   m_Name: Ranger
   m_EditorClassIdentifier: Assembly-CSharp::CodeBase.StaticData.Enemy.EnemyStaticData
   enemyTypeId: 3
-  health: 7
+  health: 1
   damage: 2
   moveSpeed: 2.5
   cooldown: 3
   radius: 12
-  xpReward: 10
+  xpReward: 50
   balanceReward: 7
   prefabReference:
     m_AssetGUID: 9296682d07c9b414c99e2a995faa9d1d

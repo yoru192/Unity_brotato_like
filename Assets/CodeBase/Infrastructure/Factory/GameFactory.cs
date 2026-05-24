@@ -33,6 +33,7 @@ namespace CodeBase.Infrastructure.Factory
         public List<ISavedProgress> ProgressWriters { get; } = new();
         public GameObject PlayerGameObject { get; set; }
         public WaveController WaveController { get; private set; }
+        public PauseInputHandler PauseInputHandler { get; private set; }
 
         private readonly IAssets _assets;
         private readonly IStaticDataService _staticData;
@@ -120,6 +121,9 @@ namespace CodeBase.Infrastructure.Factory
                     break;
             }
 
+            foreach (ISavedProgressReader reader in weaponGo.GetComponentsInChildren<ISavedProgressReader>())
+                reader.LoadProgress(_persistentProgress.Progress);
+
             holder.AddWeapon(weaponId, weaponGo.GetComponent<WeaponBase>());
 
             var ownedWeapons = _persistentProgress.Progress.playerState.OwnedWeapons;
@@ -138,7 +142,9 @@ namespace CodeBase.Infrastructure.Factory
             WeaponStaticData meleeWeaponData = _staticData.ForWeapon(WeaponTypeId.Melee);
             WeaponStaticData rangedWeaponData = _staticData.ForWeapon(WeaponTypeId.Ranged);
             GameObject hud = await InstantiateRegistered(AssetsAddress.HudPath);
-            hud.GetComponent<HudUI>().Construct(
+            PauseInputHandler = hud.AddComponent<PauseInputHandler>();
+            HudUI hudUI = hud.GetComponent<HudUI>();
+            hudUI.Construct(
                 _balanceService,
                 _progress,
                 _persistentProgress,
@@ -150,6 +156,10 @@ namespace CodeBase.Infrastructure.Factory
                 _staticData,
                 _buffService
             );
+
+            if (WaveController != null)
+                hudUI.SetWaveController(WaveController);
+
             return hud;
         }
 
@@ -171,6 +181,11 @@ namespace CodeBase.Infrastructure.Factory
         public async Task<GameObject> CreateWinScreen()
         {
             return await InstantiateRegistered(AssetsAddress.WinScreenPath);
+        }
+
+        public async Task<GameObject> CreatePauseScreen()
+        {
+            return await InstantiateRegistered(AssetsAddress.PauseScreenPath);
         }
 
         public async Task<GameObject> CreateEnemy(EnemyTypeId enemyId, Vector2 position)
@@ -209,7 +224,7 @@ namespace CodeBase.Infrastructure.Factory
             RegisterProgressWatchers(enemy);
 
             if (enemy.TryGetComponent<EnemyKamikadzeAttack>(out var kamikadze))
-                kamikadze.Construct(PlayerGameObject.transform, enemyData.damage);
+                kamikadze.Construct(PlayerGameObject.transform, enemyData.damage, enemyData.radius);
 
             if (enemy.TryGetComponent<EnemyAttack>(out var attack))
                 attack.Construct(PlayerGameObject.transform, enemyData.cooldown, enemyData.radius, enemyData.damage);
@@ -232,7 +247,7 @@ namespace CodeBase.Infrastructure.Factory
 
             EnemySpawner enemySpawner = spawner.GetComponent<EnemySpawner>();
             if (enemySpawner != null)
-                enemySpawner.Construct(this, spawnPositions);
+                enemySpawner.Construct(this, spawnPositions, PlayerGameObject.transform);
 
             return spawner;
         }

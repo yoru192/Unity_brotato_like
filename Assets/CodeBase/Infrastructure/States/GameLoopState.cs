@@ -28,6 +28,9 @@ namespace CodeBase.Infrastructure.States
             if (_gameFactory.WaveController != null)
                 _gameFactory.WaveController.OnRunCompleted += OnRunCompleted;
 
+            if (_gameFactory.PauseInputHandler != null)
+                _gameFactory.PauseInputHandler.OnPausePressed += OnPausePressed;
+
             if (!_shopTimerStarted)
             {
                 _shopService.StartShopTimer();
@@ -42,6 +45,9 @@ namespace CodeBase.Infrastructure.States
 
             if (_gameFactory.WaveController != null)
                 _gameFactory.WaveController.OnRunCompleted -= OnRunCompleted;
+
+            if (_gameFactory.PauseInputHandler != null)
+                _gameFactory.PauseInputHandler.OnPausePressed -= OnPausePressed;
         }
 
         private void OnLevelUp(int newLevel)
@@ -57,6 +63,11 @@ namespace CodeBase.Infrastructure.States
         private void OnRunCompleted()
         {
             _stateMachine.Enter<WinState>();
+        }
+
+        private void OnPausePressed()
+        {
+            _stateMachine.Enter<PauseState>();
         }
     }
 }
