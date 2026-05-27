@@ -4,6 +4,7 @@ using System.Linq;
 using CodeBase.Data;
 using CodeBase.Infrastructure.Services.PersistentProgress;
 using CodeBase.StaticData;
+using CodeBase.StaticData.Weapon;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -72,13 +73,17 @@ namespace CodeBase.Infrastructure.Services.Upgrade
                     OnUpgradeMoveSpeed?.Invoke();
                     break;
                 case StatModifierType.Damage:
-                    PlayerState.MeleeWeaponState.weaponDamage += upgrade.value;
-                    PlayerState.RangedWeaponState.weaponDamage += upgrade.value;
+                    if (PlayerState.OwnedWeapons.Contains(WeaponTypeId.Melee))
+                        PlayerState.MeleeWeaponState.weaponDamage += upgrade.value;
+                    if (PlayerState.OwnedWeapons.Contains(WeaponTypeId.Ranged))
+                        PlayerState.RangedWeaponState.weaponDamage += upgrade.value;
                     OnUpgradeWeapon?.Invoke();
                     break;
                 case StatModifierType.Cooldown:
-                    PlayerState.MeleeWeaponState.weaponCooldown += upgrade.value;
-                    PlayerState.RangedWeaponState.weaponCooldown += upgrade.value;
+                    if (PlayerState.OwnedWeapons.Contains(WeaponTypeId.Melee))
+                        PlayerState.MeleeWeaponState.weaponCooldown += upgrade.value;
+                    if (PlayerState.OwnedWeapons.Contains(WeaponTypeId.Ranged))
+                        PlayerState.RangedWeaponState.weaponCooldown += upgrade.value;
                     OnUpgradeWeapon?.Invoke();
                     break;
                 case StatModifierType.MaxStamina:

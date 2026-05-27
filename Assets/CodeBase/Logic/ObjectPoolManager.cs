@@ -14,6 +14,7 @@ namespace CodeBase.Logic
         
         private static GameObject _enemyObjectsEmpty;
         private static GameObject _projectileObjectsEmpty;
+        private static GameObject _xpOrbObjectsEmpty;
 
         private static Dictionary<GameObject, ObjectPool<GameObject>> _objectPools;
         private static Dictionary<GameObject, GameObject> _cloneToPrefabMap;
@@ -22,6 +23,7 @@ namespace CodeBase.Logic
         {
             Enemy,
             Projectile,
+            XpOrb,
         }
         public static PoolType PoolingType;
 
@@ -42,7 +44,10 @@ namespace CodeBase.Logic
            
            _projectileObjectsEmpty = new GameObject("Projectiles");
            _projectileObjectsEmpty.transform.SetParent(_emptyHolder.transform);
-           
+
+           _xpOrbObjectsEmpty = new GameObject("XpOrbs");
+           _xpOrbObjectsEmpty.transform.SetParent(_emptyHolder.transform);
+
            if (addToDontDestroyOnLoad)
                DontDestroyOnLoad(_projectileObjectsEmpty.transform.root);
         }
@@ -101,7 +106,9 @@ namespace CodeBase.Logic
                     return _projectileObjectsEmpty;
                 case PoolType.Enemy:
                     return _enemyObjectsEmpty;
-                default: 
+                case PoolType.XpOrb:
+                    return _xpOrbObjectsEmpty;
+                default:
                     return null;
             }
         }

@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using CodeBase.Ability;
 using CodeBase.Ability.Concrete;
 using CodeBase.Enemy;
+using CodeBase.Loot;
 using CodeBase.Infrastructure.AssetManagement;
 using CodeBase.Infrastructure.Services.Balance;
 using CodeBase.Infrastructure.Services.Buff;
@@ -192,6 +193,7 @@ namespace CodeBase.Infrastructure.Factory
         {
             EnemyStaticData enemyData = _staticData.ForEnemy(enemyId);
             GameObject prefab = await _assets.Load<GameObject>(enemyData.prefabReference);
+            XpOrbSet xpOrbSet = await LoadXpOrbSet();
 
             bool isFirstSpawn = !ObjectPoolManager.HasPool(prefab);
 
@@ -201,10 +203,10 @@ namespace CodeBase.Infrastructure.Factory
                 Quaternion.identity,
                 ObjectPoolManager.PoolType.Enemy
             );
-            
+
             if (isFirstSpawn || !enemy.GetComponent<EnemyDeath>().IsConstructed)
             {
-                SetupEnemy(enemy, enemyData);
+                SetupEnemy(enemy, enemyData, xpOrbSet);
             }
             
             IHealth health = enemy.GetComponent<IHealth>();
@@ -219,7 +221,15 @@ namespace CodeBase.Infrastructure.Factory
             return enemy;
         }
 
-        private void SetupEnemy(GameObject enemy, EnemyStaticData enemyData)
+        private async Task<XpOrbSet> LoadXpOrbSet()
+        {
+            GameObject large = await _assets.Load<GameObject>(AssetsAddress.XpOrbLargePath);
+            GameObject medium = await _assets.Load<GameObject>(AssetsAddress.XpOrbMediumPath);
+            GameObject small = await _assets.Load<GameObject>(AssetsAddress.XpOrbSmallPath);
+            return new XpOrbSet(large.GetComponent<XpOrb>(), medium.GetComponent<XpOrb>(), small.GetComponent<XpOrb>());
+        }
+
+        private void SetupEnemy(GameObject enemy, EnemyStaticData enemyData, XpOrbSet xpOrbSet)
         {
             RegisterProgressWatchers(enemy);
 
@@ -232,7 +242,7 @@ namespace CodeBase.Infrastructure.Factory
             if (enemy.TryGetComponent<EnemyRangerAttack>(out var ranger))
                 ranger.Construct(enemyData.damage, enemyData.cooldown, enemyData.projectileSpeed, enemyData.radius);
 
-            enemy.GetComponent<EnemyDeath>().Construct(_balanceService, _progress, enemyData);
+            enemy.GetComponent<EnemyDeath>().Construct(_balanceService, _progress, enemyData, xpOrbSet, PlayerGameObject.transform);
             enemy.GetComponent<ActorUI>().Construct(enemy.GetComponent<IHealth>());
             enemy.GetComponentInChildren<EnemyGFX>().Construct(enemyData.spriteScale);
 

@@ -9,6 +9,9 @@
         public const string GameOverScreenPath = "GameOverScreen";
         public const string WinScreenPath = "WinScreen";
         public const string PauseScreenPath = "PauseScreen";
+        public const string XpOrbLargePath = "XpOrbLarge";
+        public const string XpOrbMediumPath = "XpOrbMedium";
+        public const string XpOrbSmallPath = "XpOrbSmall";
         public const string UpgradeScreenPath = "UpgradeScreen";
         public const string ShopScreenPath = "ShopScreen";
     }
