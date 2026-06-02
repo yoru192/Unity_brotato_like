@@ -15,8 +15,7 @@ A 2D top-down bullet survivor game built with Unity, inspired by [Brotato](https
 - Survive all 10 waves to win
 
 **3 enemy types:** standard, ranged, kamikaze  
-**3 hero archetypes:** Melee fighter, Archer, Unknown  
-**1 active ability:** Dash (stamina-based)
+**2 hero archetypes:** Melee fighter, Archer
 
 ---
 
@@ -59,7 +58,7 @@ Bootstrap → LoadProgress → LoadoutSelect → LoadLevel → GameLoop → Shop
 
 | | |
 |---|---|
-| **Engine** | Unity 2022 LTS, URP |
+| **Engine** | Unity 6000.3.8f1, URP |
 | **Language** | C# |
 | **Pathfinding** | A* Pathfinding Project |
 | **Procedural** | Feel / MMTilemapGenerator (MoreMountains) |
@@ -91,19 +90,6 @@ Assets/
     ├── HeroEditor/         # Character sprite system
     └── FantasyMonsters/    # Enemy sprites
 ```
-
----
-
-## Getting Started
-
-1. Clone the repository
-2. Open in **Unity 2022.3 LTS** or newer
-3. Install packages via Package Manager if prompted (Addressables, Input System, A* Pathfinding Project)
-4. Open `Assets/Scenes/Main/Bootstrap.unity`
-5. Press Play
-
-> **Note:** The project uses Unity Addressables. If assets fail to load, go to  
-> `Window → Asset Management → Addressables → Groups` and click **Build → New Build → Default Build Script**.
 
 ---
 
