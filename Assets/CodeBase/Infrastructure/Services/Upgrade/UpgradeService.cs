@@ -29,17 +29,25 @@ namespace CodeBase.Infrastructure.Services.Upgrade
         
         
         
-        public List<UpgradeStaticData> GenerateUpgradeOptions(int count = 3)
+        public List<UpgradeStaticData> GenerateUpgradeOptions(int count = 4)
         {
             List<UpgradeStaticData> allUpgrades = _staticData.GetAllUpgrades();
-            
+            List<UpgradeStaticData> remaining = new List<UpgradeStaticData>(allUpgrades);
+
             List<UpgradeStaticData> selected = new List<UpgradeStaticData>();
             for (int i = 0; i < count; i++)
             {
-                UpgradeStaticData upgrade = GetWeightedRandom(allUpgrades);
+                // Prefer distinct options; once the unique pool runs out, fall back to repeats
+                // so we still fill all slots when there are fewer upgrade definitions than count.
+                List<UpgradeStaticData> source = remaining.Count > 0 ? remaining : allUpgrades;
+                if (source.Count == 0)
+                    break;
+
+                UpgradeStaticData upgrade = GetWeightedRandom(source);
                 selected.Add(upgrade);
+                remaining.Remove(upgrade);
             }
-            
+
             return selected;
         }
         

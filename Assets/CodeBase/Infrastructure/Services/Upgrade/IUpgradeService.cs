@@ -6,7 +6,7 @@ namespace CodeBase.Infrastructure.Services.Upgrade
 {
     public interface IUpgradeService : IService
     {
-        List<UpgradeStaticData> GenerateUpgradeOptions(int count = 3);
+        List<UpgradeStaticData> GenerateUpgradeOptions(int count = 4);
         void ApplyUpgrade(UpgradeStaticData upgrade);
         event Action OnUpgradeStamina;
         event Action OnUpgradeWeapon;
