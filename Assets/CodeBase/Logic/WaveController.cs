@@ -33,6 +33,7 @@ namespace CodeBase.Logic
         public int waveBudget;
         
         private int _waveValue;
+        private int _enemiesThisWave;
         private EnemySpawner _spawner;
         private float waveTimer;
         private float spawnTimer;
@@ -87,7 +88,10 @@ namespace CodeBase.Logic
 
             _spawner.CleanupDeadEnemies();
 
-            bool waveCleared = waveTimer <= 0 && enemiesToSpawn.Count == 0 && !_isSpawning && _spawner.GetAliveEnemiesCount() <= 0;
+            bool allEnemiesDefeated = enemiesToSpawn.Count == 0 && !_isSpawning && _spawner.GetAliveEnemiesCount() <= 0;
+            // The wave ends as soon as every enemy is dead. The timer is only a fallback for waves
+            // that spawned no enemies (e.g. the empty warmup wave), so the player never waits idle.
+            bool waveCleared = allEnemiesDefeated && (_enemiesThisWave > 0 || waveTimer <= 0);
             if ((!_isWaveCompleting && waveCleared) || (currentWave == 0 && _initialSpawnTimer <= 0))
                 CompleteWave();
         }
@@ -127,7 +131,7 @@ namespace CodeBase.Logic
             _isWaveCompleting = true;
             currentWave++;
 
-            if (currentWave >= _maxWaves)
+            if (currentWave > _maxWaves)
             {
                 OnRunCompleted?.Invoke();
                 _isWaveCompleting = false;
@@ -166,6 +170,8 @@ namespace CodeBase.Logic
             enemiesToSpawn.Clear();
             foreach (var enemy in generatedEnemies)
                 enemiesToSpawn.Enqueue(enemy);
+
+            _enemiesThisWave = enemiesToSpawn.Count;
         }
     }
 }
