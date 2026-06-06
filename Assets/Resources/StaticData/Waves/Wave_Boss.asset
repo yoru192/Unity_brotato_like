@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9fb975c6dfe746a8a1276b2452c86ab2, type: 3}
+  m_Name: Wave_Boss
+  m_EditorClassIdentifier: Assembly-CSharp::CodeBase.StaticData.WaveControllerStaticData
+  maxWaves: 2
+  waveValueMultiplier: 16
+  maxEnemiesPerWave: 60
+  initialSpawnTimer: 2
+  waveDuration: 60
+  spawnInterval: 1
+  maxAlive: 18
+  enemyConfigs:
+  - enemyTypeId: 1
+    cost: 3
+  - enemyTypeId: 3
+    cost: 2
+  - enemyTypeId: 0
+    cost: 1
+  - enemyTypeId: 2
+    cost: 1

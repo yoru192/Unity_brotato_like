@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9fb975c6dfe746a8a1276b2452c86ab2, type: 3}
+  m_Name: Wave_Combat_Easy
+  m_EditorClassIdentifier: Assembly-CSharp::CodeBase.StaticData.WaveControllerStaticData
+  maxWaves: 3
+  waveValueMultiplier: 6
+  maxEnemiesPerWave: 25
+  initialSpawnTimer: 3
+  waveDuration: 30
+  spawnInterval: 2
+  maxAlive: 6
+  enemyConfigs:
+  - enemyTypeId: 0
+    cost: 1
+  - enemyTypeId: 3
+    cost: 1

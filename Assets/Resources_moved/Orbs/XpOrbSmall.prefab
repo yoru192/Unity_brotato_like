@@ -143,3 +143,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CodeBase.Loot.XpOrb
   attractRadius: 3
   attractSpeed: 8
+  attractAcceleration: 5
+  attractMaxSpeed: 20

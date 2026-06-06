@@ -90,6 +90,11 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c6f58321fa7a3454dab95a6453771d38
+    m_Address: CampfireScreen
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: d1d4b7c44ce59f14389b438a82980fa3
     m_Address: Kamikadze
     m_ReadOnly: 0

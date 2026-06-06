@@ -13,12 +13,12 @@ MonoBehaviour:
   m_Name: Base
   m_EditorClassIdentifier: Assembly-CSharp::CodeBase.StaticData.EnemyStaticData
   enemyTypeId: 0
-  health: 1
+  health: 5
   damage: 1
   moveSpeed: 2.5
   cooldown: 2
   radius: 2.2
-  xpReward: 50
+  xpReward: 6
   balanceReward: 3
   prefabReference:
     m_AssetGUID: 01bba8ac272838f4da2622aedb7f8237
