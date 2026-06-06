@@ -16,7 +16,9 @@ namespace CodeBase.Player
 
         public float Current
         {
-            get => _persistentProgressService.Progress.playerState.currentHealth == 0 ? _playerData.maxHealth : _persistentProgressService.Progress.playerState.currentHealth;
+            // Raw stored value: 0 means dead, not "uninitialized". Initial full health is set up
+            // in LoadProgress for fresh progress, so 0 here never silently reads back as max.
+            get => _persistentProgressService.Progress.playerState.currentHealth;
             set
             {
                 if(!Mathf.Approximately(_persistentProgressService.Progress.playerState.currentHealth, value))
@@ -39,8 +41,16 @@ namespace CodeBase.Player
 
         public void LoadProgress(PlayerProgress progress)
         {
-            Current = progress.playerState.currentHealth;
-            Max = progress.playerState.maxHealth == 0 ? _playerData.maxHealth : progress.playerState.maxHealth;
+            var state = progress.playerState;
+
+            // Fresh progress (max never set) starts at full health. Otherwise keep the stored
+            // values so a player who hit 0 stays dead instead of being revived to full.
+            if (state.maxHealth <= 0f)
+            {
+                state.maxHealth = _playerData.maxHealth;
+                state.currentHealth = _playerData.maxHealth;
+            }
+
             HealthChanged?.Invoke();
         }
 

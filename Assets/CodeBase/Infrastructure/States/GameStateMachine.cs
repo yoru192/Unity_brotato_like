@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using CodeBase.Infrastructure.Factory;
 using CodeBase.Infrastructure.Services;
 using CodeBase.Infrastructure.Services.Balance;
+using CodeBase.Infrastructure.Services.Map;
 using CodeBase.Infrastructure.Services.PersistentProgress;
 using CodeBase.Infrastructure.Services.ProgressService;
 using CodeBase.Infrastructure.Services.SaveLoad;
+using CodeBase.Infrastructure.Services.SelectedLevel;
 using CodeBase.Infrastructure.Services.ShopService;
 using CodeBase.Infrastructure.Services.Upgrade;
 using CodeBase.Logic;
@@ -26,6 +28,9 @@ namespace CodeBase.Infrastructure.States
             {
                 [typeof(BootstrapState)] = new BootstrapState(this, sceneLoader, services, coroutineRunner),
                 [typeof(LoadoutSelectState)] = new LoadoutSelectState(sceneLoader),
+                [typeof(LevelMapState)] = new LevelMapState(this,
+                    sceneLoader,
+                    services.Single<IMapService>()),
                 [typeof(LoadLevelState)] = new LoadLevelState(this,
                     sceneLoader,
                     curtain,
@@ -36,9 +41,10 @@ namespace CodeBase.Infrastructure.States
                     this, 
                     services.Single<IPersistentProgressService>(), 
                     services.Single<ISaveLoadService>()),
-                [typeof(ShopState)] = new ShopState(services.Single<IShopService>(), services.Single<IGameFactory>(),this, services.Single<IBalanceService>()),
-                [typeof(UpgradeState)] = new UpgradeState(this,services.Single<IGameFactory>(),services.Single<IUpgradeService>()),
-                [typeof(GameLoopState)] = new GameLoopState(this, services.Single<IProgressService>(), services.Single<IShopService>(), services.Single<IGameFactory>()),
+                [typeof(ShopState)] = new ShopState(services.Single<IShopService>(), services.Single<IGameFactory>(),this, services.Single<IBalanceService>(), services.Single<IMapService>()),
+                [typeof(UpgradeState)] = new UpgradeState(this,services.Single<IGameFactory>(),services.Single<IUpgradeService>(),services.Single<IBalanceService>()),
+                [typeof(CampfireState)] = new CampfireState(this, services.Single<IGameFactory>(), services.Single<IMapService>(), services.Single<IUpgradeService>(), services.Single<IPersistentProgressService>()),
+                [typeof(GameLoopState)] = new GameLoopState(this, services.Single<IProgressService>(), services.Single<IGameFactory>(), services.Single<IMapService>(), services.Single<ISelectedLevelService>(), services.Single<IPersistentProgressService>()),
                 [typeof(GameOverState)] = new GameOverState(this, services.Single<IGameFactory>(), services.Single<IShopService>()),
                 [typeof(WinState)] = new WinState(this, services.Single<IGameFactory>(), services.Single<IShopService>()),
                 [typeof(PauseState)] = new PauseState(this, services.Single<IGameFactory>(), services.Single<IShopService>()),

@@ -5,9 +5,11 @@ using CodeBase.Infrastructure.Services;
 using CodeBase.Infrastructure.Services.Balance;
 using CodeBase.Infrastructure.Services.Buff;
 using CodeBase.Infrastructure.Services.Inputs;
+using CodeBase.Infrastructure.Services.Map;
 using CodeBase.Infrastructure.Services.PersistentProgress;
 using CodeBase.Infrastructure.Services.ProgressService;
 using CodeBase.Infrastructure.Services.SaveLoad;
+using CodeBase.Infrastructure.Services.SelectedLevel;
 using CodeBase.Infrastructure.Services.ShopService;
 using CodeBase.Infrastructure.Services.Upgrade;
 using CodeBase.Player;
@@ -73,6 +75,11 @@ namespace CodeBase.Infrastructure.States
                 _coroutineRunner,
                 _services.Single<IBuffService>(),
                 _services.Single<IPersistentProgressService>()));
+            _services.RegisterSingle<ISelectedLevelService>(new SelectedLevelService());
+            _services.RegisterSingle<IMapService>(new MapService(
+                _services.Single<IStaticDataService>(),
+                _services.Single<IPersistentProgressService>(),
+                _services.Single<ISelectedLevelService>()));
             _services.RegisterSingle<IGameFactory>(new GameFactory(
                 _services.Single<IAssets>(),
                 _services.Single<IStaticDataService>(),
@@ -81,7 +88,8 @@ namespace CodeBase.Infrastructure.States
                 _services.Single<IPersistentProgressService>(),
                 _services.Single<IUpgradeService>(),
                 _services.Single<IShopService>(),
-                _services.Single<IBuffService>()));
+                _services.Single<IBuffService>(),
+                _services.Single<ISelectedLevelService>()));
             _services.RegisterSingle<ISaveLoadService>( new SaveLoadService(
                 _services.Single<IPersistentProgressService>(),
                 _services.Single<IGameFactory>()));

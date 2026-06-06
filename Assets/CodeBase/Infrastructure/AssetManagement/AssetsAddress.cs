@@ -14,5 +14,6 @@
         public const string XpOrbSmallPath = "XpOrbSmall";
         public const string UpgradeScreenPath = "UpgradeScreen";
         public const string ShopScreenPath = "ShopScreen";
+        public const string CampfireScreenPath = "CampfireScreen";
     }
 }

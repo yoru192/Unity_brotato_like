@@ -10,11 +10,13 @@ namespace CodeBase.Data
         public WorldData worldData;
         public State playerState;
         public Dictionary<StatModifierType, float> AppliedUpgrades;
+        public MapProgress mapProgress;
         public PlayerProgress(string initialLevel)
         {
             worldData = new WorldData(initialLevel);
             playerState = new State();
             AppliedUpgrades = new Dictionary<StatModifierType, float>();
+            mapProgress = new MapProgress();
         }
 
     }

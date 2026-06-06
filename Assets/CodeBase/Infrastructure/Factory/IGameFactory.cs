@@ -28,6 +28,7 @@ namespace CodeBase.Infrastructure.Factory
         Task<GameObject> CreatePauseScreen();
         Task<GameObject> CreateUpgradeScreen();
         Task<GameObject> CreateShopScreen();
+        Task<GameObject> CreateCampfireScreen();
         Task EquipWeapon(WeaponTypeId weaponId);
     }
 }

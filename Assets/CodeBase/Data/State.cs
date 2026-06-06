@@ -25,6 +25,10 @@ namespace CodeBase.Data
         public void ResetHealth() =>
             currentHealth = maxHealth;
 
+        /// <summary>Restores health by <paramref name="amount"/>, clamped to maxHealth.</summary>
+        public void Heal(float amount) =>
+            currentHealth = Mathf.Min(currentHealth + amount, maxHealth);
+
         public void ResetXp() => 
             currentXp = 0;
         public void LevelUp()

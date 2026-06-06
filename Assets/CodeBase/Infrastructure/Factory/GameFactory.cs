@@ -9,6 +9,7 @@ using CodeBase.Infrastructure.Services.Balance;
 using CodeBase.Infrastructure.Services.Buff;
 using CodeBase.Infrastructure.Services.PersistentProgress;
 using CodeBase.Infrastructure.Services.ProgressService;
+using CodeBase.Infrastructure.Services.SelectedLevel;
 using CodeBase.Infrastructure.Services.ShopService;
 using CodeBase.Infrastructure.Services.Upgrade;
 using CodeBase.Logic;
@@ -44,6 +45,7 @@ namespace CodeBase.Infrastructure.Factory
         private readonly IBalanceService _balanceService;
         private readonly IShopService _shopService;
         private readonly IBuffService _buffService;
+        private readonly ISelectedLevelService _selectedLevel;
 
         public GameFactory(IAssets assets,
             IStaticDataService staticData,
@@ -52,7 +54,8 @@ namespace CodeBase.Infrastructure.Factory
             IPersistentProgressService progressService,
             IUpgradeService upgradeService,
             IShopService shopService,
-            IBuffService buffService)
+            IBuffService buffService,
+            ISelectedLevelService selectedLevel)
         {
             _assets = assets;
             _staticData = staticData;
@@ -62,6 +65,7 @@ namespace CodeBase.Infrastructure.Factory
             _upgradeService = upgradeService;
             _shopService = shopService;
             _buffService = buffService;
+            _selectedLevel = selectedLevel;
         }
 
         public async Task WarmUp()
@@ -80,7 +84,13 @@ namespace CodeBase.Infrastructure.Factory
             PlayerGameObject.GetComponent<PlayerHealth>().Construct(heroData, _persistentProgress);
 
             WeaponHolder weaponHolder = PlayerGameObject.GetComponentInChildren<WeaponHolder>();
-            foreach (WeaponTypeId weaponId in heroData.startWeapons)
+            // First run uses the hero's starter weapons; later runs re-equip everything owned
+            // (starters + anything bought at a shop node), which CreateAndEquipWeapon persists.
+            List<WeaponTypeId> ownedWeapons = _persistentProgress.Progress.playerState.OwnedWeapons;
+            List<WeaponTypeId> weaponsToEquip = ownedWeapons.Count > 0
+                ? new List<WeaponTypeId>(ownedWeapons)
+                : new List<WeaponTypeId>(heroData.startWeapons);
+            foreach (WeaponTypeId weaponId in weaponsToEquip)
                 await CreateAndEquipWeapon(weaponHolder, weaponId);
 
             AbilityController abilityController = PlayerGameObject.AddComponent<AbilityController>();
@@ -174,6 +184,11 @@ namespace CodeBase.Infrastructure.Factory
             return await InstantiateRegistered(AssetsAddress.ShopScreenPath);
         }
 
+        public async Task<GameObject> CreateCampfireScreen()
+        {
+            return await InstantiateRegistered(AssetsAddress.CampfireScreenPath);
+        }
+
         public async Task<GameObject> CreateGameOverScreen()
         {
             return await InstantiateRegistered(AssetsAddress.GameOverScreenPath);
@@ -253,7 +268,10 @@ namespace CodeBase.Infrastructure.Factory
         {
             GameObject spawner = await InstantiateRegistered(AssetsAddress.SpawnerPath, Vector3.zero);
             WaveController = spawner.GetComponent<WaveController>();
-            WaveController.Construct(_staticData.GetWaveController());
+            // Use the wave config of the node picked on the level map; fall back to the global
+            // config when launched outside the map flow (e.g. direct play in the editor).
+            WaveControllerStaticData waveConfig = _selectedLevel.SelectedWaveConfig ?? _staticData.GetWaveController();
+            WaveController.Construct(waveConfig);
 
             EnemySpawner enemySpawner = spawner.GetComponent<EnemySpawner>();
             if (enemySpawner != null)

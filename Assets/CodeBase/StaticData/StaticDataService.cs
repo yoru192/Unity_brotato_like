@@ -2,6 +2,7 @@
 using System.Linq;
 using CodeBase.StaticData.Enemy;
 using CodeBase.StaticData.Hero;
+using CodeBase.StaticData.Map;
 using CodeBase.StaticData.Weapon;
 using UnityEngine;
 
@@ -17,6 +18,8 @@ namespace CodeBase.StaticData
         private List<UpgradeStaticData> _upgrades;
         private List<ShopItemStaticData> _shopItems;
         private WaveControllerStaticData _waveController;
+        private MapStaticData _mapSettings;
+        private MapLevelLibrary _mapLevelLibrary;
 
 
         public void Load()
@@ -35,7 +38,9 @@ namespace CodeBase.StaticData
                 .ToList();
             _shopItems = Resources.LoadAll<ShopItemStaticData>("StaticData/ShopItems")
                 .ToList();
-            _waveController = Resources.Load<WaveControllerStaticData>("StaticData/WaveController");
+            _waveController = Resources.Load<WaveControllerStaticData>("StaticData/Waves/WaveController");
+            _mapSettings = Resources.Load<MapStaticData>("StaticData/Map/MapStaticData");
+            _mapLevelLibrary = Resources.Load<MapLevelLibrary>("StaticData/Map/MapLevelLibrary");
         }
         
         public LevelStaticData ForLevel(string sceneKey) =>
@@ -63,5 +68,8 @@ namespace CodeBase.StaticData
         public List<ShopItemStaticData> GetAllShopItems() => _shopItems;
         
         public WaveControllerStaticData GetWaveController() => _waveController;
+
+        public MapStaticData GetMapSettings() => _mapSettings;
+        public MapLevelLibrary GetMapLevelLibrary() => _mapLevelLibrary;
     }
 }
