@@ -70,10 +70,14 @@ namespace CodeBase.Infrastructure.Services.ShopService
                                || !ownedWeapons.Contains(item.effect.weaponTypeId))
                 .ToList();
 
+            // Distinct items only — the shop now lets the player buy every offered item, so a
+            // duplicate would let the same effect be purchased (and applied) twice.
             List<ShopItemStaticData> selected = new List<ShopItemStaticData>();
             for (int i = 0; i < count && allShopItems.Count > 0; i++)
             {
-                selected.Add(GetWeightedRandom(allShopItems));
+                ShopItemStaticData item = GetWeightedRandom(allShopItems);
+                selected.Add(item);
+                allShopItems.Remove(item);
             }
 
             return selected;

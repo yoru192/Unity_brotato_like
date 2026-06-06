@@ -15,15 +15,17 @@ namespace CodeBase.UI.Elements
         [SerializeField] private TextMeshProUGUI price;
         
         private ShopItemStaticData _itemData;
-        private Action<ShopItemStaticData> _onItemClicked;
+        private Action<ShopItem> _onItemClicked;
+        private bool _sold;
 
-        
+        public ShopItemStaticData Data => _itemData;
+
         private void Awake()
         {
             button.onClick.AddListener(OnClick);
         }
 
-        public void Initialize(ShopItemStaticData itemData, Action<ShopItemStaticData> onItemClicked, int currentBalance)
+        public void Initialize(ShopItemStaticData itemData, Action<ShopItem> onItemClicked, int currentBalance)
         {
             _itemData = itemData;
             _onItemClicked = onItemClicked;
@@ -48,12 +50,31 @@ namespace CodeBase.UI.Elements
         
         public void UpdateAffordability(int currentBalance)
         {
-            if (price == null) return;
-            price.color = currentBalance >= _itemData.itemPrice ? Color.white : Color.red;
+            if (_sold) return;
+
+            bool affordable = currentBalance >= _itemData.itemPrice;
+            if (price != null)
+                price.color = affordable ? Color.white : Color.red;
+            if (button != null)
+                button.interactable = affordable;
         }
+
+        /// <summary>Marks the item as bought: disables the button and shows it as sold.</summary>
+        public void MarkSold()
+        {
+            _sold = true;
+            if (button != null)
+                button.interactable = false;
+            if (price != null)
+            {
+                price.text = "SOLD";
+                price.color = Color.gray;
+            }
+        }
+
         private void OnClick()
         {
-            _onItemClicked?.Invoke(_itemData);
+            _onItemClicked?.Invoke(this);
         }
     }
 }
