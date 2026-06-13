@@ -6,12 +6,19 @@ namespace CodeBase.Infrastructure.Map
 {
     /// <summary>
     /// Procedural branching-map generator in the Slay the Spire style. Pure C# (System.Random),
-    /// fully deterministic for a given seed. Walks several start->boss paths through a grid;
-    /// cells that get visited become real nodes and the steps between them become edges.
+    /// fully deterministic for a given seed. Walks several start->pre-boss paths through a grid,
+    /// then converges them into one final boss node.
     /// </summary>
     public class MapGenerator
     {
         private readonly MapGenerationConfig _config;
+
+        private int Rows => Math.Max(3, _config.Rows);
+        private int Columns => Math.Max(3, _config.Columns);
+        private int PathCount => Math.Max(1, _config.PathCount);
+        private int BossColumn => Columns / 2;
+        private int BossRow => Rows - 1;
+        private int PreBossRow => Rows - 2;
 
         public MapGenerator(MapGenerationConfig config)
         {
@@ -23,32 +30,35 @@ namespace CodeBase.Infrastructure.Map
             Random random = new Random(seed);
 
             // grid[row][col] is null until a path visits that cell.
-            MapNode[][] grid = new MapNode[_config.Rows][];
-            for (int row = 0; row < _config.Rows; row++)
-                grid[row] = new MapNode[_config.Columns];
+            MapNode[][] grid = new MapNode[Rows][];
+            for (int row = 0; row < Rows; row++)
+                grid[row] = new MapNode[Columns];
 
             // Edges already drawn out of each row, used to forbid crossings.
             List<List<(int from, int to)>> edgesPerRow = new List<List<(int, int)>>();
-            for (int row = 0; row < _config.Rows; row++)
+            for (int row = 0; row < Rows; row++)
                 edgesPerRow.Add(new List<(int, int)>());
 
-            for (int path = 0; path < _config.PathCount; path++)
+            for (int path = 0; path < PathCount; path++)
                 BuildPath(grid, edgesPerRow, random);
+
+            ConnectPreBossNodesToSingleBoss(grid, edgesPerRow);
 
             List<List<MapNode>> nodesByRow = CollectNodes(grid);
             AssignIds(nodesByRow);
             AssignTypes(nodesByRow, random);
             MarkEntrancesAvailable(nodesByRow);
 
-            return new GeneratedMap(seed, _config.Rows, _config.Columns, nodesByRow);
+            return new GeneratedMap(seed, Rows, Columns, nodesByRow);
         }
 
         private void BuildPath(MapNode[][] grid, List<List<(int from, int to)>> edgesPerRow, Random random)
         {
-            int column = random.Next(_config.Columns);
+            int column = random.Next(Columns);
             MapNode current = GetOrCreate(grid, 0, column);
 
-            for (int row = 0; row < _config.Rows - 1; row++)
+            // Walk only to the row before the boss. The final row is one shared boss node.
+            for (int row = 0; row < PreBossRow; row++)
             {
                 int nextColumn = ChooseNextColumn(column, edgesPerRow[row], random);
                 MapNode next = GetOrCreate(grid, row + 1, nextColumn);
@@ -61,13 +71,28 @@ namespace CodeBase.Infrastructure.Map
             }
         }
 
+        private void ConnectPreBossNodesToSingleBoss(MapNode[][] grid, List<List<(int from, int to)>> edgesPerRow)
+        {
+            MapNode boss = GetOrCreate(grid, BossRow, BossColumn);
+
+            for (int column = 0; column < Columns; column++)
+            {
+                MapNode preBossNode = grid[PreBossRow][column];
+                if (preBossNode == null)
+                    continue;
+
+                Connect(preBossNode, boss);
+                edgesPerRow[PreBossRow].Add((column, BossColumn));
+            }
+        }
+
         private int ChooseNextColumn(int column, List<(int from, int to)> rowEdges, Random random)
         {
             List<int> candidates = new List<int>();
             foreach (int delta in new[] { -1, 0, 1 })
             {
                 int candidate = column + delta;
-                if (candidate >= 0 && candidate < _config.Columns)
+                if (candidate >= 0 && candidate < Columns)
                     candidates.Add(candidate);
             }
 
@@ -79,7 +104,7 @@ namespace CodeBase.Infrastructure.Map
                     return candidate;
             }
 
-            // Every diagonal would cross — going straight up never crosses another edge.
+            // Every diagonal would cross, while going straight up never crosses another edge.
             return column;
         }
 
@@ -134,15 +159,15 @@ namespace CodeBase.Infrastructure.Map
 
         private void AssignTypes(List<List<MapNode>> nodesByRow, Random random)
         {
-            int lastRow = nodesByRow.Count - 1;
-
             for (int row = 0; row < nodesByRow.Count; row++)
             {
                 foreach (MapNode node in nodesByRow[row])
                 {
-                    if (row == lastRow)
+                    if (row == BossRow)
                         node.Type = NodeType.Boss;
-                    else if (row == 0)
+                    else if (_config.ForceCampfireBeforeBoss && row == PreBossRow)
+                        node.Type = NodeType.Campfire;
+                    else if (row < _config.GuaranteedCombatRows)
                         node.Type = NodeType.Combat;
                     else
                         node.Type = RollMiddleType(node, row, random);
@@ -153,17 +178,31 @@ namespace CodeBase.Infrastructure.Map
         private NodeType RollMiddleType(MapNode node, int row, Random random)
         {
             bool parentIsShop = node.Incoming.Any(parent => parent.Type == NodeType.Shop);
+            bool parentIsCampfire = node.Incoming.Any(parent => parent.Type == NodeType.Campfire);
 
             double roll = random.NextDouble();
+            double threshold = 0f;
 
-            if (!parentIsShop && roll < _config.ShopChance)
-                return NodeType.Shop;
+            if (!parentIsShop)
+            {
+                threshold += _config.ShopChance;
+                if (roll < threshold)
+                    return NodeType.Shop;
+            }
 
-            if (row >= _config.MinEliteRow && roll < _config.ShopChance + _config.EliteChance)
-                return NodeType.Elite;
+            if (row >= _config.MinEliteRow)
+            {
+                threshold += _config.EliteChance;
+                if (roll < threshold)
+                    return NodeType.Elite;
+            }
 
-            if (roll < _config.ShopChance + _config.EliteChance + _config.CampfireChance)
-                return NodeType.Campfire;
+            if (!parentIsCampfire)
+            {
+                threshold += _config.CampfireChance;
+                if (roll < threshold)
+                    return NodeType.Campfire;
+            }
 
             return NodeType.Combat;
         }

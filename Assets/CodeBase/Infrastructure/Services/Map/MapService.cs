@@ -13,6 +13,8 @@ namespace CodeBase.Infrastructure.Services.Map
 {
     public class MapService : IMapService
     {
+        private const int CurrentMapVersion = 2;
+
         private readonly IStaticDataService _staticData;
         private readonly IPersistentProgressService _persistentProgress;
         private readonly ISelectedLevelService _selectedLevel;
@@ -36,7 +38,7 @@ namespace CodeBase.Infrastructure.Services.Map
 
         public void EnsureMap()
         {
-            if (!Progress.hasMap)
+            if (!Progress.hasMap || Progress.version != CurrentMapVersion)
             {
                 RegenerateMap();
                 return;
@@ -52,6 +54,7 @@ namespace CodeBase.Infrastructure.Services.Map
         {
             int seed = Environment.TickCount;
             Progress.hasMap = true;
+            Progress.version = CurrentMapVersion;
             Progress.seed = seed;
             Progress.completedNodeIds.Clear();
             Progress.currentNodeId = -1;

@@ -213,11 +213,11 @@ MonoBehaviour:
   button: {fileID: 8143020679757804398}
   icon: {fileID: 4530418684992989996}
   availableHighlight: {fileID: 7420827468706951931}
-  combatSprite: {fileID: 21300000, guid: 2f1c6d5b0a98a410a9ec9dc4792fc096, type: 3}
-  eliteSprite: {fileID: 21300000, guid: 88fd51c1af9dd4127a0795114270cf32, type: 3}
-  shopSprite: {fileID: 21300000, guid: 1f6208b760a9d48c08283dbea3af527a, type: 3}
-  bossSprite: {fileID: 21300000, guid: 31294a08297e34c6384d0a6e4b0669ae, type: 3}
-  campfireSprite: {fileID: 21300000, guid: f20a6b0257072432785d100e3d0e5fb4, type: 3}
+  combatSprite: {fileID: 21300000, guid: aae89cc86905142a4a2b8f6ed0400eaa, type: 3}
+  eliteSprite: {fileID: 21300000, guid: 9982eb3390de44b3f8cff2a46161a5f3, type: 3}
+  shopSprite: {fileID: 21300000, guid: 723f73dd5ccbc4b47a3a413c84bed03d, type: 3}
+  bossSprite: {fileID: 21300000, guid: f274178d747514da1a30a88d62739ea2, type: 3}
+  campfireSprite: {fileID: 21300000, guid: e8ca0d1bbb09545fdbb4aa867f1390ae, type: 3}
   lockedColor: {r: 1, g: 1, b: 1, a: 0.35}
   availableColor: {r: 1, g: 1, b: 1, a: 1}
   completedColor: {r: 0.55, g: 0.55, b: 0.55, a: 1}

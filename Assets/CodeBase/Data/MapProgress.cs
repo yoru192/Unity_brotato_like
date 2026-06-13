@@ -11,6 +11,7 @@ namespace CodeBase.Data
     public class MapProgress
     {
         public bool hasMap;
+        public int version;
         public int seed;
 
         /// <summary>Node ids completed so far, in completion order. The last one defines the frontier.</summary>

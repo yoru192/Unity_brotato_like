@@ -12,9 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a077a7dc3508828489a0462a36e6f101, type: 3}
   m_Name: MapStaticData
   m_EditorClassIdentifier: Assembly-CSharp::CodeBase.StaticData.Map.MapStaticData
-  rows: 8
+  rows: 10
   columns: 7
-  pathCount: 6
+  pathCount: 8
   eliteChance: 0.16
   shopChance: 0.12
+  campfireChance: 0.1
   minEliteRow: 3
+  guaranteedCombatRows: 2
+  forceCampfireBeforeBoss: 1

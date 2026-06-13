@@ -25,15 +25,17 @@ namespace CodeBase.UI.Map
         [SerializeField] private TextMeshProUGUI coinsLabel;
 
         [Header("Layout")]
-        [SerializeField] private Vector2 nodeSize = new Vector2(80f, 80f);
-        [SerializeField] private float columnSpacing = 140f;
-        [SerializeField] private float rowSpacing = 160f;
+        [SerializeField] private Vector2 nodeSize = new Vector2(104f, 104f);
+        [SerializeField] private float columnSpacing = 156f;
+        [SerializeField] private float rowSpacing = 168f;
         [SerializeField] private float verticalPadding = 120f;
-        [SerializeField] private float edgeThickness = 6f;
+        [SerializeField] private float edgeThickness = 7f;
+        [SerializeField] private float edgeNodePadding = 42f;
 
         [Header("Edge Colors")]
-        [SerializeField] private Color edgeColor = new Color(1f, 1f, 1f, 0.35f);
-        [SerializeField] private Color openEdgeColor = new Color(1f, 0.9f, 0.4f, 1f);
+        [SerializeField] private Color edgeColor = new Color(0.44f, 0.5f, 0.64f, 0.45f);
+        [SerializeField] private Color openEdgeColor = new Color(1f, 0.75f, 0.22f, 1f);
+        [SerializeField] private Color completedEdgeColor = new Color(0.35f, 0.9f, 0.58f, 0.9f);
 
         private IMapService _mapService;
         private IGameStateMachine _stateMachine;
@@ -111,9 +113,10 @@ namespace CodeBase.UI.Map
             foreach (MapNode next in node.Outgoing)
             {
                 bool open = node.State == NodeState.Completed && next.State == NodeState.Available;
+                bool completed = node.State == NodeState.Completed && next.State == NodeState.Completed;
                 DrawEdge(views[node].RectTransform.anchoredPosition,
                     views[next].RectTransform.anchoredPosition,
-                    open ? openEdgeColor : edgeColor);
+                    completed ? completedEdgeColor : open ? openEdgeColor : edgeColor);
             }
         }
 
@@ -123,14 +126,22 @@ namespace CodeBase.UI.Map
             SetupChildRect(edge);
 
             Vector2 delta = to - from;
-            float length = delta.magnitude;
+            float fullLength = delta.magnitude;
+            Vector2 direction = fullLength > 0f ? delta / fullLength : Vector2.right;
+            Vector2 paddedFrom = from + direction * edgeNodePadding;
+            Vector2 paddedTo = to - direction * edgeNodePadding;
+            Vector2 paddedDelta = paddedTo - paddedFrom;
+            float length = Mathf.Max(0f, paddedDelta.magnitude);
 
             edge.sizeDelta = new Vector2(length, edgeThickness);
-            edge.anchoredPosition = from + delta * 0.5f;
-            edge.localRotation = Quaternion.Euler(0f, 0f, Mathf.Atan2(delta.y, delta.x) * Mathf.Rad2Deg);
+            edge.anchoredPosition = paddedFrom + paddedDelta * 0.5f;
+            edge.localRotation = Quaternion.Euler(0f, 0f, Mathf.Atan2(paddedDelta.y, paddedDelta.x) * Mathf.Rad2Deg);
 
             if (edge.TryGetComponent(out Image image))
+            {
                 image.color = color;
+                image.raycastTarget = false;
+            }
 
             edge.SetAsFirstSibling(); // keep edges behind the node views
         }

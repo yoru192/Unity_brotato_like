@@ -23,5 +23,11 @@ namespace CodeBase.Infrastructure.Map
 
         /// <summary>Chance (0..1) a middle-row node becomes a Campfire (rest / random upgrade).</summary>
         public float CampfireChance = 0.10f;
+
+        /// <summary>Rows from the bottom that are always regular combat nodes.</summary>
+        public int GuaranteedCombatRows = 2;
+
+        /// <summary>When true, the row before the single boss is always campfires/rest sites.</summary>
+        public bool ForceCampfireBeforeBoss = true;
     }
 }

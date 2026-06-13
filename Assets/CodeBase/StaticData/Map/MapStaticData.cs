@@ -23,6 +23,10 @@ namespace CodeBase.StaticData.Map
         [Range(0f, 1f)] public float campfireChance = 0.10f;
         [Min(0)] public int minEliteRow = 3;
 
+        [Header("Row Rules")]
+        [Min(0)] public int guaranteedCombatRows = 2;
+        public bool forceCampfireBeforeBoss = true;
+
         public MapGenerationConfig ToGenerationConfig() => new MapGenerationConfig
         {
             Rows = rows,
@@ -32,6 +36,8 @@ namespace CodeBase.StaticData.Map
             ShopChance = shopChance,
             CampfireChance = campfireChance,
             MinEliteRow = minEliteRow,
+            GuaranteedCombatRows = guaranteedCombatRows,
+            ForceCampfireBeforeBoss = forceCampfireBeforeBoss,
         };
     }
 }
