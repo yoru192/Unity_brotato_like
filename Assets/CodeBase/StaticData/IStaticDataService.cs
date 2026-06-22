@@ -21,5 +21,6 @@ namespace CodeBase.StaticData
         HeroStaticData ForHero(HeroTypeId heroId);
         MapStaticData GetMapSettings();
         MapLevelLibrary GetMapLevelLibrary();
+        AudioStaticData GetAudio();
     }
 }

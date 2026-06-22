@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using CodeBase.Infrastructure.Factory;
 using CodeBase.Infrastructure.Services;
+using CodeBase.Infrastructure.Services.Audio;
 using CodeBase.Infrastructure.Services.Balance;
 using CodeBase.Infrastructure.Services.Map;
 using CodeBase.Infrastructure.Services.PersistentProgress;
@@ -43,7 +44,7 @@ namespace CodeBase.Infrastructure.States
                     services.Single<ISaveLoadService>()),
                 [typeof(ShopState)] = new ShopState(services.Single<IShopService>(), services.Single<IGameFactory>(),this, services.Single<IBalanceService>(), services.Single<IMapService>()),
                 [typeof(UpgradeState)] = new UpgradeState(this,services.Single<IGameFactory>(),services.Single<IUpgradeService>(),services.Single<IBalanceService>()),
-                [typeof(CampfireState)] = new CampfireState(this, services.Single<IGameFactory>(), services.Single<IMapService>(), services.Single<IUpgradeService>(), services.Single<IPersistentProgressService>()),
+                [typeof(CampfireState)] = new CampfireState(this, services.Single<IGameFactory>(), services.Single<IMapService>(), services.Single<IUpgradeService>(), services.Single<IPersistentProgressService>(), services.Single<IAudioService>()),
                 [typeof(GameLoopState)] = new GameLoopState(this, services.Single<IProgressService>(), services.Single<IGameFactory>(), services.Single<IMapService>(), services.Single<ISelectedLevelService>(), services.Single<IPersistentProgressService>()),
                 [typeof(GameOverState)] = new GameOverState(this, services.Single<IGameFactory>(), services.Single<IShopService>()),
                 [typeof(WinState)] = new WinState(this, services.Single<IGameFactory>(), services.Single<IShopService>()),

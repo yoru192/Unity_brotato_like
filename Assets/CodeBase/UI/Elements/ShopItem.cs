@@ -1,4 +1,6 @@
 ﻿using System;
+using CodeBase.Infrastructure.Services;
+using CodeBase.Infrastructure.Services.Audio;
 using CodeBase.StaticData;
 using TMPro;
 using UnityEngine;
@@ -17,11 +19,13 @@ namespace CodeBase.UI.Elements
         private ShopItemStaticData _itemData;
         private Action<ShopItem> _onItemClicked;
         private bool _sold;
+        private IAudioService _audioService;
 
         public ShopItemStaticData Data => _itemData;
 
         private void Awake()
         {
+            _audioService = AllServices.Container.Single<IAudioService>();
             button.onClick.AddListener(OnClick);
         }
 
@@ -74,6 +78,7 @@ namespace CodeBase.UI.Elements
 
         private void OnClick()
         {
+            _audioService.PlaySfx(AudioClipId.ShopItemPick);
             _onItemClicked?.Invoke(this);
         }
     }

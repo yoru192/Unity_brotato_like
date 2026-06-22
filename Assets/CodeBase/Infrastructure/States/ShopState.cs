@@ -7,6 +7,7 @@ using CodeBase.Infrastructure.Services.Map;
 using CodeBase.Infrastructure.Services.ShopService;
 using CodeBase.StaticData;
 using CodeBase.UI;
+using CodeBase.UI.Screens;
 using UnityEngine;
 using Object = UnityEngine.Object;
 

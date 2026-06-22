@@ -2,11 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using CodeBase.Infrastructure.Factory;
+using CodeBase.Infrastructure.Services.Audio;
 using CodeBase.Infrastructure.Services.Map;
 using CodeBase.Infrastructure.Services.PersistentProgress;
 using CodeBase.Infrastructure.Services.Upgrade;
 using CodeBase.StaticData;
 using CodeBase.UI;
+using CodeBase.UI.Screens;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -25,6 +27,7 @@ namespace CodeBase.Infrastructure.States
         private readonly IMapService _mapService;
         private readonly IUpgradeService _upgradeService;
         private readonly IPersistentProgressService _persistentProgress;
+        private readonly IAudioService _audioService;
 
         private GameObject _campfireUI;
 
@@ -32,24 +35,28 @@ namespace CodeBase.Infrastructure.States
             IGameFactory gameFactory,
             IMapService mapService,
             IUpgradeService upgradeService,
-            IPersistentProgressService persistentProgress)
+            IPersistentProgressService persistentProgress,
+            IAudioService audioService)
         {
             _stateMachine = stateMachine;
             _gameFactory = gameFactory;
             _mapService = mapService;
             _upgradeService = upgradeService;
             _persistentProgress = persistentProgress;
+            _audioService = audioService;
         }
 
         public void Enter()
         {
             Time.timeScale = 0f;
+            _audioService.PlayLoop(AudioClipId.Campfire);
             _ = ShowCampfire();
         }
 
         public void Exit()
         {
             Time.timeScale = 1f;
+            _audioService.StopLoop(AudioClipId.Campfire);
             if (_campfireUI != null)
                 Object.Destroy(_campfireUI);
         }

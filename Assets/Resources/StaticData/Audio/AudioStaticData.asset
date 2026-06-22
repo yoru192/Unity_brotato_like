@@ -1,0 +1,47 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 20eb6397fefd43e99d1a369056c5517c, type: 3}
+  m_Name: AudioStaticData
+  m_EditorClassIdentifier: Assembly-CSharp::CodeBase.StaticData.AudioStaticData
+  entries:
+  - id: 2
+    clip: {fileID: 8300000, guid: 0c9b923048579534cb2d3cd2f1c829c8, type: 3}
+    volume: 1
+    pitchVariance: 0.1
+  - id: 3
+    clip: {fileID: 8300000, guid: f323ee238cce11d41bde6a18a821dc5d, type: 3}
+    volume: 1
+    pitchVariance: 0.1
+  - id: 0
+    clip: {fileID: 8300000, guid: 0745a08745dc5f64cb49e4b682a70707, type: 3}
+    volume: 1
+    pitchVariance: 0.1
+  - id: 1
+    clip: {fileID: 8300000, guid: 33ddda99f69e68f4282034c2b1614c56, type: 3}
+    volume: 1
+    pitchVariance: 0.1
+  - id: 7
+    clip: {fileID: 8300000, guid: bc00d1758d9c516489aad522cb8a8de1, type: 3}
+    volume: 1
+    pitchVariance: 0.1
+  - id: 8
+    clip: {fileID: 8300000, guid: 392357b73d424e93aefa26f7856c1a1d, type: 3}
+    volume: 1
+    pitchVariance: 0.1
+  - id: 9
+    clip: {fileID: 8300000, guid: d65022cf5faef7f40a7f178f56afb250, type: 3}
+    volume: 1
+    pitchVariance: 0.1
+  - id: 10
+    clip: {fileID: 8300000, guid: e87b1d118fafd8b48a030b4367b23d59, type: 3}
+    volume: 1
+    pitchVariance: 0.1

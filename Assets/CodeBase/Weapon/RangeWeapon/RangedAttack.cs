@@ -1,5 +1,7 @@
 ﻿using CodeBase.Common;
 using CodeBase.Data;
+using CodeBase.Infrastructure.Services;
+using CodeBase.Infrastructure.Services.Audio;
 using CodeBase.Infrastructure.Services.PersistentProgress;
 using CodeBase.Logic;
 using UnityEngine;
@@ -8,6 +10,7 @@ namespace CodeBase.Weapon.RangeWeapon
 {
     public class RangedAttack : WeaponBase, ISavedProgress
     {
+        private IAudioService _audioService;
         private State _state;
         private float _detectionRadius;
         private float _shootRate;
@@ -48,6 +51,7 @@ namespace CodeBase.Weapon.RangeWeapon
 
         private void Awake()
         {
+            _audioService = AllServices.Container.Single<IAudioService>();
             _launcher = GetComponent<ProjectileLauncher>();
             _hittableLayer = PhysicsLayers.HittableMask;
             _shootTimer = _shootRate;
@@ -60,13 +64,14 @@ namespace CodeBase.Weapon.RangeWeapon
 
             Transform nearestTarget = FindNearestTarget();
             if (nearestTarget == null) return;
-
             _shootTimer = Cooldown;
             SpawnProjectile(nearestTarget);
+            _audioService?.PlaySfx(AudioClipId.ArrowShoot);
         }
 
         private void SpawnProjectile(Transform target) =>
             _launcher.Launch(target, _projectileMaxMoveSpeed, Damage);
+            
 
         private Transform FindNearestTarget()
         {

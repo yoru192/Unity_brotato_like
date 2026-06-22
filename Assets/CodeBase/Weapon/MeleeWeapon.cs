@@ -2,6 +2,8 @@
 using System.Linq;
 using CodeBase.Common;
 using CodeBase.Data;
+using CodeBase.Infrastructure.Services;
+using CodeBase.Infrastructure.Services.Audio;
 using CodeBase.Infrastructure.Services.PersistentProgress;
 using CodeBase.Logic;
 using UnityEngine;
@@ -10,6 +12,7 @@ namespace CodeBase.Weapon
 {
     public class MeleeWeapon : WeaponBase, IAttackColliderHandler, ISavedProgress
     {
+        private IAudioService _audioService;
         private MeleeWeaponState _state;
         private Transform _attackOrigin;
         private float _attackAngle = 90f;
@@ -54,6 +57,7 @@ namespace CodeBase.Weapon
 
         private void Awake()
         {
+            _audioService = AllServices.Container.Single<IAudioService>();
             _animator = GetComponentInParent<WeaponAnimator>();
             if (_animator?.AnimationEvents != null)
             {
@@ -92,6 +96,7 @@ namespace CodeBase.Weapon
 
         private void StartAttack()
         {
+            _audioService?.PlaySfx(AudioClipId.SwordSwing);
             _animator?.PlayAttack();
             _isAttacking = true;
         }
@@ -99,9 +104,11 @@ namespace CodeBase.Weapon
         private void OnAttackHit()
         {
             if (!_isAttacking) return;
-
             foreach (var target in _triggeredTargets.ToList())
+            {
                 target.GetComponentInParent<IHealth>()?.TakeDamage(Damage);
+            }
+                
         }
 
         private void OnAttackEnded()

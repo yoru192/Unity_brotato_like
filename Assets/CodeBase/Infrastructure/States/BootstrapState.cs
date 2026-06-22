@@ -2,6 +2,7 @@
 using CodeBase.Infrastructure.AssetManagement;
 using CodeBase.Infrastructure.Factory;
 using CodeBase.Infrastructure.Services;
+using CodeBase.Infrastructure.Services.Audio;
 using CodeBase.Infrastructure.Services.Balance;
 using CodeBase.Infrastructure.Services.Buff;
 using CodeBase.Infrastructure.Services.Inputs;
@@ -93,6 +94,7 @@ namespace CodeBase.Infrastructure.States
             _services.RegisterSingle<ISaveLoadService>( new SaveLoadService(
                 _services.Single<IPersistentProgressService>(),
                 _services.Single<IGameFactory>()));
+            _services.RegisterSingle<IAudioService>(new AudioService(_services.Single<IStaticDataService>().GetAudio()));
         }
         
         private void RegisterAssetsProvider()

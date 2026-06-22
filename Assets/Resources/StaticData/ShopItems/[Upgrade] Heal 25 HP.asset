@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe482f41f29e4da0b3d4e115d3edfbc8, type: 3}
+  m_Name: '[Upgrade] Heal 25 HP'
+  m_EditorClassIdentifier: Assembly-CSharp::CodeBase.StaticData.ShopItemStaticData
+  itemName: '[Upgrade] Heal 25 HP'
+  itemDescription: 
+  itemIcon: {fileID: 2127019733, guid: fc7d4998a6f3ce54a94e94a270800592, type: 3}
+  itemBackground: {fileID: 0}
+  itemPrice: 30
+  effect:
+    category: 1
+    value: 25
+    buffType: 0
+    upgradeType: 1
+    weaponTypeId: 0
+  duration: 0
+  weight: 1

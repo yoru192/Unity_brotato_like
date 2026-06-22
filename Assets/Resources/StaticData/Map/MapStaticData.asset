@@ -16,8 +16,8 @@ MonoBehaviour:
   columns: 7
   pathCount: 8
   eliteChance: 0.16
-  shopChance: 0.12
-  campfireChance: 0.1
+  shopChance: 0.5
+  campfireChance: 0.5
   minEliteRow: 3
-  guaranteedCombatRows: 2
+  guaranteedCombatRows: 0
   forceCampfireBeforeBoss: 1

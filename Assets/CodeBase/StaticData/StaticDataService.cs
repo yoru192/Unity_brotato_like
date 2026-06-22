@@ -20,6 +20,7 @@ namespace CodeBase.StaticData
         private WaveControllerStaticData _waveController;
         private MapStaticData _mapSettings;
         private MapLevelLibrary _mapLevelLibrary;
+        private AudioStaticData _audio;
 
 
         public void Load()
@@ -41,6 +42,7 @@ namespace CodeBase.StaticData
             _waveController = Resources.Load<WaveControllerStaticData>("StaticData/Waves/WaveController");
             _mapSettings = Resources.Load<MapStaticData>("StaticData/Map/MapStaticData");
             _mapLevelLibrary = Resources.Load<MapLevelLibrary>("StaticData/Map/MapLevelLibrary");
+            _audio = Resources.Load<AudioStaticData>("StaticData/Audio/AudioStaticData");
         }
         
         public LevelStaticData ForLevel(string sceneKey) =>
@@ -71,5 +73,7 @@ namespace CodeBase.StaticData
 
         public MapStaticData GetMapSettings() => _mapSettings;
         public MapLevelLibrary GetMapLevelLibrary() => _mapLevelLibrary;
+
+        public AudioStaticData GetAudio() => _audio;
     }
 }
