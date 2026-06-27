@@ -127,7 +127,7 @@ namespace CodeBase.Logic
             _isWaveCompleting = true;
             currentWave++;
 
-            if (currentWave > _maxWaves)
+            if (_maxWaves > 0 && currentWave > _maxWaves)
             {
                 StartCoroutine(NotifyRunCompletedDelayed());
                 return;
