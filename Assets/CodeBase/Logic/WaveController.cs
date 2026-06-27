@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using CodeBase.StaticData;
@@ -28,10 +29,14 @@ namespace CodeBase.Logic
         public float spawnInterval;
         public int maxAlive;
 
+        [Header("End of Run Delay")]
+        [Tooltip("Час (сек) після фінальної хвилі перед переходом. Дає гравцю зібрати орби.")]
+        [SerializeField] private float _runCompletedDelay = 15f;
+
         [Header("Wave Info")]
         public int currentWave;
         public int waveBudget;
-        
+
         private int _waveValue;
         private int _enemiesThisWave;
         private EnemySpawner _spawner;
@@ -64,21 +69,17 @@ namespace CodeBase.Logic
             GenerateWave();
         }
 
-
         private void Awake()
         {
             _spawner = GetComponent<EnemySpawner>();
             if (_spawner == null)
-            {
                 Debug.LogError("EnemySpawner component not found on the same GameObject!");
-            }
         }
-        
+
         void FixedUpdate()
         {
             _initialSpawnTimer -= Time.fixedDeltaTime;
             waveTimer -= Time.fixedDeltaTime;
-
 
             if (spawnTimer > 0)
                 spawnTimer -= Time.fixedDeltaTime;
@@ -89,13 +90,10 @@ namespace CodeBase.Logic
             _spawner.CleanupDeadEnemies();
 
             bool allEnemiesDefeated = enemiesToSpawn.Count == 0 && !_isSpawning && _spawner.GetAliveEnemiesCount() <= 0;
-            // The wave ends as soon as every enemy is dead. The timer is only a fallback for waves
-            // that spawned no enemies (e.g. the empty warmup wave), so the player never waits idle.
             bool waveCleared = allEnemiesDefeated && (_enemiesThisWave > 0 || waveTimer <= 0);
             if ((!_isWaveCompleting && waveCleared) || (currentWave == 0 && _initialSpawnTimer <= 0))
                 CompleteWave();
         }
-
 
         private async void TrySpawnNextEnemy()
         {
@@ -112,7 +110,6 @@ namespace CodeBase.Logic
                     enemiesToSpawn.Dequeue();
                     spawnTimer = spawnInterval;
                 }
-                // якщо відхилено через maxAlive — не чекаємо spawnInterval, пробуємо швидко
             }
             catch (Exception e)
             {
@@ -125,7 +122,6 @@ namespace CodeBase.Logic
             }
         }
 
-
         private void CompleteWave()
         {
             _isWaveCompleting = true;
@@ -133,13 +129,19 @@ namespace CodeBase.Logic
 
             if (currentWave > _maxWaves)
             {
-                OnRunCompleted?.Invoke();
-                _isWaveCompleting = false;
+                StartCoroutine(NotifyRunCompletedDelayed());
                 return;
             }
 
             OnWaveCompleted?.Invoke();
             GenerateWave();
+            _isWaveCompleting = false;
+        }
+
+        private IEnumerator NotifyRunCompletedDelayed()
+        {
+            yield return new WaitForSeconds(_runCompletedDelay);
+            OnRunCompleted?.Invoke();
             _isWaveCompleting = false;
         }
 

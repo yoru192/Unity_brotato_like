@@ -1,0 +1,18 @@
+fileFormatVersion: 2
+guid: 97ae8b045839b455fb4afc3e3dae96c3
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 226429
+  packageName: '[Free] Avesta: Procedural Tilemap Generator'
+  packageVersion: 1.0
+  assetPath: Assets/Plugins/BerserkPixel/Avesta Tilemap Generator/Samples/Scripts/SimpleCameraFollow.cs
+  uploadId: 510088

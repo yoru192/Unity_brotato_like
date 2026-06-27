@@ -432,9 +432,6 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 2880459104827774263, guid: 958d885750f8cc640a306692cc1adb3a, type: 3}
       insertIndex: -1
       addedObject: {fileID: 6638405437271292384}
-    - targetCorrespondingSourceObject: {fileID: 2880459104827774263, guid: 958d885750f8cc640a306692cc1adb3a, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 2873667039668783536}
   m_SourcePrefab: {fileID: 100100000, guid: 958d885750f8cc640a306692cc1adb3a, type: 3}
 --- !u!4 &4004688042126531473 stripped
 Transform:
@@ -459,18 +456,3 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyGFX
   followerEntity: {fileID: 7077774002601737260}
---- !u!114 &2873667039668783536
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8998775219319946581}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7533e3d5a00b44bc92a180559e6af952, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::CodeBase.Logic.YSorting
-  _sortPoint: {fileID: 3545341756790832764}
-  _multiplier: 100
-  _baseOrder: 5000

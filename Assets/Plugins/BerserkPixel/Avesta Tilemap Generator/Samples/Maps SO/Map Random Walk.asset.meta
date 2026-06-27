@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: 693da01eb1a074d748f8d74b7a0dcf18
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 11400000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 226429
+  packageName: '[Free] Avesta: Procedural Tilemap Generator'
+  packageVersion: 1.0
+  assetPath: Assets/Plugins/BerserkPixel/Avesta Tilemap Generator/Samples/Maps SO/Map
+    Random Walk.asset
+  uploadId: 510088

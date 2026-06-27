@@ -1,0 +1,18 @@
+fileFormatVersion: 2
+guid: a84adfa744568412d827972e08f0f41c
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {fileID: 2800000, guid: f58fcd31b84204e368aec571fd7ec9bd, type: 3}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 226429
+  packageName: '[Free] Avesta: Procedural Tilemap Generator'
+  packageVersion: 1.0
+  assetPath: Assets/Plugins/BerserkPixel/Avesta Tilemap Generator/Runtime/Scripts/Maps/Algorithms/CellularAutomata.cs
+  uploadId: 510088

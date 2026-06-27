@@ -1,0 +1,22 @@
+{
+  "name": "com.berserkpixel.avesta-free",
+  "version": "2.1.1",
+  "displayName": "Avesta: Procedural Tilemap Generator",
+  "description": "Avesta is an easy-to-use Procedural Tilemap Generator Tool. Start designing your world!",
+  "unity": "2019.4",
+  "dependencies": {
+    "com.unity.2d.tilemap.extras": "https://github.com/Unity-Technologies/2d-extras.git#master",
+    "com.unity.2d.tilemap": "1.0.0"
+  },
+  "keywords": [
+    "tilemap",
+    "tile map",
+    "generator",
+    "tool"
+  ],
+  "author": {
+    "name": "Berserk Pixel Game Studio",
+    "email": "hello@berserkpixel.studio",
+    "url": "https://berserkpixel.studio/"
+  }
+}

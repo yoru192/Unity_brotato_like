@@ -1,0 +1,11 @@
+fileFormatVersion: 2
+guid: 5d64328071da4b50a9595efb066c7f93
+timeCreated: 1648040540
+AssetOrigin:
+  serializedVersion: 1
+  productId: 226429
+  packageName: '[Free] Avesta: Procedural Tilemap Generator'
+  packageVersion: 1.0
+  assetPath: Assets/Plugins/BerserkPixel/Avesta Tilemap Generator/Samples/Scripts/Occlusion
+    Culling/OcclusionTilemap.cs
+  uploadId: 510088

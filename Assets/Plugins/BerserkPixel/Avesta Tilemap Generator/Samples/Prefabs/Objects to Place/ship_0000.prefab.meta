@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 35f9d619003b84b40b398cbb46b00d10
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 226429
+  packageName: '[Free] Avesta: Procedural Tilemap Generator'
+  packageVersion: 1.0
+  assetPath: Assets/Plugins/BerserkPixel/Avesta Tilemap Generator/Samples/Prefabs/Objects
+    to Place/ship_0000.prefab
+  uploadId: 510088

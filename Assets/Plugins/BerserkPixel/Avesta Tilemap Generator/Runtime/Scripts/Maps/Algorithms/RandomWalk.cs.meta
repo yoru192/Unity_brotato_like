@@ -1,0 +1,18 @@
+fileFormatVersion: 2
+guid: 2480ae88198d45b99813900aaab9e051
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {fileID: 2800000, guid: f58fcd31b84204e368aec571fd7ec9bd, type: 3}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 226429
+  packageName: '[Free] Avesta: Procedural Tilemap Generator'
+  packageVersion: 1.0
+  assetPath: Assets/Plugins/BerserkPixel/Avesta Tilemap Generator/Runtime/Scripts/Maps/Algorithms/RandomWalk.cs
+  uploadId: 510088

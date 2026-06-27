@@ -150,36 +150,13 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 117150395161187363, guid: c830dfed47304bb40b15a4b5cb03625e, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 6535934264162577580}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c830dfed47304bb40b15a4b5cb03625e, type: 3}
 --- !u!4 &910565250316068584 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 117150395161187362, guid: c830dfed47304bb40b15a4b5cb03625e, type: 3}
   m_PrefabInstance: {fileID: 937533691000156874}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &910565250316068585 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 117150395161187363, guid: c830dfed47304bb40b15a4b5cb03625e, type: 3}
-  m_PrefabInstance: {fileID: 937533691000156874}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &6535934264162577580
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 910565250316068585}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7533e3d5a00b44bc92a180559e6af952, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::CodeBase.Logic.YSorting
-  _sortPoint: {fileID: 2348098847145705987}
-  _multiplier: 100
-  _baseOrder: 5000
 --- !u!1001 &5102347680287955165
 PrefabInstance:
   m_ObjectHideFlags: 0

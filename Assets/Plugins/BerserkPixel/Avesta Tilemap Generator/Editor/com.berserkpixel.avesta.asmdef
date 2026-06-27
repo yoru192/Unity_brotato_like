@@ -1,0 +1,19 @@
+{
+    "name": "com.berserkpixel.avesta.editor",
+    "rootNamespace": "",
+    "references": [
+        "GUID:1f7ecd295893f477cb57d8230dfdabfc",
+        "GUID:cbdf09464b6b87745be748a67e5a21a0"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

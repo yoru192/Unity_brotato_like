@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: e48ab0166bc3546cc81c929651bfa6f0
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 4343727234628468602
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 226429
+  packageName: '[Free] Avesta: Procedural Tilemap Generator'
+  packageVersion: 1.0
+  assetPath: Assets/Plugins/BerserkPixel/Avesta Tilemap Generator/Samples/Sprites/Other
+    Tilemaps/Tilemaps.spriteatlas
+  uploadId: 510088

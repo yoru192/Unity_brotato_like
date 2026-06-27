@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 1be7828038c4147d5a732164f0ff20c3
+DefaultImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 226429
+  packageName: '[Free] Avesta: Procedural Tilemap Generator'
+  packageVersion: 1.0
+  assetPath: Assets/Plugins/BerserkPixel/Avesta Tilemap Generator/Samples/Scenes/Demo
+    Scene.unity
+  uploadId: 510088
