@@ -1,7 +1,7 @@
 ﻿using System;
 using CodeBase.Common;
 using CodeBase.Logic;
-using CodeBase.Weapon.RangeWeapon;
+using CodeBase.Weapon.ArrowWeapon;
 using UnityEngine;
 
 namespace CodeBase.Enemy

@@ -70,6 +70,11 @@ namespace CodeBase.Player
             Current -= damage;
             HealthChanged?.Invoke();
         }
+
+        /// <summary>Ворог цілився в гравця, але промазав. Наразі без візуалізації — метод потрібен для IHealth.</summary>
+        public void Miss()
+        {
+        }
         
     }
 }

@@ -39,7 +39,7 @@ namespace CodeBase.Infrastructure.Services.Buff
             {
                 case BuffType.Damage:
                     state.MeleeWeaponState.weaponDamage += value;
-                    state.RangedWeaponState.weaponDamage += value;
+                    state.ArrowWeaponState.weaponDamage += value;
                     OnWeaponBuffChanged?.Invoke();
                     break;
                 case BuffType.MaxHealth:
@@ -62,7 +62,7 @@ namespace CodeBase.Infrastructure.Services.Buff
                 BuffType.Damage => () =>
                 {
                     state.MeleeWeaponState.weaponDamage -= value;
-                    state.RangedWeaponState.weaponDamage -= value;
+                    state.ArrowWeaponState.weaponDamage -= value;
                     OnWeaponBuffChanged?.Invoke();
                 },
                 BuffType.MaxHealth => () =>

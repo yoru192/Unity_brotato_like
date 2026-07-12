@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace CodeBase.Weapon.RangeWeapon
+namespace CodeBase.Weapon.ArrowWeapon
 {
     public class ProjectileVisual : MonoBehaviour
     {

@@ -5,6 +5,7 @@ using CodeBase.Infrastructure.Services;
 using CodeBase.Infrastructure.Services.Audio;
 using CodeBase.Infrastructure.Services.Balance;
 using CodeBase.Infrastructure.Services.Buff;
+using CodeBase.Infrastructure.Services.CritDamage;
 using CodeBase.Infrastructure.Services.Inputs;
 using CodeBase.Infrastructure.Services.Map;
 using CodeBase.Infrastructure.Services.PersistentProgress;
@@ -81,6 +82,7 @@ namespace CodeBase.Infrastructure.States
                 _services.Single<IStaticDataService>(),
                 _services.Single<IPersistentProgressService>(),
                 _services.Single<ISelectedLevelService>()));
+            _services.RegisterSingle<ICritDamageService>(new CritDamageService());
             _services.RegisterSingle<IGameFactory>(new GameFactory(
                 _services.Single<IAssets>(),
                 _services.Single<IStaticDataService>(),
@@ -90,7 +92,8 @@ namespace CodeBase.Infrastructure.States
                 _services.Single<IUpgradeService>(),
                 _services.Single<IShopService>(),
                 _services.Single<IBuffService>(),
-                _services.Single<ISelectedLevelService>()));
+                _services.Single<ISelectedLevelService>(),
+                _services.Single<ICritDamageService>()));
             _services.RegisterSingle<ISaveLoadService>( new SaveLoadService(
                 _services.Single<IPersistentProgressService>(),
                 _services.Single<IGameFactory>()));

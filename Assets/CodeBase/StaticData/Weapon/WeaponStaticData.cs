@@ -11,14 +11,23 @@ namespace CodeBase.StaticData.Weapon
         public int damage;
         [Range(0.1f, 100f)]
         public float radius;
+        [Range(0, 100)]
+        public int critChance;
+        [Range(1, 5)]
+        public float critRate;
         public AssetReferenceGameObject prefabReference;
         
-        [Header("Ranged Only")]
+        [ShowIf("weaponTypeId", WeaponTypeId.Arrow)]
         public float projectileSpeed = 8f;
+        
+        [ShowIf("weaponTypeId", WeaponTypeId.Arrow)]
         public float shootRate = 1f;
-        [Header("Melee Only")]
+        
         [Range(10f, 360f)]
+        [ShowIf("weaponTypeId", WeaponTypeId.Melee)]
         public float attackAngle;
+        
+        [ShowIf("weaponTypeId", WeaponTypeId.Melee)]
         public float cooldown;
     }
 }

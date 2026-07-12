@@ -7,6 +7,7 @@ using CodeBase.Loot;
 using CodeBase.Infrastructure.AssetManagement;
 using CodeBase.Infrastructure.Services.Balance;
 using CodeBase.Infrastructure.Services.Buff;
+using CodeBase.Infrastructure.Services.CritDamage;
 using CodeBase.Infrastructure.Services.PersistentProgress;
 using CodeBase.Infrastructure.Services.ProgressService;
 using CodeBase.Infrastructure.Services.SelectedLevel;
@@ -23,7 +24,7 @@ using CodeBase.StaticData.Weapon;
 using CodeBase.UI;
 using CodeBase.UI.Elements;
 using CodeBase.Weapon;
-using CodeBase.Weapon.RangeWeapon;
+using CodeBase.Weapon.ArrowWeapon;
 using Pathfinding;
 using UnityEngine;
 
@@ -46,6 +47,7 @@ namespace CodeBase.Infrastructure.Factory
         private readonly IShopService _shopService;
         private readonly IBuffService _buffService;
         private readonly ISelectedLevelService _selectedLevel;
+        private readonly ICritDamageService _critDamageService;
 
         public GameFactory(IAssets assets,
             IStaticDataService staticData,
@@ -55,7 +57,8 @@ namespace CodeBase.Infrastructure.Factory
             IUpgradeService upgradeService,
             IShopService shopService,
             IBuffService buffService,
-            ISelectedLevelService selectedLevel)
+            ISelectedLevelService selectedLevel,
+            ICritDamageService critDamageService)
         {
             _assets = assets;
             _staticData = staticData;
@@ -66,6 +69,7 @@ namespace CodeBase.Infrastructure.Factory
             _shopService = shopService;
             _buffService = buffService;
             _selectedLevel = selectedLevel;
+            _critDamageService = critDamageService;
         }
 
         public async Task WarmUp()
@@ -123,12 +127,12 @@ namespace CodeBase.Infrastructure.Factory
             {
                 case WeaponTypeId.Melee:
                     weaponGo.GetComponent<MeleeWeapon>()
-                        .Construct(data.damage, data.cooldown, data.radius, data.attackAngle);
+                        .Construct(data.damage, data.cooldown, data.radius, data.attackAngle, data.critChance, data.critRate, _critDamageService);
                     break;
 
-                case WeaponTypeId.Ranged:
-                    weaponGo.GetComponent<RangedAttack>()
-                        .Construct(data.damage, data.shootRate, data.projectileSpeed, data.radius);
+                case WeaponTypeId.Arrow:
+                    weaponGo.GetComponent<ArrowAttack>()
+                        .Construct(data.damage, data.shootRate, data.projectileSpeed, data.radius, data.critChance, data.critRate, _critDamageService);
                     break;
             }
 
@@ -151,7 +155,7 @@ namespace CodeBase.Infrastructure.Factory
         public async Task<GameObject> CreateHud()
         {
             WeaponStaticData meleeWeaponData = _staticData.ForWeapon(WeaponTypeId.Melee);
-            WeaponStaticData rangedWeaponData = _staticData.ForWeapon(WeaponTypeId.Ranged);
+            WeaponStaticData rangedWeaponData = _staticData.ForWeapon(WeaponTypeId.Arrow);
             GameObject hud = await InstantiateRegistered(AssetsAddress.HudPath);
             PauseInputHandler = hud.AddComponent<PauseInputHandler>();
             HudUI hudUI = hud.GetComponent<HudUI>();

@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using Febucci.UI;
+using Random = UnityEngine.Random;
 
 namespace CodeBase.UI.Elements
 {
@@ -15,17 +16,14 @@ namespace CodeBase.UI.Elements
         [Header("Кольори по черзі (критикал завжди червоний)")]
         [SerializeField] private Color[] sequentialColors = new Color[]
         {
-            Color.white,
-            Color.yellow,
-            Color.cyan,
-            Color.green,
-            new Color(1f, 0.5f, 0f),   // помаранчевий
-            new Color(0.6f, 0.4f, 1f),  // фіолетовий
+            Color.white, Color.yellow, Color.cyan, Color.green,
+            new Color(1f, 0.5f, 0f), new Color(0.6f, 0.4f, 1f),
         };
 
-        // статичний лічильник — спільний для всіх інстансів
-        private static int _nextColorIndex = 0;
+        [Header("Miss")]
+        [SerializeField] private Color missColor = new Color(0.7f, 0.7f, 0.7f);
 
+        private static int _nextColorIndex = 0;
         private float _timer;
         private float _directionX;
         private TypewriterByCharacter _typewriter;
@@ -35,13 +33,18 @@ namespace CodeBase.UI.Elements
             _typewriter = GetComponent<TypewriterByCharacter>();
         }
 
-        public void Initialize(float damage, bool isCritical = false)
+        public void Initialize(float damage, bool isCritical = false, bool isMiss = false)
         {
             string text;
 
-            if (isCritical)
+            if (isMiss)
             {
-                text = $"<color=red><b>-{damage}!</b></color>";
+                string hex = ColorUtility.ToHtmlStringRGB(missColor);
+                text = $"<color=#{hex}><i>Miss!</i></color>";
+            }
+            else if (isCritical)
+            {
+                text = $"<color=red><size=140%>-{damage}!</size></color>";
             }
             else
             {
@@ -52,8 +55,6 @@ namespace CodeBase.UI.Elements
 
             _typewriter.ShowText(text);
             _timer = lifetime;
-
-            // Рандомний напрямок та сила бокового зміщення
             _directionX = Random.Range(-1f, 1f);
         }
 
@@ -62,8 +63,7 @@ namespace CodeBase.UI.Elements
             transform.position += new Vector3(
                 _directionX * moveSpeedX * Time.deltaTime,
                 moveSpeedY * Time.deltaTime,
-                0f
-            );
+                0f);
 
             _timer -= Time.deltaTime;
             if (_timer <= 0f)

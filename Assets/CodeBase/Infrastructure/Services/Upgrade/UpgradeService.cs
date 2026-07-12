@@ -83,15 +83,15 @@ namespace CodeBase.Infrastructure.Services.Upgrade
                 case StatModifierType.Damage:
                     if (PlayerState.OwnedWeapons.Contains(WeaponTypeId.Melee))
                         PlayerState.MeleeWeaponState.weaponDamage += upgrade.value;
-                    if (PlayerState.OwnedWeapons.Contains(WeaponTypeId.Ranged))
-                        PlayerState.RangedWeaponState.weaponDamage += upgrade.value;
+                    if (PlayerState.OwnedWeapons.Contains(WeaponTypeId.Arrow))
+                        PlayerState.ArrowWeaponState.weaponDamage += upgrade.value;
                     OnUpgradeWeapon?.Invoke();
                     break;
                 case StatModifierType.Cooldown:
                     if (PlayerState.OwnedWeapons.Contains(WeaponTypeId.Melee))
                         PlayerState.MeleeWeaponState.weaponCooldown += upgrade.value;
-                    if (PlayerState.OwnedWeapons.Contains(WeaponTypeId.Ranged))
-                        PlayerState.RangedWeaponState.weaponCooldown += upgrade.value;
+                    if (PlayerState.OwnedWeapons.Contains(WeaponTypeId.Arrow))
+                        PlayerState.ArrowWeaponState.weaponCooldown += upgrade.value;
                     OnUpgradeWeapon?.Invoke();
                     break;
                 case StatModifierType.MaxStamina:

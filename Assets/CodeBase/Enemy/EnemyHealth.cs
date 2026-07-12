@@ -1,7 +1,10 @@
 ﻿using System;
+using CodeBase.Infrastructure.Services;
+using CodeBase.Infrastructure.Services.CritDamage;
 using CodeBase.Logic;
 using CodeBase.UI.Elements;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 namespace CodeBase.Enemy
 {
@@ -16,30 +19,50 @@ namespace CodeBase.Enemy
         [SerializeField] private float spawnOffsetX = 0.3f;
         [SerializeField] private float spawnOffsetY = 0.2f;
 
+        private ICritDamageService _critDamageService;
+        private bool _lastHitWasCritical;
+
         public event Action HealthChanged;
 
-        public float Current
+        public float Current { get => current; set => current = value; }
+        public float Max { get => max; set => max = value; }
+
+        private void Awake()
         {
-            get => current;
-            set => current = value;
+            _critDamageService = AllServices.Container.Single<ICritDamageService>();
         }
 
-        public float Max
+        private void OnEnable()
         {
-            get => max;
-            set => max = value;
+            _critDamageService.OnGetCritDamage += RememberCrit;
+        }
+
+        private void OnDisable()
+        {
+            _critDamageService.OnGetCritDamage -= RememberCrit;
+        }
+
+        private void RememberCrit(float damage, bool isCritical)
+        {
+            _lastHitWasCritical = isCritical;
         }
 
         public void TakeDamage(float damage)
         {
-            // Зберігаємо позицію ДО того як ворог може бути знищений
             Vector3 spawnPos = GetSpawnPosition();
 
             Current -= damage;
 
-            SpawnDamageNumber(damage, spawnPos);
+            SpawnDamageNumber(damage, spawnPos, _lastHitWasCritical);
 
             HealthChanged?.Invoke();
+        }
+
+        /// <summary>Атака була спрямована на цього ворога, але промазала. HP не змінюється, крит не рахуємо.</summary>
+        public void Miss()
+        {
+            Vector3 spawnPos = GetSpawnPosition();
+            SpawnDamageNumber(0f, spawnPos, isCritical: false, isMiss: true);
         }
 
         private Vector3 GetSpawnPosition()
@@ -49,13 +72,12 @@ namespace CodeBase.Enemy
                 : transform.position + Vector3.up * 1.5f;
 
             return basePos + new Vector3(
-                UnityEngine.Random.Range(-spawnOffsetX, spawnOffsetX),
-                UnityEngine.Random.Range(0f, spawnOffsetY),
-                0f
-            );
+                Random.Range(-spawnOffsetX, spawnOffsetX),
+                Random.Range(0f, spawnOffsetY),
+                0f);
         }
 
-        private void SpawnDamageNumber(float damage, Vector3 spawnPos)
+        private void SpawnDamageNumber(float damage, Vector3 spawnPos, bool isCritical, bool isMiss = false)
         {
             if (damageNumberPrefab == null)
             {
@@ -69,16 +91,13 @@ namespace CodeBase.Enemy
                 return;
             }
 
-            // Спавнимо у глобальний Canvas — він не знищується разом з ворогом
             GameObject go = Instantiate(
                 damageNumberPrefab,
                 spawnPos,
                 Quaternion.identity,
-                DamageNumberCanvas.Instance.Canvas.transform
-            );
+                DamageNumberCanvas.Instance.Canvas.transform);
 
-            bool isCritical = damage >= 50;
-            go.GetComponent<DamageNumber>().Initialize(damage, isCritical);
+            go.GetComponent<DamageNumber>().Initialize(damage, isCritical, isMiss);
         }
     }
 }

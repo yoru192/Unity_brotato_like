@@ -166,8 +166,8 @@ namespace CodeBase.UI
             var state = _persistentProgressService.Progress.playerState;
             _meleeDamage.text = $"Melee damage - {Stat(state.MeleeWeaponState.weaponDamage, _meleeWeaponData.damage)}";
             _meleeCooldown.text = $"Melee cooldown - {Stat(state.MeleeWeaponState.weaponCooldown, _meleeWeaponData.cooldown)}";
-            _rangedDamage.text = $"Ranged damage - {Stat(state.RangedWeaponState.weaponDamage, _rangedWeaponData.damage)}";
-            _rangedShootRate.text = $"Ranged shoot rate - {Stat(state.RangedWeaponState.weaponCooldown, _rangedWeaponData.cooldown)}";
+            _rangedDamage.text = $"Ranged damage - {Stat(state.ArrowWeaponState.weaponDamage, _rangedWeaponData.damage)}";
+            _rangedShootRate.text = $"Ranged shoot rate - {Stat(state.ArrowWeaponState.weaponCooldown, _rangedWeaponData.cooldown)}";
         }
 
         private void UpdateWaveText()

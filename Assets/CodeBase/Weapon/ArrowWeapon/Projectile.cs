@@ -1,7 +1,7 @@
 ﻿using CodeBase.Logic;
 using UnityEngine;
 
-namespace CodeBase.Weapon.RangeWeapon
+namespace CodeBase.Weapon.ArrowWeapon
 {
     public enum ProjectileTrackingMode
     {
@@ -44,10 +44,21 @@ namespace CodeBase.Weapon.RangeWeapon
         [Header("Hit")]
         [Tooltip("Радіус спрацювання колізії (по реальній позиції / тіні).")]
         [SerializeField] private float _hitRadius = 0.5f;
+
+        [Header("Miss")]
+        [Tooltip("Радіус відхилення точки прильоту при промаху на мінімальній тяжкості промаху (missSeverity = 0).")]
+        [SerializeField] private float _missOffsetMin = 0.6f;
+        [Tooltip("Радіус відхилення точки прильоту при промаху на максимальній тяжкості промаху (missSeverity = 1).")]
+        [SerializeField] private float _missOffsetMax = 2.2f;
+        [Tooltip("Розкид (у частках від розрахованого радіусу), щоб відхил не був ідеально передбачуваним.")]
+        [Range(0f, 0.5f)]
+        [SerializeField] private float _missOffsetJitter = 0.15f;
         
         private Transform _target;
         private float _damage;
         private float _maxSpeed;
+        private bool _isMiss;
+        private Vector3 _missOffset;
         
         private Vector3 _startPoint;
         private Vector3 _fixedTargetPosition;
@@ -69,11 +80,11 @@ namespace CodeBase.Weapon.RangeWeapon
             switch (_trackingMode)
             {
                 case ProjectileTrackingMode.FixedPoint:
-                    _fixedTargetPosition = _target != null ? _target.position : transform.position;
+                    _fixedTargetPosition = _target != null ? _target.position + _missOffset : transform.position;
                     break;
 
                 case ProjectileTrackingMode.HomingThenStraight:
-                    _fixedTargetPosition = _target != null ? _target.position : transform.position;
+                    _fixedTargetPosition = _target != null ? _target.position + _missOffset : transform.position;
                     _homingTimer = _homingDuration;
                     _isHoming = true;
                     break;
@@ -99,14 +110,14 @@ namespace CodeBase.Weapon.RangeWeapon
         {
             if (_target == null) return transform.position;
 
-            Vector3 predictedPosition = _target.position;
+            Vector3 predictedPosition = _target.position + _missOffset;
 
             for (int i = 0; i < _predictionIterations; i++)
             {
                 float dist = Vector3.Distance(_startPoint, predictedPosition);
                 float flightTime = dist / Mathf.Max(_maxSpeed, 0.001f);
 
-                predictedPosition = _target.position + _targetVelocityAtShot * flightTime;
+                predictedPosition = _target.position + _targetVelocityAtShot * flightTime + _missOffset;
             }
 
             return predictedPosition;
@@ -120,12 +131,12 @@ namespace CodeBase.Weapon.RangeWeapon
             _homingTimer -= Time.deltaTime;
 
             if (_target != null)
-                _fixedTargetPosition = _target.position;
+                _fixedTargetPosition = _target.position + _missOffset;
 
             if (_homingTimer <= 0f)
             {
                 _isHoming = false;
-                _fixedTargetPosition = _target != null ? _target.position : _fixedTargetPosition;
+                _fixedTargetPosition = _target != null ? _target.position + _missOffset : _fixedTargetPosition;
 
                 _startPoint = transform.position;
                 _t = 0f;
@@ -152,14 +163,31 @@ namespace CodeBase.Weapon.RangeWeapon
             if (_t >= 1f ||
                 Vector3.Distance(transform.position, _fixedTargetPosition) < _hitRadius)
             {
-                if (_target != null &&
-                    Vector3.Distance(transform.position, _target.position) < _hitRadius * 2f)
-                {
-                    _target.GetComponentInParent<IHealth>()?.TakeDamage(_damage);
-                }
-                
+                ResolveImpact();
                 ObjectPoolManager.ReturnObjectToPool(gameObject, ObjectPoolManager.PoolType.Projectile);
             }
+        }
+
+        /// <summary>
+        /// Наносить урон або, якщо цей постріл був промахом, показує "Miss!" без зміни HP.
+        /// Для промаху дистанцію до реальної позиції цілі не перевіряємо — снаряд летів у зміщену
+        /// точку саме для того, щоб не влучити, тож така перевірка тут недоречна.
+        /// </summary>
+        private void ResolveImpact()
+        {
+            if (_target == null) return;
+
+            IHealth health = _target.GetComponentInParent<IHealth>();
+            if (health == null) return;
+
+            if (_isMiss)
+            {
+                health.Miss();
+                return;
+            }
+
+            if (Vector3.Distance(transform.position, _target.position) < _hitRadius * 2f)
+                health.TakeDamage(_damage);
         }
         
         private void RecalculateFlightDuration()
@@ -178,13 +206,21 @@ namespace CodeBase.Weapon.RangeWeapon
             _flightDuration = avgSpeed > 0f ? distance / avgSpeed : 1f;
         }
         
-        public void InitializeProjectile(Transform target, float maxSpeed, float arcHeight, float damage)
+        /// <param name="missSeverity">
+        /// 0..1: наскільки "глибоко" постріл потрапив у зону промаху (0 — щойно за межею гарантованого
+        /// влучання, 1 — на максимальній дистанції виявлення цілі). Впливає лише на радіус відхилення
+        /// точки прильоту при <paramref name="isMiss"/> == true; на сам факт промаху не впливає.
+        /// </param>
+        public void InitializeProjectile(Transform target, float maxSpeed, float arcHeight, float damage,
+            bool isMiss = false, float missSeverity = 0f)
         {
             _target = target;
             _maxSpeed = maxSpeed;
             _arcHeight = arcHeight;
             _damage = damage;
-            _fixedTargetPosition = target.position;
+            _isMiss = isMiss;
+            _missOffset = isMiss ? CalculateMissOffset(missSeverity) : Vector3.zero;
+            _fixedTargetPosition = target.position + _missOffset;
             _speedCurve = null;
             
             var rb = target.GetComponentInParent<Rigidbody2D>();
@@ -197,6 +233,23 @@ namespace CodeBase.Weapon.RangeWeapon
                 _targetVelocityAtShot = Vector3.zero;
             }
         }
+
+        /// <summary>
+        /// Випадковий зсув точки прильоту при промаху: кут — довільний, радіус росте разом із
+        /// <paramref name="missSeverity"/> (далекі промахи "розлітаються" сильніше за близькі), плюс
+        /// невеликий джиттер, щоб два постріли з однаковою severity не мазали однаково.
+        /// </summary>
+        private Vector3 CalculateMissOffset(float missSeverity)
+        {
+            float severity = Mathf.Clamp01(missSeverity);
+            float baseRadius = Mathf.Lerp(_missOffsetMin, _missOffsetMax, severity);
+            float radius = baseRadius * UnityEngine.Random.Range(1f - _missOffsetJitter, 1f + _missOffsetJitter);
+
+            float angle = UnityEngine.Random.Range(0f, Mathf.PI * 2f);
+
+            return new Vector3(Mathf.Cos(angle) * radius, Mathf.Sin(angle) * radius, 0f);
+        }
+
         public void InitializeSpeedCurve(AnimationCurve speedCurve)
         {
             _speedCurve = speedCurve;

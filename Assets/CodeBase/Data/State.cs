@@ -9,7 +9,7 @@ namespace CodeBase.Data
     public class State
     {
         public MeleeWeaponState MeleeWeaponState = new MeleeWeaponState();
-        public RangedWeaponState RangedWeaponState = new RangedWeaponState();
+        public ArrowWeaponState ArrowWeaponState = new ArrowWeaponState();
         public List<WeaponTypeId> OwnedWeapons = new List<WeaponTypeId>();
         public float currentStamina;
         public float maxStamina;
@@ -48,7 +48,7 @@ namespace CodeBase.Data
         public float weaponCooldown;
     }
 
-    public class RangedWeaponState : WeaponState
+    public class ArrowWeaponState : WeaponState
     {
     }
 

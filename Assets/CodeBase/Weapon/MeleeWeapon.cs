@@ -4,6 +4,7 @@ using CodeBase.Common;
 using CodeBase.Data;
 using CodeBase.Infrastructure.Services;
 using CodeBase.Infrastructure.Services.Audio;
+using CodeBase.Infrastructure.Services.CritDamage;
 using CodeBase.Infrastructure.Services.PersistentProgress;
 using CodeBase.Logic;
 using UnityEngine;
@@ -26,7 +27,10 @@ namespace CodeBase.Weapon
         private PolygonCollider2D _attackCollider;
         private readonly List<Collider2D> _triggeredTargets = new();
         private float _damage;
-        
+        private ICritDamageService _critDamageService;
+        private int _critChance;
+        private float _critRate;
+
         public int Damage
         {
             get => (int)(_state?.weaponDamage ?? _damage);
@@ -47,12 +51,16 @@ namespace CodeBase.Weapon
             }
         }
 
-        public void Construct(int damage, float cooldown, float radius, float attackAngle)
+        public void Construct(int damage, float cooldown, float radius, float attackAngle, int critChance,
+            float critRate, ICritDamageService critDamageService)
         {
             _damage = damage;
             _cooldown = cooldown;
             _radius = radius;
             _attackAngle = attackAngle;
+            _critChance = critChance;
+            _critRate = critRate;
+            _critDamageService = critDamageService;
         }
 
         private void Awake()
@@ -101,12 +109,15 @@ namespace CodeBase.Weapon
             _isAttacking = true;
         }
 
+        private float ApllyCritDamage() => 
+            _critDamageService.GetCritDamage(Damage, _critChance, _critRate);
+
         private void OnAttackHit()
         {
             if (!_isAttacking) return;
             foreach (var target in _triggeredTargets.ToList())
             {
-                target.GetComponentInParent<IHealth>()?.TakeDamage(Damage);
+                target.GetComponentInParent<IHealth>()?.TakeDamage(ApllyCritDamage());
             }
                 
         }

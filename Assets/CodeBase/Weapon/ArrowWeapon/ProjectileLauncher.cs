@@ -1,7 +1,7 @@
 using CodeBase.Logic;
 using UnityEngine;
 
-namespace CodeBase.Weapon.RangeWeapon
+namespace CodeBase.Weapon.ArrowWeapon
 {
     public class ProjectileLauncher : MonoBehaviour
     {
@@ -15,11 +15,12 @@ namespace CodeBase.Weapon.RangeWeapon
         [Tooltip("Крива швидкості снаряда. X=прогрес польоту, Y=множник швидкості. Залиш пустою для постійної швидкості.")]
         [SerializeField] private AnimationCurve _speedCurve;
 
-        public void Launch(Transform target, float speed, float damage)
+        /// <param name="missSeverity">0..1, наскільки далеко за межею гарантованого влучання стався постріл. Впливає на радіус відхилу при промаху.</param>
+        public void Launch(Transform target, float speed, float damage, bool isMiss = false, float missSeverity = 0f)
         {
             var go = ObjectPoolManager.SpawnObject(_projectilePrefab, transform.position, Quaternion.identity, ObjectPoolManager.PoolType.Projectile);
             var projectile = go.GetComponent<Projectile>();
-            projectile.InitializeProjectile(target, speed, _arcHeight, damage);
+            projectile.InitializeProjectile(target, speed, _arcHeight, damage, isMiss, missSeverity);
             if (_speedCurve != null && _speedCurve.keys.Length > 0)
                 projectile.InitializeSpeedCurve(_speedCurve);
             projectile.Launch();
