@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using CodeBase.Infrastructure.Services.Audio;
 using UnityEngine;
+using UnityEngine.Audio;
 
 namespace CodeBase.StaticData
 {
@@ -9,6 +10,7 @@ namespace CodeBase.StaticData
     public class AudioStaticData : ScriptableObject
     {
         public List<AudioEntry> entries = new();
+        public AudioMixerGroup sfxGroup;
     }
 
     [Serializable]

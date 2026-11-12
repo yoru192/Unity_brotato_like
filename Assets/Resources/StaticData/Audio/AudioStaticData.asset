@@ -33,3 +33,16 @@ MonoBehaviour:
     clip: {fileID: 8300000, guid: e87b1d118fafd8b48a030b4367b23d59, type: 3}
     volume: 1
     pitchVariance: 0.1
+  - id: 5
+    clip: {fileID: 8300000, guid: 0949c9e0c53b72047abbe3f224cd8133, type: 3}
+    volume: 0.1
+    pitchVariance: 0.1
+  - id: 6
+    clip: {fileID: 8300000, guid: 2f764191f04b2f44e915bff72bd2245f, type: 3}
+    volume: 0.1
+    pitchVariance: 0.1
+  - id: 7
+    clip: {fileID: 8300000, guid: fa9125962d9f03d409aa7bac28d0757f, type: 3}
+    volume: 0.4
+    pitchVariance: 0.1
+  sfxGroup: {fileID: -2251962491383276106, guid: 90ddfa0eafdcc314cbaa35121174ff01, type: 2}

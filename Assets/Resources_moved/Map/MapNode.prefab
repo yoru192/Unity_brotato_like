@@ -213,14 +213,27 @@ MonoBehaviour:
   button: {fileID: 8143020679757804398}
   icon: {fileID: 4530418684992989996}
   availableHighlight: {fileID: 7420827468706951931}
+  background: {fileID: 0}
+  frame: {fileID: 0}
+  typeLabel: {fileID: 0}
+  floorLabel: {fileID: 0}
+  statusLabel: {fileID: 0}
   combatSprite: {fileID: 21300000, guid: aae89cc86905142a4a2b8f6ed0400eaa, type: 3}
   eliteSprite: {fileID: 21300000, guid: 9982eb3390de44b3f8cff2a46161a5f3, type: 3}
   shopSprite: {fileID: 21300000, guid: 723f73dd5ccbc4b47a3a413c84bed03d, type: 3}
-  bossSprite: {fileID: 21300000, guid: f274178d747514da1a30a88d62739ea2, type: 3}
+  bossSprite: {fileID: 21300000, guid: 8c39525751a764a7fb43886d24bf97de, type: 3}
   campfireSprite: {fileID: 21300000, guid: e8ca0d1bbb09545fdbb4aa867f1390ae, type: 3}
   lockedColor: {r: 1, g: 1, b: 1, a: 0.35}
   availableColor: {r: 1, g: 1, b: 1, a: 1}
   completedColor: {r: 0.55, g: 0.55, b: 0.55, a: 1}
+  availableFrameColor: {r: 1, g: 0.78, b: 0.25, a: 1}
+  completedFrameColor: {r: 0.42, g: 0.95, b: 0.65, a: 1}
+  lockedFrameColor: {r: 0.36, g: 0.39, b: 0.48, a: 0.85}
+  combatColor: {r: 0.36, g: 0.55, b: 0.95, a: 1}
+  eliteColor: {r: 0.95, g: 0.38, b: 0.32, a: 1}
+  shopColor: {r: 0.32, g: 0.78, b: 0.58, a: 1}
+  bossColor: {r: 0.9, g: 0.28, b: 0.76, a: 1}
+  campfireColor: {r: 1, g: 0.62, b: 0.28, a: 1}
 --- !u!1 &7420827468706951931
 GameObject:
   m_ObjectHideFlags: 0

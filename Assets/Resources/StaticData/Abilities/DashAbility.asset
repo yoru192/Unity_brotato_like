@@ -13,10 +13,11 @@ MonoBehaviour:
   m_Name: DashAbility
   m_EditorClassIdentifier: Assembly-CSharp::CodeBase.StaticData.Ability.DashAbilityData
   abilityTypeId: 0
-  abilityCooldown: 1
+  abilityIcon: {fileID: 2576758498083056221, guid: 3bdec3bc81e76704b972af217442771e, type: 3}
+  abilityCooldown: 4
   menuName: Dash
-  dashDistance: 25
-  dashDuration: 0.25
+  dashDistance: 23
+  dashDuration: 0.2
   dashCurve:
     serializedVersion: 2
     m_Curve:

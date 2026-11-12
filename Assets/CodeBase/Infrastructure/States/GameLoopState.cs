@@ -1,14 +1,16 @@
 using CodeBase.Infrastructure.Factory;
+using CodeBase.Infrastructure.Services.Audio;
 using CodeBase.Infrastructure.Services.Map;
+using CodeBase.Infrastructure.Services.Music;
 using CodeBase.Infrastructure.Services.PersistentProgress;
 using CodeBase.Infrastructure.Services.ProgressService;
 using CodeBase.Infrastructure.Services.SelectedLevel;
+using CodeBase.Player.Movement;
 
 namespace CodeBase.Infrastructure.States
 {
     public class GameLoopState : IState
     {
-        // Small heal granted after clearing a combat node so HP slowly recovers along the map.
         private const float HealAfterRun = 6f;
 
         private readonly IGameStateMachine _stateMachine;
@@ -17,10 +19,12 @@ namespace CodeBase.Infrastructure.States
         private readonly IMapService _mapService;
         private readonly ISelectedLevelService _selectedLevel;
         private readonly IPersistentProgressService _persistentProgress;
+        private readonly IAudioService _audioService;
+        private readonly IMusicService _music;
 
         public GameLoopState(IGameStateMachine stateMachine, IProgressService progressService,
             IGameFactory gameFactory, IMapService mapService, ISelectedLevelService selectedLevel,
-            IPersistentProgressService persistentProgress)
+            IPersistentProgressService persistentProgress, IAudioService audioService, IMusicService musicService)
         {
             _stateMachine = stateMachine;
             _progressService = progressService;
@@ -28,10 +32,15 @@ namespace CodeBase.Infrastructure.States
             _mapService = mapService;
             _selectedLevel = selectedLevel;
             _persistentProgress = persistentProgress;
+            _audioService = audioService;
+            _music = musicService;
         }
 
         public void Enter()
         {
+            _music.Play(_selectedLevel.SelectedNode != null && _selectedLevel.SelectedNode.IsBoss
+                ? MusicTrackId.Boss
+                : MusicTrackId.Battle);
             _progressService.OnLevelUp += OnLevelUp;
 
             if (_gameFactory.WaveController != null)
@@ -39,6 +48,8 @@ namespace CodeBase.Infrastructure.States
 
             if (_gameFactory.PauseInputHandler != null)
                 _gameFactory.PauseInputHandler.OnPausePressed += OnPausePressed;
+
+            SetPlayerMovementEnabled(true);
         }
 
         public void Exit()
@@ -50,6 +61,20 @@ namespace CodeBase.Infrastructure.States
 
             if (_gameFactory.PauseInputHandler != null)
                 _gameFactory.PauseInputHandler.OnPausePressed -= OnPausePressed;
+
+            SetPlayerMovementEnabled(false);
+
+
+            _audioService.StopLoop(AudioClipId.Walk);
+            _audioService.StopLoop(AudioClipId.Run);
+        }
+
+        private void SetPlayerMovementEnabled(bool isEnabled)
+        {
+            if (_gameFactory.PlayerGameObject == null) return;
+
+            if (_gameFactory.PlayerGameObject.TryGetComponent(out PlayerMovement playerMovement))
+                playerMovement.enabled = isEnabled;
         }
 
         private void OnLevelUp(int newLevel)
@@ -59,7 +84,6 @@ namespace CodeBase.Infrastructure.States
 
         private void OnRunCompleted()
         {
-            // Launched outside the map flow (e.g. direct editor play): keep the old behaviour.
             if (_selectedLevel.SelectedNode == null)
             {
                 _stateMachine.Enter<WinState>();
@@ -67,8 +91,7 @@ namespace CodeBase.Infrastructure.States
             }
 
             bool wasBoss = _selectedLevel.SelectedNode.IsBoss;
-
-            // Passive recovery between nodes.
+            
             _persistentProgress.Progress.playerState.Heal(HealAfterRun);
 
             _mapService.CompleteSelectedNode();

@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using CodeBase.Infrastructure.Services.Audio;
+using UnityEngine;
 using CodeBase.Player.Movement;
 using CodeBase.StaticData.Ability;
 
@@ -13,20 +14,25 @@ namespace CodeBase.Ability.Concrete
         private float dashTimer;
         private Vector2 dashDirection;
         private Vector2 originalVelocity;
+        private readonly IAudioService _audioService;
 
         public DashAbility(
             Transform playerTransform,
             Rigidbody2D playerRb,
             PlayerMovement playerMovement,
-            DashAbilityData staticData) 
+            DashAbilityData staticData, 
+            IAudioService audioService) 
             : base(playerTransform, playerRb, staticData)
         {
             this.playerMovement = playerMovement;
             dashData = staticData;
+            _audioService = audioService;
         }
+        
 
         protected override void OnExecute()
         {
+            _audioService.PlaySfx(AudioClipId.Dash);
             // Зберігаємо поточну швидкість
             originalVelocity = playerRb.linearVelocity;
             

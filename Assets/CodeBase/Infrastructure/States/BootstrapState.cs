@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using System.Collections;
+using System.ComponentModel;
 using CodeBase.Infrastructure.AssetManagement;
 using CodeBase.Infrastructure.Factory;
 using CodeBase.Infrastructure.Services;
@@ -6,12 +7,15 @@ using CodeBase.Infrastructure.Services.Audio;
 using CodeBase.Infrastructure.Services.Balance;
 using CodeBase.Infrastructure.Services.Buff;
 using CodeBase.Infrastructure.Services.CritDamage;
+using CodeBase.Infrastructure.Services.HitFeel;
 using CodeBase.Infrastructure.Services.Inputs;
 using CodeBase.Infrastructure.Services.Map;
+using CodeBase.Infrastructure.Services.Music;
 using CodeBase.Infrastructure.Services.PersistentProgress;
 using CodeBase.Infrastructure.Services.ProgressService;
 using CodeBase.Infrastructure.Services.SaveLoad;
 using CodeBase.Infrastructure.Services.SelectedLevel;
+using CodeBase.Infrastructure.Services.Settings;
 using CodeBase.Infrastructure.Services.ShopService;
 using CodeBase.Infrastructure.Services.Upgrade;
 using CodeBase.Player;
@@ -58,9 +62,16 @@ namespace CodeBase.Infrastructure.States
         {
             RegisterStaticData();
             
+            ISettingsService settings = new SettingsService();
+            settings.Load();
+            _services.RegisterSingle(settings);
+            // Сервіси реєструються в Awake, а AudioMixer.SetFloat до першого кадру не спрацьовує —
+            // тому збережену гучність застосовуємо ще раз на наступному кадрі.
+            _coroutineRunner.StartCoroutine(ApplyAudioSettingsNextFrame(settings));
+            
             _services.RegisterSingle<IGameStateMachine>(_stateMachine);
             RegisterAssetsProvider();
-            
+            _services.RegisterSingle<IMusicService>(new MusicService(_services.Single<IStaticDataService>().GetMusic(), _coroutineRunner));
             _services.RegisterSingle<IInputService>(InputService());
             _services.RegisterSingle<IPersistentProgressService>( new PersistentProgressService());
             _services.RegisterSingle<IProgressService>(new ProgressService(_services.Single<IPersistentProgressService>()));
@@ -83,6 +94,8 @@ namespace CodeBase.Infrastructure.States
                 _services.Single<IPersistentProgressService>(),
                 _services.Single<ISelectedLevelService>()));
             _services.RegisterSingle<ICritDamageService>(new CritDamageService());
+            _services.RegisterSingle<IHitFeelService>(new HitFeelService(_coroutineRunner));
+            _services.RegisterSingle<IAudioService>(new AudioService(_services.Single<IStaticDataService>().GetAudio()));
             _services.RegisterSingle<IGameFactory>(new GameFactory(
                 _services.Single<IAssets>(),
                 _services.Single<IStaticDataService>(),
@@ -93,13 +106,19 @@ namespace CodeBase.Infrastructure.States
                 _services.Single<IShopService>(),
                 _services.Single<IBuffService>(),
                 _services.Single<ISelectedLevelService>(),
-                _services.Single<ICritDamageService>()));
+                _services.Single<ICritDamageService>(), 
+                _services.Single<IAudioService>()));
             _services.RegisterSingle<ISaveLoadService>( new SaveLoadService(
                 _services.Single<IPersistentProgressService>(),
                 _services.Single<IGameFactory>()));
-            _services.RegisterSingle<IAudioService>(new AudioService(_services.Single<IStaticDataService>().GetAudio()));
         }
         
+        private static IEnumerator ApplyAudioSettingsNextFrame(ISettingsService settings)
+        {
+            yield return null;
+            settings.ApplyAudio();
+        }
+
         private void RegisterAssetsProvider()
         {
             AssetsProvider assetsProvider = new AssetsProvider();

@@ -1,4 +1,5 @@
-﻿using CodeBase.Common;
+﻿using System.Collections.Generic;
+using CodeBase.Common;
 using CodeBase.Data;
 using CodeBase.Infrastructure.Services;
 using CodeBase.Infrastructure.Services.Audio;
@@ -18,6 +19,12 @@ namespace CodeBase.Weapon.ArrowWeapon
         [Range(0f, 100f)]
         [SerializeField] private float _maxMissChance = 70f;
 
+        private const float TargetSearchInterval = 0.1f;
+
+        // Спільний буфер для пошуку цілей: без алокації масиву на кожен запит.
+        private static readonly List<Collider2D> TargetBuffer = new List<Collider2D>(64);
+
+        private ContactFilter2D _targetFilter;
         private IAudioService _audioService;
         private State _state;
         private float _detectionRadius;
@@ -69,6 +76,12 @@ namespace CodeBase.Weapon.ArrowWeapon
             _audioService = AllServices.Container.Single<IAudioService>();
             _launcher = GetComponent<ProjectileLauncher>();
             _hittableLayer = PhysicsLayers.HittableMask;
+            _targetFilter = new ContactFilter2D
+            {
+                useLayerMask = true,
+                layerMask = _hittableLayer,
+                useTriggers = Physics2D.queriesHitTriggers
+            };
             _shootTimer = _shootRate;
         }
 
@@ -78,7 +91,12 @@ namespace CodeBase.Weapon.ArrowWeapon
             if (_shootTimer > 0f) return;
 
             Transform nearestTarget = FindNearestTarget();
-            if (nearestTarget == null) return;
+            if (nearestTarget == null)
+            {
+                // Цілей немає — не скануємо фізику щокадру, а пробуємо знову через короткий інтервал.
+                _shootTimer = TargetSearchInterval;
+                return;
+            }
 
             _shootTimer = Cooldown;
 
@@ -122,27 +140,34 @@ namespace CodeBase.Weapon.ArrowWeapon
             // і відхилить точку прильоту (тим сильніше, чим більша missSeverity), замість накладання
             // нульового урону.
             float damage = isMiss ? 0f : ApplyCritDamage();
-            _launcher.Launch(target, _projectileMaxMoveSpeed, damage, isMiss, missSeverity);
+
+            // Крит кидається тут, а влучання станеться пізніше — тому ознаку криту везе сама стріла.
+            bool isCritical = !isMiss && _critDamageService.LastHitWasCritical;
+
+            _launcher.Launch(target, _projectileMaxMoveSpeed, damage, isMiss, missSeverity, isCritical);
         }
 
         private Transform FindNearestTarget()
         {
-            Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, _detectionRadius, _hittableLayer);
-            if (hits.Length == 0) return null;
+            Vector2 origin = transform.position;
+            int count = Physics2D.OverlapCircle(origin, _detectionRadius, _targetFilter, TargetBuffer);
+            if (count == 0) return null;
 
             Transform nearest = null;
-            float minDist = float.MaxValue;
+            float minSqrDist = float.MaxValue;
 
-            foreach (var hit in hits)
+            for (int i = 0; i < count; i++)
             {
-                float dist = Vector2.Distance(transform.position, hit.transform.position);
-                if (dist < minDist)
+                Transform candidate = TargetBuffer[i].transform;
+                float sqrDist = ((Vector2)candidate.position - origin).sqrMagnitude;
+                if (sqrDist < minSqrDist)
                 {
-                    minDist = dist;
-                    nearest = hit.transform;
+                    minSqrDist = sqrDist;
+                    nearest = candidate;
                 }
             }
 
+            TargetBuffer.Clear();
             return nearest;
         }
 

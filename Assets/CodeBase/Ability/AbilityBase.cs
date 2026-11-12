@@ -1,11 +1,13 @@
 ﻿using UnityEngine;
 using CodeBase.StaticData;
+using CodeBase.StaticData.Ability;
 
 namespace CodeBase.Ability
 {
     public abstract class AbilityBase : IAbility
     {
         public string AbilityName { get; protected set; }
+        public Sprite Icon { get; protected set; }
         public float Cooldown { get; protected set; }
         public float RemainingCooldown { get; protected set; }
         public bool IsReady => RemainingCooldown <= 0f;
@@ -21,6 +23,7 @@ namespace CodeBase.Ability
             this.playerTransform = playerTransform;
             this.playerRb = playerRb;
             AbilityName = staticData.menuName;
+            Icon = staticData.abilityIcon; // NEW
             Cooldown = staticData.abilityCooldown;
             RemainingCooldown = 0f;
         }

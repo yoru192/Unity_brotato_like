@@ -71,6 +71,9 @@ namespace CodeBase.Player
             HealthChanged?.Invoke();
         }
 
+        /// <summary>Для гравця крит наразі нічим не відрізняється від звичайного урону.</summary>
+        public void TakeDamage(float damage, bool isCritical) => TakeDamage(damage);
+
         /// <summary>Ворог цілився в гравця, але промазав. Наразі без візуалізації — метод потрібен для IHealth.</summary>
         public void Miss()
         {

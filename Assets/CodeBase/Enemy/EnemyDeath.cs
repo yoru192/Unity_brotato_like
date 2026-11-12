@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using Assets.FantasyMonsters.Common.Scripts;
 using CodeBase.Infrastructure.Services.Balance;
 using CodeBase.Infrastructure.Services.ProgressService;
@@ -26,6 +27,9 @@ namespace CodeBase.Enemy
         private XpOrbSet _xpOrbSet;
         private Transform _playerTransform;
 
+        private readonly List<Collider2D> _disabledOnDeath = new List<Collider2D>();
+        private readonly List<Collider2D> _colliderBuffer = new List<Collider2D>();
+
         public bool IsConstructed { get; set; }
 
         public void Construct(IBalanceService balanceService, IProgressService progressService, EnemyStaticData enemyData, XpOrbSet xpOrbSet, Transform playerTransform)
@@ -42,6 +46,8 @@ namespace CodeBase.Enemy
 
         private void OnEnable()
         {
+            SetCollidersEnabled(true);
+
             if (IsConstructed)
             {
                 _monster = GetComponentInChildren<Monster>();
@@ -71,9 +77,33 @@ namespace CodeBase.Enemy
             if (TryGetComponent<IAstarAI>(out var ai)) ai.isStopped = true;
             if (TryGetComponent<EnemyAttack>(out var attack)) attack.enabled = false;
             if (TryGetComponent<EnemyMover>(out var mover)) mover.enabled = false;
+            if (TryGetComponent<EnemyRangerAttack>(out var ranger)) ranger.enabled = false;
+
+            // Труп не повинен бути ціллю для зброї гравця, поки грає анімація смерті.
+            SetCollidersEnabled(false);
 
             _monster.Die();
             StartCoroutine(DestroyAfterAnimation());
+        }
+
+        private void SetCollidersEnabled(bool value)
+        {
+            if (value)
+            {
+                foreach (Collider2D col in _disabledOnDeath)
+                    if (col != null) col.enabled = true;
+                _disabledOnDeath.Clear();
+                return;
+            }
+
+            GetComponentsInChildren(_colliderBuffer);
+            foreach (Collider2D col in _colliderBuffer)
+            {
+                if (!col.enabled) continue;
+                col.enabled = false;
+                _disabledOnDeath.Add(col);
+            }
+            _colliderBuffer.Clear();
         }
 
         private void SpawnXpOrbs()

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using CodeBase.Ability;
 using CodeBase.Infrastructure.Services;
 using CodeBase.Infrastructure.Services.PersistentProgress;
 using CodeBase.Logic;
@@ -17,6 +18,8 @@ namespace CodeBase.Infrastructure.Factory
         List<ISavedProgress> ProgressWriters { get; }
         WaveController WaveController { get; }
         PauseInputHandler PauseInputHandler { get; }
+        AbilityController AbilityController { get; }
+        GameObject PlayerGameObject { get; set; }
         Task WarmUp();
         void Cleanup();
         Task<GameObject> CreatePlayer(Vector3 at, HeroTypeId heroType);

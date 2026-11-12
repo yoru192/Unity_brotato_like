@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using CodeBase.Data;
 using CodeBase.Infrastructure.Services;
+using CodeBase.StaticData.Ability;
 using CodeBase.StaticData.Enemy;
 using CodeBase.StaticData.Hero;
 using CodeBase.StaticData.Map;
@@ -22,5 +23,6 @@ namespace CodeBase.StaticData
         MapStaticData GetMapSettings();
         MapLevelLibrary GetMapLevelLibrary();
         AudioStaticData GetAudio();
+        MusicStaticData GetMusic();
     }
 }

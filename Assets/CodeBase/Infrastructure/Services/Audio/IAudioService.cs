@@ -17,6 +17,9 @@ namespace CodeBase.Infrastructure.Services.Audio
         ArrowShoot,
         ShopItemPick,
         CampfireButtonPick,
-        Campfire
+        Campfire,
+        Walk,
+        Run,
+        Dash
     }
 }

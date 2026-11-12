@@ -16,11 +16,13 @@ namespace CodeBase.Weapon.ArrowWeapon
         [SerializeField] private AnimationCurve _speedCurve;
 
         /// <param name="missSeverity">0..1, наскільки далеко за межею гарантованого влучання стався постріл. Впливає на радіус відхилу при промаху.</param>
-        public void Launch(Transform target, float speed, float damage, bool isMiss = false, float missSeverity = 0f)
+        /// <param name="isCritical">Чи був цей постріл критичним. Летить разом зі снарядом і застосовується в момент влучання.</param>
+        public void Launch(Transform target, float speed, float damage, bool isMiss = false, float missSeverity = 0f,
+            bool isCritical = false)
         {
             var go = ObjectPoolManager.SpawnObject(_projectilePrefab, transform.position, Quaternion.identity, ObjectPoolManager.PoolType.Projectile);
             var projectile = go.GetComponent<Projectile>();
-            projectile.InitializeProjectile(target, speed, _arcHeight, damage, isMiss, missSeverity);
+            projectile.InitializeProjectile(target, speed, _arcHeight, damage, isMiss, missSeverity, isCritical);
             if (_speedCurve != null && _speedCurve.keys.Length > 0)
                 projectile.InitializeSpeedCurve(_speedCurve);
             projectile.Launch();

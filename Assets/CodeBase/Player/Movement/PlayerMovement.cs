@@ -1,5 +1,7 @@
 ﻿using Assets.HeroEditor.Common.Scripts.CharacterScripts;
 using CodeBase.Data;
+using CodeBase.Infrastructure.Services;
+using CodeBase.Infrastructure.Services.Audio;
 using CodeBase.Infrastructure.Services.PersistentProgress;
 using CodeBase.StaticData.Hero;
 using UnityEngine;
@@ -14,10 +16,13 @@ namespace CodeBase.Player.Movement
         private Vector2 _moveInput;
         private HeroStaticData _heroData;
         private State _state;
+        private IAudioService _audioService;
+        private AudioClipId? _currentMovementClip;
 
         public void Construct(HeroStaticData heroData)
         {
             _heroData = heroData;
+            _audioService = AllServices.Container.Single<IAudioService>();
         }
         
         public bool IsSprinting { get; set; }
@@ -44,6 +49,7 @@ namespace CodeBase.Player.Movement
         private void OnDisable()
         {
             _controls.Disable();
+            StopMovementSound();
         }
 
         private void FixedUpdate()
@@ -56,6 +62,7 @@ namespace CodeBase.Player.Movement
         {
             UpdateCharacterState();
             UpdateDirection();
+            UpdateMovementSound();
         }
 
         private void UpdateCharacterState()
@@ -77,6 +84,35 @@ namespace CodeBase.Player.Movement
                 int facingDirection = _rb.linearVelocity.x > 0 ? 1 : -1;
                 transform.localScale = new Vector3(facingDirection, 1, 1);
             }
+        }
+
+        private void UpdateMovementSound()
+        {
+            if (_audioService == null) return;
+
+            bool isDead = _character != null && _character.GetState() >= CharacterState.DeathB;
+            bool isMoving = !isDead && _rb.linearVelocity.magnitude > 0.1f;
+
+            if (!isMoving)
+            {
+                StopMovementSound();
+                return;
+            }
+
+            AudioClipId desiredClip = IsSprinting ? AudioClipId.Run : AudioClipId.Walk;
+            if (_currentMovementClip == desiredClip) return;
+
+            StopMovementSound();
+            _audioService.PlayLoop(desiredClip);
+            _currentMovementClip = desiredClip;
+        }
+
+        private void StopMovementSound()
+        {
+            if (_currentMovementClip == null) return;
+
+            _audioService.StopLoop(_currentMovementClip.Value);
+            _currentMovementClip = null;
         }
 
         public void LoadProgress(PlayerProgress progress)

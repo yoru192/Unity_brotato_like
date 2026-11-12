@@ -26,6 +26,7 @@ namespace CodeBase.Weapon
 
         private PolygonCollider2D _attackCollider;
         private readonly List<Collider2D> _triggeredTargets = new();
+        private readonly List<Collider2D> _hitBuffer = new();
         private float _damage;
         private ICritDamageService _critDamageService;
         private int _critChance;
@@ -115,16 +116,23 @@ namespace CodeBase.Weapon
         private void OnAttackHit()
         {
             if (!_isAttacking) return;
-            foreach (var target in _triggeredTargets.ToList())
+            // Копія в багаторазовий буфер: смерть цілі під час удару змінює _triggeredTargets.
+            _hitBuffer.Clear();
+            _hitBuffer.AddRange(_triggeredTargets);
+
+            foreach (Collider2D target in _hitBuffer)
             {
+                if (target == null) continue;
                 target.GetComponentInParent<IHealth>()?.TakeDamage(ApllyCritDamage());
             }
+
+            _hitBuffer.Clear();
                 
         }
 
         private void OnAttackEnded()
         {
-            _currentCooldown = _cooldown;
+            _currentCooldown = Cooldown;
             _isAttacking = false;
         }
         

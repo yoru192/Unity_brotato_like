@@ -1,6 +1,7 @@
 ﻿using System;
 using CodeBase.Infrastructure.Services;
 using CodeBase.Infrastructure.Services.CritDamage;
+using CodeBase.Infrastructure.Services.Settings;
 using CodeBase.Logic;
 using CodeBase.UI.Elements;
 using UnityEngine;
@@ -20,9 +21,12 @@ namespace CodeBase.Enemy
         [SerializeField] private float spawnOffsetY = 0.2f;
 
         private ICritDamageService _critDamageService;
-        private bool _lastHitWasCritical;
+        private ISettingsService _settings;
 
         public event Action HealthChanged;
+
+        /// <summary>Ворог отримав урон: (величина урону, чи був це крит).</summary>
+        public event Action<float, bool> Damaged;
 
         public float Current { get => current; set => current = value; }
         public float Max { get => max; set => max = value; }
@@ -30,37 +34,35 @@ namespace CodeBase.Enemy
         private void Awake()
         {
             _critDamageService = AllServices.Container.Single<ICritDamageService>();
+            _settings = AllServices.Container.Single<ISettingsService>();
         }
 
-        private void OnEnable()
-        {
-            _critDamageService.OnGetCritDamage += RememberCrit;
-        }
+        /// <summary>
+        /// Урон без явної ознаки криту: беремо результат останнього кидка із сервісу.
+        /// Коректно лише коли кидок і удар відбуваються одразу один за одним (меч).
+        /// </summary>
+        public void TakeDamage(float damage) =>
+            TakeDamage(damage, _critDamageService != null && _critDamageService.LastHitWasCritical);
 
-        private void OnDisable()
+        public void TakeDamage(float damage, bool isCritical)
         {
-            _critDamageService.OnGetCritDamage -= RememberCrit;
-        }
+            if (Current <= 0) return;
 
-        private void RememberCrit(float damage, bool isCritical)
-        {
-            _lastHitWasCritical = isCritical;
-        }
-
-        public void TakeDamage(float damage)
-        {
             Vector3 spawnPos = GetSpawnPosition();
 
             Current -= damage;
 
-            SpawnDamageNumber(damage, spawnPos, _lastHitWasCritical);
+            SpawnDamageNumber(damage, spawnPos, isCritical);
 
+            Damaged?.Invoke(damage, isCritical);
             HealthChanged?.Invoke();
         }
 
         /// <summary>Атака була спрямована на цього ворога, але промазала. HP не змінюється, крит не рахуємо.</summary>
         public void Miss()
         {
+            if (Current <= 0) return;
+
             Vector3 spawnPos = GetSpawnPosition();
             SpawnDamageNumber(0f, spawnPos, isCritical: false, isMiss: true);
         }
@@ -79,6 +81,8 @@ namespace CodeBase.Enemy
 
         private void SpawnDamageNumber(float damage, Vector3 spawnPos, bool isCritical, bool isMiss = false)
         {
+            if (_settings != null && !_settings.DamageNumbers)
+                return;
             if (damageNumberPrefab == null)
             {
                 Debug.LogWarning("DamageNumber prefab не призначений!", this);
@@ -91,13 +95,9 @@ namespace CodeBase.Enemy
                 return;
             }
 
-            GameObject go = Instantiate(
-                damageNumberPrefab,
-                spawnPos,
-                Quaternion.identity,
-                DamageNumberCanvas.Instance.Canvas.transform);
-
-            go.GetComponent<DamageNumber>().Initialize(damage, isCritical, isMiss);
+            DamageNumber number = DamageNumberCanvas.Instance.Spawn(damageNumberPrefab, spawnPos);
+            if (number != null)
+                number.Initialize(damage, isCritical, isMiss);
         }
     }
 }

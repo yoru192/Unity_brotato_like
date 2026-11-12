@@ -2,6 +2,7 @@
 using System.Linq;
 using CodeBase.StaticData;
 using UnityEngine;
+using UnityEngine.Audio;
 
 namespace CodeBase.Infrastructure.Services.Audio
 {
@@ -14,9 +15,11 @@ namespace CodeBase.Infrastructure.Services.Audio
         private readonly Dictionary<AudioClipId, AudioSource> _loopSources = new();
         private GameObject _audioPoolGo;
         private float _masterVolume = 1f;
+        private readonly AudioMixerGroup _sfxGroup;
 
         public AudioService(AudioStaticData data)
         {
+            _sfxGroup = data.sfxGroup;
             foreach (var entry in data.entries)
                 _clips[entry.id] = entry;
             
@@ -29,6 +32,7 @@ namespace CodeBase.Infrastructure.Services.Audio
                 var source = go.AddComponent<AudioSource>();
                 source.playOnAwake = false;
                 source.spatialBlend = 0f;
+                source.outputAudioMixerGroup = _sfxGroup;
                 _pool.Add(source);
             }
         }
@@ -65,6 +69,7 @@ namespace CodeBase.Infrastructure.Services.Audio
             var source = _audioPoolGo.AddComponent<AudioSource>();
             source.playOnAwake = false;
             source.spatialBlend = 0f;
+            source.outputAudioMixerGroup = _sfxGroup;
             source.loop = true;
             source.clip = entry.clip;
             source.volume = entry.volume * _masterVolume;
@@ -104,7 +109,13 @@ namespace CodeBase.Infrastructure.Services.Audio
 
         private AudioSource GetFreeSource()
         {
-            return _pool.FirstOrDefault(s => !s.isPlaying) ?? _pool[0];
+            for (int i = 0; i < _pool.Count; i++)
+            {
+                if (!_pool[i].isPlaying)
+                    return _pool[i];
+            }
+
+            return _pool[0];
         }
     }
 }

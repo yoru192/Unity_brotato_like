@@ -5,6 +5,7 @@ using CodeBase.Ability.Concrete;
 using CodeBase.Enemy;
 using CodeBase.Loot;
 using CodeBase.Infrastructure.AssetManagement;
+using CodeBase.Infrastructure.Services.Audio;
 using CodeBase.Infrastructure.Services.Balance;
 using CodeBase.Infrastructure.Services.Buff;
 using CodeBase.Infrastructure.Services.CritDamage;
@@ -37,6 +38,8 @@ namespace CodeBase.Infrastructure.Factory
         public GameObject PlayerGameObject { get; set; }
         public WaveController WaveController { get; private set; }
         public PauseInputHandler PauseInputHandler { get; private set; }
+        
+        public AbilityController AbilityController { get; private set; }
 
         private readonly IAssets _assets;
         private readonly IStaticDataService _staticData;
@@ -48,6 +51,7 @@ namespace CodeBase.Infrastructure.Factory
         private readonly IBuffService _buffService;
         private readonly ISelectedLevelService _selectedLevel;
         private readonly ICritDamageService _critDamageService;
+        private readonly IAudioService _audioService;
 
         public GameFactory(IAssets assets,
             IStaticDataService staticData,
@@ -58,7 +62,8 @@ namespace CodeBase.Infrastructure.Factory
             IShopService shopService,
             IBuffService buffService,
             ISelectedLevelService selectedLevel,
-            ICritDamageService critDamageService)
+            ICritDamageService critDamageService,
+            IAudioService audioService)
         {
             _assets = assets;
             _staticData = staticData;
@@ -70,6 +75,7 @@ namespace CodeBase.Infrastructure.Factory
             _buffService = buffService;
             _selectedLevel = selectedLevel;
             _critDamageService = critDamageService;
+            _audioService = audioService;
         }
 
         public async Task WarmUp()
@@ -86,6 +92,8 @@ namespace CodeBase.Infrastructure.Factory
             PlayerGameObject.GetComponent<PlayerStamina>()
                 .Construct(_persistentProgress, _upgradeService, heroData);
             PlayerGameObject.GetComponent<PlayerHealth>().Construct(heroData, _persistentProgress);
+            if (!PlayerGameObject.TryGetComponent<PlayerHitFeedback>(out _))
+                PlayerGameObject.AddComponent<PlayerHitFeedback>();
 
             WeaponHolder weaponHolder = PlayerGameObject.GetComponentInChildren<WeaponHolder>();
             // First run uses the hero's starter weapons; later runs re-equip everything owned
@@ -99,7 +107,8 @@ namespace CodeBase.Infrastructure.Factory
 
             AbilityController abilityController = PlayerGameObject.AddComponent<AbilityController>();
             PlayerAbilityInput abilityInput = PlayerGameObject.AddComponent<PlayerAbilityInput>();
-
+            AbilityController = abilityController;
+            
             Rigidbody2D playerRb = PlayerGameObject.GetComponent<Rigidbody2D>();
             PlayerMovement playerMovement = PlayerGameObject.GetComponent<PlayerMovement>();
 
@@ -107,7 +116,11 @@ namespace CodeBase.Infrastructure.Factory
             if (dashData != null)
             {
                 DashAbility dashAbility = new DashAbility(
-                    PlayerGameObject.transform, playerRb, playerMovement, dashData);
+                    PlayerGameObject.transform,
+                    playerRb,
+                    playerMovement,
+                    dashData,
+                    _audioService);
                 abilityController.AddAbility(dashAbility);
             }
 
@@ -169,7 +182,8 @@ namespace CodeBase.Infrastructure.Factory
                 rangedWeaponData,
                 _upgradeService,
                 _staticData,
-                _buffService
+                _buffService,
+                AbilityController
             );
 
             if (WaveController != null)
@@ -264,6 +278,9 @@ namespace CodeBase.Infrastructure.Factory
             enemy.GetComponent<EnemyDeath>().Construct(_balanceService, _progress, enemyData, xpOrbSet, PlayerGameObject.transform);
             enemy.GetComponent<ActorUI>().Construct(enemy.GetComponent<IHealth>());
             enemy.GetComponentInChildren<EnemyGFX>().Construct(enemyData.spriteScale);
+
+            if (!enemy.TryGetComponent<EnemyHitFeedback>(out _))
+                enemy.AddComponent<EnemyHitFeedback>();
 
             enemy.GetComponent<EnemyDeath>().IsConstructed = true;
         }

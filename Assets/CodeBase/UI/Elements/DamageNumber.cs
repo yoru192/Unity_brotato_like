@@ -27,6 +27,8 @@ namespace CodeBase.UI.Elements
         private float _timer;
         private float _directionX;
         private TypewriterByCharacter _typewriter;
+        private DamageNumberCanvas _pool;
+        private GameObject _prefab;
 
         private void Awake()
         {
@@ -67,6 +69,21 @@ namespace CodeBase.UI.Elements
 
             _timer -= Time.deltaTime;
             if (_timer <= 0f)
+                Despawn();
+        }
+
+        /// <summary>Викликається пулом одразу після створення екземпляра.</summary>
+        public void SetPool(DamageNumberCanvas pool, GameObject prefab)
+        {
+            _pool = pool;
+            _prefab = prefab;
+        }
+
+        private void Despawn()
+        {
+            if (_pool != null)
+                _pool.Release(this, _prefab);
+            else
                 Destroy(gameObject);
         }
 

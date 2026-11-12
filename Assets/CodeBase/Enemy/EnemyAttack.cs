@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using Assets.FantasyMonsters.Common.Scripts;
 using CodeBase.Common;
 using CodeBase.Logic;
@@ -25,11 +24,13 @@ namespace CodeBase.Enemy
         private int _layerMask;
         private bool _attackIsActive;
         private Collider2D _enemyCollider;
+        private Collider2D _playerCollider;
 
         public void Construct(Transform playerTransform, float attackCooldown,
             float radius, int damage)
         {
             _playerTransform = playerTransform;
+            _playerCollider = playerTransform != null ? playerTransform.GetComponent<Collider2D>() : null;
             _attackCooldown = attackCooldown;
             _radius = radius;
             _damage = damage;
@@ -102,7 +103,7 @@ namespace CodeBase.Enemy
                 _hits, 
                 _layerMask);
             
-            hit = _hits.FirstOrDefault();
+            hit = hitAmount > 0 ? _hits[0] : null;
             return hitAmount > 0;
         }
 
@@ -115,9 +116,9 @@ namespace CodeBase.Enemy
         {
             if (!_isAttacking && CooldownIsUp())
             {
-                if (_playerTransform.TryGetComponent<Collider2D>(out var playerCollider))
+                if (_playerCollider != null)
                 {
-                    ColliderDistance2D distanceInfo = Physics2D.Distance(_enemyCollider, playerCollider);
+                    ColliderDistance2D distanceInfo = Physics2D.Distance(_enemyCollider, _playerCollider);
                     return distanceInfo.distance <= _radius;
                 }
                 else

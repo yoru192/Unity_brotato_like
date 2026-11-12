@@ -129,6 +129,9 @@ MonoBehaviour:
   _homingDuration: 1
   _predictionIterations: 2
   _hitRadius: 0.5
+  _missOffsetMin: 0.6
+  _missOffsetMax: 2.2
+  _missOffsetJitter: 0.15
 --- !u!96 &3147168166183863233
 TrailRenderer:
   serializedVersion: 4

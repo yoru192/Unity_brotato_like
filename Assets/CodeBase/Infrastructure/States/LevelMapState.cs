@@ -1,4 +1,5 @@
 using CodeBase.Infrastructure.Services.Map;
+using CodeBase.Infrastructure.Services.Music;
 using UnityEngine;
 
 namespace CodeBase.Infrastructure.States
@@ -14,18 +15,21 @@ namespace CodeBase.Infrastructure.States
         private readonly GameStateMachine _stateMachine;
         private readonly SceneLoader _sceneLoader;
         private readonly IMapService _mapService;
+        private readonly IMusicService _music;
 
-        public LevelMapState(GameStateMachine stateMachine, SceneLoader sceneLoader, IMapService mapService)
+        public LevelMapState(GameStateMachine stateMachine, SceneLoader sceneLoader, IMapService mapService, IMusicService musicService)
         {
             _stateMachine = stateMachine;
             _sceneLoader = sceneLoader;
             _mapService = mapService;
+            _music =  musicService;
         }
 
         public void Enter()
         {
             Debug.Log("Entering LevelMapState");
             _mapService.EnsureMap();
+            _music.Play(MusicTrackId.Map);
 
             // A finished map (boss cleared) has no reachable nodes — start a fresh run.
             if (_mapService.IsMapCompleted)

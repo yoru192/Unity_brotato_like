@@ -58,6 +58,7 @@ namespace CodeBase.Weapon.ArrowWeapon
         private float _damage;
         private float _maxSpeed;
         private bool _isMiss;
+        private bool _isCritical;
         private Vector3 _missOffset;
         
         private Vector3 _startPoint;
@@ -187,7 +188,7 @@ namespace CodeBase.Weapon.ArrowWeapon
             }
 
             if (Vector3.Distance(transform.position, _target.position) < _hitRadius * 2f)
-                health.TakeDamage(_damage);
+                health.TakeDamage(_damage, _isCritical);
         }
         
         private void RecalculateFlightDuration()
@@ -212,8 +213,9 @@ namespace CodeBase.Weapon.ArrowWeapon
         /// точки прильоту при <paramref name="isMiss"/> == true; на сам факт промаху не впливає.
         /// </param>
         public void InitializeProjectile(Transform target, float maxSpeed, float arcHeight, float damage,
-            bool isMiss = false, float missSeverity = 0f)
+            bool isMiss = false, float missSeverity = 0f, bool isCritical = false)
         {
+            _isCritical = isCritical && !isMiss;
             _target = target;
             _maxSpeed = maxSpeed;
             _arcHeight = arcHeight;

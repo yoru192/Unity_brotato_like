@@ -17,7 +17,10 @@ namespace CodeBase.Enemy
         private float _damage;
 
         private ProjectileLauncher _launcher;
+        private const float TargetSearchInterval = 0.1f;
+
         private float _shootTimer;
+        private bool _isReady;
         private int _playerLayer;
 
         public void Construct(int damage, float shootRate, float projectileSpeed, float radius)
@@ -39,12 +42,25 @@ namespace CodeBase.Enemy
         {
             _shootTimer -= Time.deltaTime;
             if (_shootTimer > 0f) return;
-            OnCooldownEnded?.Invoke();
+
+            // Подію шлемо один раз на кулдаун, а не щокадру, поки чекаємо на ціль.
+            if (!_isReady)
+            {
+                _isReady = true;
+                OnCooldownEnded?.Invoke();
+            }
+
             Transform target = FindTarget();
-            if (target == null) return;
+            if (target == null)
+            {
+                // Гравець поза радіусом — не скануємо фізику щокадру.
+                _shootTimer = TargetSearchInterval;
+                return;
+            }
 
             SpawnProjectile(target);
             _shootTimer = _shootRate;
+            _isReady = false;
             OnCooldownStarted?.Invoke();
         }
 

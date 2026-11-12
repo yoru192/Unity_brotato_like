@@ -100,3 +100,6 @@ InitTestScene*.unity*
 
 # Claude Code
 .claude/
+
+# Claude Code project instructions (local only)
+CLAUDE.md

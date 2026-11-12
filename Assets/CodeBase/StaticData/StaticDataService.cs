@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using CodeBase.StaticData.Ability;
 using CodeBase.StaticData.Enemy;
 using CodeBase.StaticData.Hero;
 using CodeBase.StaticData.Map;
@@ -21,6 +22,7 @@ namespace CodeBase.StaticData
         private MapStaticData _mapSettings;
         private MapLevelLibrary _mapLevelLibrary;
         private AudioStaticData _audio;
+        private MusicStaticData _music;
 
 
         public void Load()
@@ -43,6 +45,7 @@ namespace CodeBase.StaticData
             _mapSettings = Resources.Load<MapStaticData>("StaticData/Map/MapStaticData");
             _mapLevelLibrary = Resources.Load<MapLevelLibrary>("StaticData/Map/MapLevelLibrary");
             _audio = Resources.Load<AudioStaticData>("StaticData/Audio/AudioStaticData");
+            _music = Resources.Load<MusicStaticData>("StaticData/Audio/MusicStaticData");
         }
         
         public LevelStaticData ForLevel(string sceneKey) =>
@@ -73,7 +76,8 @@ namespace CodeBase.StaticData
 
         public MapStaticData GetMapSettings() => _mapSettings;
         public MapLevelLibrary GetMapLevelLibrary() => _mapLevelLibrary;
-
         public AudioStaticData GetAudio() => _audio;
+        public MusicStaticData GetMusic() => _music;
+        
     }
 }
