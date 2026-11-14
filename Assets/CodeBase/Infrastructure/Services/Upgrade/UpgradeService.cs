@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using CodeBase.Data;
+using CodeBase.Infrastructure.Services.Perk;
 using CodeBase.Infrastructure.Services.PersistentProgress;
 using CodeBase.StaticData;
+using CodeBase.StaticData.Perk;
 using CodeBase.StaticData.Weapon;
 using UnityEngine;
 using Random = UnityEngine.Random;
@@ -18,11 +20,14 @@ namespace CodeBase.Infrastructure.Services.Upgrade
         public event Action OnUpgradeMoveSpeed;
         private IStaticDataService _staticData;
         private readonly IPersistentProgressService _progressService;
+        private readonly IPerkService _perkService;
 
-        public UpgradeService(IStaticDataService staticDataService, IPersistentProgressService progressService)
+        public UpgradeService(IStaticDataService staticDataService, IPersistentProgressService progressService,
+            IPerkService perkService)
         {
             _staticData =  staticDataService;
             _progressService = progressService;
+            _perkService = perkService;
         }
         private PlayerProgress Progress => _progressService.Progress;
         private State PlayerState => Progress.playerState;
@@ -31,7 +36,14 @@ namespace CodeBase.Infrastructure.Services.Upgrade
         
         public List<UpgradeStaticData> GenerateUpgradeOptions(int count = 4)
         {
-            List<UpgradeStaticData> allUpgrades = _staticData.GetAllUpgrades();
+            // Лише ті апгрейди, що зараз мають сенс (напр. перк для лука не пропонуємо без лука).
+            List<UpgradeStaticData> allUpgrades = new List<UpgradeStaticData>();
+            foreach (UpgradeStaticData candidate in _staticData.GetAllUpgrades())
+            {
+                if (IsAvailable(candidate))
+                    allUpgrades.Add(candidate);
+            }
+
             List<UpgradeStaticData> remaining = new List<UpgradeStaticData>(allUpgrades);
 
             List<UpgradeStaticData> selected = new List<UpgradeStaticData>();
@@ -51,8 +63,34 @@ namespace CodeBase.Infrastructure.Services.Upgrade
             return selected;
         }
         
+        private bool IsAvailable(UpgradeStaticData upgrade)
+        {
+            if (upgrade == null) return false;
+            if (!upgrade.IsPerk) return true;
+
+            if (upgrade.maxPicks > 0 && _perkService.GetPicks(upgrade.perkId) >= upgrade.maxPicks)
+                return false;
+
+            switch (upgrade.perkId)
+            {
+                case PerkId.MultiShot:
+                    return PlayerState.OwnedWeapons.Contains(WeaponTypeId.Arrow);
+                case PerkId.WideSwing:
+                case PerkId.Vampirism:
+                    return PlayerState.OwnedWeapons.Contains(WeaponTypeId.Melee);
+                default:
+                    return true;
+            }
+        }
+
         public void ApplyUpgrade(UpgradeStaticData upgrade)
         {
+            if (upgrade.IsPerk)
+            {
+                _perkService.Add(upgrade.perkId, upgrade.value);
+                return;
+            }
+
             switch (upgrade.modifierType)
             {
                 case StatModifierType.MaxHealth:

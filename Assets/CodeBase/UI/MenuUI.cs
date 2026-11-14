@@ -35,8 +35,10 @@ namespace CodeBase.UI
 
         private void OnStartGameClicked()
         {
+            // "Грати" починає новий забіг із самого початку (Initial -> новий прогрес -> вибір героя).
+            // LoadLevelState тут не підходить: він завантажує бойовий рівень, а "Initial" рівнем не є.
             if (_stateMachine != null)
-                _stateMachine.Enter<LoadLevelState, string>("Initial");
+                _stateMachine.Enter<BootstrapState>();
             else
                 SceneManager.LoadScene("Initial");
         }

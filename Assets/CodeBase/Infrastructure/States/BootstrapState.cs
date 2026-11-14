@@ -10,7 +10,9 @@ using CodeBase.Infrastructure.Services.CritDamage;
 using CodeBase.Infrastructure.Services.HitFeel;
 using CodeBase.Infrastructure.Services.Inputs;
 using CodeBase.Infrastructure.Services.Map;
+using CodeBase.Infrastructure.Services.MetaProgress;
 using CodeBase.Infrastructure.Services.Music;
+using CodeBase.Infrastructure.Services.Perk;
 using CodeBase.Infrastructure.Services.PersistentProgress;
 using CodeBase.Infrastructure.Services.ProgressService;
 using CodeBase.Infrastructure.Services.SaveLoad;
@@ -74,11 +76,20 @@ namespace CodeBase.Infrastructure.States
             _services.RegisterSingle<IMusicService>(new MusicService(_services.Single<IStaticDataService>().GetMusic(), _coroutineRunner));
             _services.RegisterSingle<IInputService>(InputService());
             _services.RegisterSingle<IPersistentProgressService>( new PersistentProgressService());
+
+            // Прогрес між забігами: читаємо з диска один раз на старті гри.
+            IMetaProgressService metaProgress = new MetaProgressService(
+                _services.Single<IStaticDataService>(),
+                _services.Single<IPersistentProgressService>());
+            metaProgress.Load();
+            _services.RegisterSingle(metaProgress);
             _services.RegisterSingle<IProgressService>(new ProgressService(_services.Single<IPersistentProgressService>()));
             _services.RegisterSingle<IBalanceService>(new BalanceService(_services.Single<IPersistentProgressService>()));
+            _services.RegisterSingle<IPerkService>(new PerkService(_services.Single<IPersistentProgressService>()));
             _services.RegisterSingle<IUpgradeService>(new UpgradeService(
                 _services.Single<IStaticDataService>(),
-                _services.Single<IPersistentProgressService>()));
+                _services.Single<IPersistentProgressService>(),
+                _services.Single<IPerkService>()));
             _services.RegisterSingle<IBuffService>(new BuffService(
                 _coroutineRunner,
                 _services.Single<IPersistentProgressService>()));
@@ -106,8 +117,9 @@ namespace CodeBase.Infrastructure.States
                 _services.Single<IShopService>(),
                 _services.Single<IBuffService>(),
                 _services.Single<ISelectedLevelService>(),
-                _services.Single<ICritDamageService>(), 
-                _services.Single<IAudioService>()));
+                _services.Single<ICritDamageService>(),
+                _services.Single<IAudioService>(),
+                _services.Single<IPerkService>()));
             _services.RegisterSingle<ISaveLoadService>( new SaveLoadService(
                 _services.Single<IPersistentProgressService>(),
                 _services.Single<IGameFactory>()));

@@ -1,6 +1,9 @@
 using CodeBase.Common;
+using CodeBase.Infrastructure.Services;
+using CodeBase.Infrastructure.Services.Perk;
 using CodeBase.Infrastructure.Services.ProgressService;
 using CodeBase.Logic;
+using CodeBase.StaticData.Perk;
 using UnityEngine;
 
 namespace CodeBase.Loot
@@ -17,12 +20,25 @@ namespace CodeBase.Loot
         private Transform _playerTransform;
         private bool _isAttracting;
         private float _currentSpeed;
+        private IPerkService _perkService;
 
         public void Construct(int xpAmount, IProgressService progressService, Transform playerTransform)
         {
             _xpAmount = xpAmount;
             _progressService = progressService;
             _playerTransform = playerTransform;
+        }
+
+        private void Awake()
+        {
+            _perkService = AllServices.Container.Single<IPerkService>();
+        }
+
+        /// <summary>Радіус притягування з урахуванням перку Magnet (значення перку = частка до радіуса).</summary>
+        private float EffectiveAttractRadius()
+        {
+            float bonus = _perkService != null ? _perkService.GetValue(PerkId.Magnet) : 0f;
+            return attractRadius * (1f + Mathf.Max(0f, bonus));
         }
 
         public void OnSpawn() { }
@@ -43,7 +59,7 @@ namespace CodeBase.Loot
             if (!_isAttracting)
             {
                 float dist = Vector2.Distance(transform.position, _playerTransform.position);
-                if (dist <= attractRadius)
+                if (dist <= EffectiveAttractRadius())
                 {
                     _isAttracting = true;
                     _currentSpeed = attractSpeed;

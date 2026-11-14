@@ -9,6 +9,7 @@ using CodeBase.Infrastructure.Services.Audio;
 using CodeBase.Infrastructure.Services.Balance;
 using CodeBase.Infrastructure.Services.Buff;
 using CodeBase.Infrastructure.Services.CritDamage;
+using CodeBase.Infrastructure.Services.Perk;
 using CodeBase.Infrastructure.Services.PersistentProgress;
 using CodeBase.Infrastructure.Services.ProgressService;
 using CodeBase.Infrastructure.Services.SelectedLevel;
@@ -52,6 +53,7 @@ namespace CodeBase.Infrastructure.Factory
         private readonly ISelectedLevelService _selectedLevel;
         private readonly ICritDamageService _critDamageService;
         private readonly IAudioService _audioService;
+        private readonly IPerkService _perkService;
 
         public GameFactory(IAssets assets,
             IStaticDataService staticData,
@@ -63,8 +65,10 @@ namespace CodeBase.Infrastructure.Factory
             IBuffService buffService,
             ISelectedLevelService selectedLevel,
             ICritDamageService critDamageService,
-            IAudioService audioService)
+            IAudioService audioService,
+            IPerkService perkService)
         {
+            _perkService = perkService;
             _assets = assets;
             _staticData = staticData;
             _balanceService = balanceService;
@@ -120,7 +124,8 @@ namespace CodeBase.Infrastructure.Factory
                     playerRb,
                     playerMovement,
                     dashData,
-                    _audioService);
+                    _audioService,
+                    _perkService);
                 abilityController.AddAbility(dashAbility);
             }
 

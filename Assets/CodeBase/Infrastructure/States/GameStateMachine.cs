@@ -5,6 +5,7 @@ using CodeBase.Infrastructure.Services;
 using CodeBase.Infrastructure.Services.Audio;
 using CodeBase.Infrastructure.Services.Balance;
 using CodeBase.Infrastructure.Services.Map;
+using CodeBase.Infrastructure.Services.MetaProgress;
 using CodeBase.Infrastructure.Services.Music;
 using CodeBase.Infrastructure.Services.PersistentProgress;
 using CodeBase.Infrastructure.Services.ProgressService;
@@ -29,6 +30,7 @@ namespace CodeBase.Infrastructure.States
             _states = new Dictionary<Type, IExitableState>
             {
                 [typeof(BootstrapState)] = new BootstrapState(this, sceneLoader, services, coroutineRunner),
+                [typeof(MenuState)] = new MenuState(sceneLoader, services.Single<IMusicService>()),
                 [typeof(LoadoutSelectState)] = new LoadoutSelectState(sceneLoader, services.Single<IMusicService>()),
                 [typeof(LevelMapState)] = new LevelMapState(this,
                     sceneLoader,
@@ -70,10 +72,12 @@ namespace CodeBase.Infrastructure.States
                     services.Single<IMusicService>()),
                 [typeof(GameOverState)] = new GameOverState(this,
                     services.Single<IGameFactory>(),
-                    services.Single<IShopService>()),
+                    services.Single<IShopService>(),
+                    services.Single<IMetaProgressService>()),
                 [typeof(WinState)] = new WinState(this,
                     services.Single<IGameFactory>(),
-                    services.Single<IShopService>()),
+                    services.Single<IShopService>(),
+                    services.Single<IMetaProgressService>()),
                 [typeof(PauseState)] = new PauseState(this,
                     services.Single<IGameFactory>(),
                     services.Single<IShopService>()),

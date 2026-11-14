@@ -10,6 +10,8 @@ namespace CodeBase.Player.Movement
 {
     public class PlayerMovement : MonoBehaviour, ISavedProgress
     {
+        private const float FacingInputDeadzone = 0.1f;
+
         private Rigidbody2D _rb;
         private Character _character;
         private PlayerControls _controls;
@@ -27,6 +29,13 @@ namespace CodeBase.Player.Movement
         
         public bool IsSprinting { get; set; }
         public float SpeedMultiplier { get; set; } = 1f;
+
+        /// <summary>
+        /// Рухом тимчасово керує здібність (ривок): введення не застосовується, звук ходьби мовчить.
+        /// Окремо від enabled, бо enabled належить станам гри (пауза, екран апгрейдів, смерть) —
+        /// здібність не повинна вмикати керування, яке вимкнув стан.
+        /// </summary>
+        public bool IsMovementOverridden { get; set; }
 
         private float BaseMoveSpeed => _state?.moveSpeed > 0 ? _state.moveSpeed : _heroData?.moveSpeed > 0 ? _heroData.moveSpeed : 1f;
 
@@ -54,6 +63,8 @@ namespace CodeBase.Player.Movement
 
         private void FixedUpdate()
         {
+            if (IsMovementOverridden) return;
+
             Vector2 movement = _moveInput.normalized;
             _rb.linearVelocity = movement * (BaseMoveSpeed * SpeedMultiplier);
         }
@@ -79,9 +90,13 @@ namespace CodeBase.Player.Movement
 
         private void UpdateDirection()
         {
-            if (_rb.linearVelocity.x != 0)
+            // Дивимось туди, куди гравець тисне, а не куди реально рухається тіло: при зіткненні
+            // з ворогом фізика на мить дає швидкість у зворотний бік, і персонаж розвертався.
+            if (IsMovementOverridden) return;
+
+            if (Mathf.Abs(_moveInput.x) > FacingInputDeadzone)
             {
-                int facingDirection = _rb.linearVelocity.x > 0 ? 1 : -1;
+                int facingDirection = _moveInput.x > 0 ? 1 : -1;
                 transform.localScale = new Vector3(facingDirection, 1, 1);
             }
         }
@@ -91,7 +106,7 @@ namespace CodeBase.Player.Movement
             if (_audioService == null) return;
 
             bool isDead = _character != null && _character.GetState() >= CharacterState.DeathB;
-            bool isMoving = !isDead && _rb.linearVelocity.magnitude > 0.1f;
+            bool isMoving = !isDead && !IsMovementOverridden && _rb.linearVelocity.magnitude > 0.1f;
 
             if (!isMoving)
             {

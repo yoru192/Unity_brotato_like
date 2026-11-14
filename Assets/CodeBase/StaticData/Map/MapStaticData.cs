@@ -27,6 +27,12 @@ namespace CodeBase.StaticData.Map
         [Min(0)] public int guaranteedCombatRows = 2;
         public bool forceCampfireBeforeBoss = true;
 
+        [Header("Meta Rewards (есенція між забігами)")]
+        [Tooltip("Скільки есенції дається за кожен пройдений вузол карти наприкінці забігу.")]
+        [Min(0)] public int essencePerCompletedNode = 5;
+        [Tooltip("Додаткова есенція за перемогу (пройдену карту).")]
+        [Min(0)] public int essenceForWin = 50;
+
         public MapGenerationConfig ToGenerationConfig() => new MapGenerationConfig
         {
             Rows = rows,

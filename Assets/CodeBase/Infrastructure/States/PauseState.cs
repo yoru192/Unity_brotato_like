@@ -57,7 +57,7 @@ namespace CodeBase.Infrastructure.States
         public void GiveUp()
         {
             _shopService.StopShopTimer();
-            SceneManager.LoadScene(MenuScene);
+            _stateMachine.Enter<MenuState>();
         }
     }
 }

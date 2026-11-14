@@ -1,9 +1,10 @@
 ﻿using CodeBase.Infrastructure.Services;
+using CodeBase.Infrastructure.Services.MetaProgress;
 using CodeBase.Infrastructure.Services.PersistentProgress;
 using CodeBase.Infrastructure.States;
 using CodeBase.StaticData;
 using CodeBase.StaticData.Hero;
-using CodeBase.StaticData.Weapon;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -14,19 +15,32 @@ namespace CodeBase.UI.LoadoutSelect
         [SerializeField] private Button startGameButton;
         [SerializeField] private RoleButton[] roleButtons;
         [SerializeField] private CharacterPanel characterPanel;
-        
+
+        [Header("Meta (опційно)")]
+        [Tooltip("Текст із поточною кількістю есенції. Можна не призначати.")]
+        [SerializeField] private TextMeshProUGUI essenceText;
+        [Tooltip("Напис на кнопці старту: для закритого героя показує ціну відкриття. Можна не призначати.")]
+        [SerializeField] private TextMeshProUGUI startButtonLabel;
+
         private RoleButton _currentFocused;
-        private HeroTypeId _selectedHeroType = HeroTypeId.Unknown;
-        
+        private HeroStaticData _selectedHero;
+        private string _defaultStartLabel;
+
         private IGameStateMachine _stateMachine;
         private IPersistentProgressService _progressService;
         private IStaticDataService _staticData;
+        private IMetaProgressService _metaProgress;
 
         private void Awake()
         {
             _stateMachine = AllServices.Container.Single<IGameStateMachine>();
             _progressService = AllServices.Container.Single<IPersistentProgressService>();
             _staticData = AllServices.Container.Single<IStaticDataService>();
+            _metaProgress = AllServices.Container.Single<IMetaProgressService>();
+
+            if (startButtonLabel != null)
+                _defaultStartLabel = startButtonLabel.text;
+
             if (startGameButton != null)
             {
                 startGameButton.onClick.AddListener(OnStartGameClicked);
@@ -36,35 +50,72 @@ namespace CodeBase.UI.LoadoutSelect
                 Debug.LogError("Start Game Button is not assigned in LoadoutSelectUI!");
             }
         }
+
+        private void OnEnable()
+        {
+            if (_metaProgress != null)
+                _metaProgress.Changed += RefreshMeta;
+        }
+
+        private void OnDisable()
+        {
+            if (_metaProgress != null)
+                _metaProgress.Changed -= RefreshMeta;
+        }
+
         private void Start()
         {
             foreach (var btn in roleButtons)
                 btn.OnClicked += HandleRoleButtonClicked;
+
+            RefreshMeta();
         }
-        
+
         private void HandleRoleButtonClicked(RoleButton clicked)
         {
             _currentFocused?.Unfocus();
             _currentFocused = clicked;
             _currentFocused.Focus();
-            HeroStaticData data = clicked.GetData();
-            
-            _selectedHeroType = data.heroTypeId;
-            characterPanel.Show(data);
+
+            _selectedHero = clicked.GetData();
+            characterPanel.Show(_selectedHero);
+            RefreshMeta();
         }
 
         private void OnStartGameClicked()
         {
-            if (_selectedHeroType == HeroTypeId.Unknown)
+            if (_selectedHero == null || _selectedHero.heroTypeId == HeroTypeId.Unknown)
             {
                 Debug.LogWarning("No hero selected!");
                 return;
             }
-            
-            _progressService.Progress.worldData.selectedHero = _selectedHeroType;
+
+            // Закритий герой: перший клік купує його за есенцію, гра стартує наступним кліком.
+            if (!_metaProgress.IsHeroUnlocked(_selectedHero))
+            {
+                if (!_metaProgress.TryUnlockHero(_selectedHero))
+                    Debug.LogWarning($"Not enough essence to unlock {_selectedHero.HeroName}.");
+                return;
+            }
+
+            _progressService.Progress.worldData.selectedHero = _selectedHero.heroTypeId;
 
             // Hero chosen — head to the branching map; a node there launches the actual run.
             _stateMachine.Enter<LevelMapState>();
+        }
+
+        private void RefreshMeta()
+        {
+            if (essenceText != null)
+                essenceText.text = _metaProgress.Essence.ToString();
+
+            bool locked = _selectedHero != null && !_metaProgress.IsHeroUnlocked(_selectedHero);
+
+            if (startGameButton != null)
+                startGameButton.interactable = !locked || _metaProgress.CanUnlockHero(_selectedHero);
+
+            if (startButtonLabel != null)
+                startButtonLabel.text = locked ? $"Unlock ({_selectedHero.unlockCost})" : _defaultStartLabel;
         }
     }
 }

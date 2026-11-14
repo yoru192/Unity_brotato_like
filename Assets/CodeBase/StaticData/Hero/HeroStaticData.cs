@@ -23,5 +23,9 @@ namespace CodeBase.StaticData.Hero
         public float moveSpeed;
         public List<WeaponTypeId> startWeapons = new() { WeaponTypeId.Melee };
 
+        [Header("Meta")]
+        [Tooltip("Ціна відкриття героя в есенції. 0 — герой доступний із самого початку.")]
+        [Min(0)] public int unlockCost;
+
     }
 }

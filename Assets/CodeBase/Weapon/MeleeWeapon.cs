@@ -5,8 +5,10 @@ using CodeBase.Data;
 using CodeBase.Infrastructure.Services;
 using CodeBase.Infrastructure.Services.Audio;
 using CodeBase.Infrastructure.Services.CritDamage;
+using CodeBase.Infrastructure.Services.Perk;
 using CodeBase.Infrastructure.Services.PersistentProgress;
 using CodeBase.Logic;
+using CodeBase.StaticData.Perk;
 using UnityEngine;
 
 namespace CodeBase.Weapon
@@ -14,6 +16,8 @@ namespace CodeBase.Weapon
     public class MeleeWeapon : WeaponBase, IAttackColliderHandler, ISavedProgress
     {
         private IAudioService _audioService;
+        private IPerkService _perkService;
+        private IHealth _ownerHealth;
         private MeleeWeaponState _state;
         private Transform _attackOrigin;
         private float _attackAngle = 90f;
@@ -62,11 +66,19 @@ namespace CodeBase.Weapon
             _critChance = critChance;
             _critRate = critRate;
             _critDamageService = critDamageService;
+
+            // Awake (де колайдер створюється з типовими значеннями) спрацьовує раніше за Construct,
+            // тому перебудовуємо сектор уже зі справжніми радіусом і кутом зброї.
+            GenerateSectorCollider();
         }
 
         private void Awake()
         {
             _audioService = AllServices.Container.Single<IAudioService>();
+            _perkService = AllServices.Container.Single<IPerkService>();
+            if (_perkService != null)
+                _perkService.Changed += GenerateSectorCollider;
+            _ownerHealth = GetComponentInParent<IHealth>();
             _animator = GetComponentInParent<WeaponAnimator>();
             if (_animator?.AnimationEvents != null)
             {
@@ -120,14 +132,41 @@ namespace CodeBase.Weapon
             _hitBuffer.Clear();
             _hitBuffer.AddRange(_triggeredTargets);
 
+            bool hitAnyone = false;
+
             foreach (Collider2D target in _hitBuffer)
             {
                 if (target == null) continue;
-                target.GetComponentInParent<IHealth>()?.TakeDamage(ApllyCritDamage());
+
+                IHealth health = target.GetComponentInParent<IHealth>();
+                if (health == null || health.Current <= 0) continue;
+
+                health.TakeDamage(ApllyCritDamage());
+                hitAnyone = true;
             }
 
             _hitBuffer.Clear();
-                
+
+            if (hitAnyone)
+                ApplyVampirism();
+        }
+
+        /// <summary>Перк Vampirism: замах, що влучив хоча б в одного ворога, лікує власника.</summary>
+        private void ApplyVampirism()
+        {
+            if (_perkService == null || _ownerHealth == null) return;
+
+            float heal = _perkService.GetValue(PerkId.Vampirism);
+            if (heal <= 0f || _ownerHealth.Current <= 0f || _ownerHealth.Current >= _ownerHealth.Max) return;
+
+            _ownerHealth.Current = Mathf.Min(_ownerHealth.Current + heal, _ownerHealth.Max);
+        }
+
+        /// <summary>Кут атаки з урахуванням перку Wide Swing, не більше повного кола.</summary>
+        private float EffectiveAttackAngle()
+        {
+            float bonus = _perkService != null ? _perkService.GetValue(PerkId.WideSwing) : 0f;
+            return Mathf.Clamp(_attackAngle + bonus, 1f, 360f);
         }
 
         private void OnAttackEnded()
@@ -158,19 +197,31 @@ namespace CodeBase.Weapon
         {
             if (_animator?.AnimationEvents != null)
                 _animator.AnimationEvents.OnCustomEvent -= OnAnimationEvent;
+
+            if (_perkService != null)
+                _perkService.Changed -= GenerateSectorCollider;
         }
 
         private void GenerateSectorCollider()
         {
             if (_attackCollider == null) return;
 
-            int segments = 16;
-            float halfAngle = _attackAngle * 0.5f;
-            float angleStep = _attackAngle / segments;
+            float angle = EffectiveAttackAngle();
+            bool fullCircle = angle >= 360f;
 
-            var points = new List<Vector2> { Vector2.zero };
+            // Більший кут — більше сегментів, щоб дуга лишалась гладкою.
+            int segments = Mathf.Max(16, Mathf.CeilToInt(angle / 360f * 32f));
+            float halfAngle = angle * 0.5f;
+            float angleStep = angle / segments;
 
-            for (int i = 0; i <= segments; i++)
+            // Сектор — це "віяло" від центру. Повне коло будуємо без центральної точки
+            // і без дубля останньої точки, інакше полігон вироджується.
+            var points = new List<Vector2>(segments + 2);
+            if (!fullCircle)
+                points.Add(Vector2.zero);
+
+            int lastIndex = fullCircle ? segments - 1 : segments;
+            for (int i = 0; i <= lastIndex; i++)
             {
                 float currentAngle = (-halfAngle + angleStep * i) * Mathf.Deg2Rad;
                 points.Add(new Vector2(

@@ -4,6 +4,8 @@ using CodeBase.Data;
 using CodeBase.Infrastructure.Services;
 using CodeBase.Infrastructure.Services.Audio;
 using CodeBase.Infrastructure.Services.CritDamage;
+using CodeBase.Infrastructure.Services.Perk;
+using CodeBase.StaticData.Perk;
 using CodeBase.Infrastructure.Services.PersistentProgress;
 using UnityEngine;
 
@@ -24,7 +26,14 @@ namespace CodeBase.Weapon.ArrowWeapon
         // Спільний буфер для пошуку цілей: без алокації масиву на кожен запит.
         private static readonly List<Collider2D> TargetBuffer = new List<Collider2D>(64);
 
+        private const int MaxExtraArrows = 8;
+
+        // Точка відліку для сортування цілей; статична, щоб компаратор не захоплював змінні (без алокацій).
+        private static Vector2 _sortOrigin;
+        private static readonly System.Comparison<Collider2D> ByDistanceToSortOrigin = CompareByDistanceToSortOrigin;
+
         private ContactFilter2D _targetFilter;
+        private IPerkService _perkService;
         private IAudioService _audioService;
         private State _state;
         private float _detectionRadius;
@@ -74,6 +83,7 @@ namespace CodeBase.Weapon.ArrowWeapon
         private void Awake()
         {
             _audioService = AllServices.Container.Single<IAudioService>();
+            _perkService = AllServices.Container.Single<IPerkService>();
             _launcher = GetComponent<ProjectileLauncher>();
             _hittableLayer = PhysicsLayers.HittableMask;
             _targetFilter = new ContactFilter2D
@@ -90,8 +100,11 @@ namespace CodeBase.Weapon.ArrowWeapon
             _shootTimer -= Time.deltaTime;
             if (_shootTimer > 0f) return;
 
-            Transform nearestTarget = FindNearestTarget();
-            if (nearestTarget == null)
+            // Перк MultiShot: додаткові стріли летять у наступних за близькістю ворогів.
+            int arrows = 1 + ExtraArrows();
+
+            int targetCount = CollectTargets(sortByDistance: arrows > 1);
+            if (targetCount == 0)
             {
                 // Цілей немає — не скануємо фізику щокадру, а пробуємо знову через короткий інтервал.
                 _shootTimer = TargetSearchInterval;
@@ -100,7 +113,23 @@ namespace CodeBase.Weapon.ArrowWeapon
 
             _shootTimer = Cooldown;
 
-            float distance = Vector2.Distance(transform.position, nearestTarget.position);
+            // Якщо ворогів менше, ніж стріл, зайві стріли йдуть по колу в тих самих ворогів.
+            for (int i = 0; i < arrows; i++)
+                ShootAt(TargetBuffer[i % targetCount].transform);
+
+            TargetBuffer.Clear();
+            _audioService?.PlaySfx(AudioClipId.ArrowShoot);
+        }
+
+        private int ExtraArrows()
+        {
+            if (_perkService == null) return 0;
+            return Mathf.Clamp(Mathf.RoundToInt(_perkService.GetValue(PerkId.MultiShot)), 0, MaxExtraArrows);
+        }
+
+        private void ShootAt(Transform target)
+        {
+            float distance = Vector2.Distance(transform.position, target.position);
 
             // t = 0 на _guaranteedHitRadius (і ближче), t = 1 на _detectionRadius.
             // Використовуємо його і для шансу промаху, і для того, наскільки сильно
@@ -108,8 +137,7 @@ namespace CodeBase.Weapon.ArrowWeapon
             float t = CalculateMissT(distance);
             bool isMiss = RollMiss(t);
 
-            SpawnProjectile(nearestTarget, isMiss, t);
-            _audioService?.PlaySfx(AudioClipId.ArrowShoot);
+            SpawnProjectile(target, isMiss, t);
         }
 
         private float CalculateMissT(float distance)
@@ -147,28 +175,47 @@ namespace CodeBase.Weapon.ArrowWeapon
             _launcher.Launch(target, _projectileMaxMoveSpeed, damage, isMiss, missSeverity, isCritical);
         }
 
-        private Transform FindNearestTarget()
+        /// <summary>
+        /// Заповнює TargetBuffer ворогами в радіусі та повертає їх кількість. Найближчий завжди на позиції 0;
+        /// із sortByDistance увесь буфер відсортовано від найближчого. Викликач має очистити буфер після себе.
+        /// </summary>
+        private int CollectTargets(bool sortByDistance)
         {
             Vector2 origin = transform.position;
             int count = Physics2D.OverlapCircle(origin, _detectionRadius, _targetFilter, TargetBuffer);
-            if (count == 0) return null;
+            if (count <= 1) return count;
 
-            Transform nearest = null;
+            if (sortByDistance)
+            {
+                _sortOrigin = origin;
+                TargetBuffer.Sort(ByDistanceToSortOrigin);
+                return count;
+            }
+
+            int nearestIndex = 0;
             float minSqrDist = float.MaxValue;
 
             for (int i = 0; i < count; i++)
             {
-                Transform candidate = TargetBuffer[i].transform;
-                float sqrDist = ((Vector2)candidate.position - origin).sqrMagnitude;
+                float sqrDist = ((Vector2)TargetBuffer[i].transform.position - origin).sqrMagnitude;
                 if (sqrDist < minSqrDist)
                 {
                     minSqrDist = sqrDist;
-                    nearest = candidate;
+                    nearestIndex = i;
                 }
             }
 
-            TargetBuffer.Clear();
-            return nearest;
+            if (nearestIndex != 0)
+                (TargetBuffer[0], TargetBuffer[nearestIndex]) = (TargetBuffer[nearestIndex], TargetBuffer[0]);
+
+            return count;
+        }
+
+        private static int CompareByDistanceToSortOrigin(Collider2D a, Collider2D b)
+        {
+            float distA = ((Vector2)a.transform.position - _sortOrigin).sqrMagnitude;
+            float distB = ((Vector2)b.transform.position - _sortOrigin).sqrMagnitude;
+            return distA.CompareTo(distB);
         }
 
         private void OnDrawGizmosSelected()
