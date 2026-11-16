@@ -456,3 +456,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyGFX
   followerEntity: {fileID: 7077774002601737260}
+  faceTargetDistance: 3
+  targetDeadzoneX: 0.15
+  velocityThresholdX: 0.3

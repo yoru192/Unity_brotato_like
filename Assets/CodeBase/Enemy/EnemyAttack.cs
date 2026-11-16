@@ -1,8 +1,13 @@
 ﻿using System;
 using Assets.FantasyMonsters.Common.Scripts;
 using CodeBase.Common;
+using CodeBase.Infrastructure.Services;
+using CodeBase.Infrastructure.Services.Perk;
+using CodeBase.Infrastructure.Services.Vfx;
+using CodeBase.StaticData.Vfx;
 using CodeBase.Logic;
 using CodeBase.Player;
+using CodeBase.StaticData.Perk;
 using UnityEngine;
 
 namespace CodeBase.Enemy
@@ -25,6 +30,8 @@ namespace CodeBase.Enemy
         private bool _attackIsActive;
         private Collider2D _enemyCollider;
         private Collider2D _playerCollider;
+        private EnemyHealth _health;
+        private IPerkService _perkService;
 
         public void Construct(Transform playerTransform, float attackCooldown,
             float radius, int damage)
@@ -43,7 +50,24 @@ namespace CodeBase.Enemy
             _enemyCollider = GetComponent<Collider2D>();
             _monster = GetComponentInChildren<Monster>();
             _mover = GetComponent<EnemyMover>();
+            _health = GetComponent<EnemyHealth>();
+            _perkService = AllServices.Container.Single<IPerkService>();
             _monster.OnEvent += HandleAnimationEvent;
+        }
+
+        /// <summary>Перк Thorns: ворог, що влучив по гравцю в ближньому бою, сам отримує урон.</summary>
+        private void ApplyThorns()
+        {
+            if (_perkService == null || _health == null) return;
+
+            float thorns = _perkService.GetValue(PerkId.Thorns);
+            if (thorns <= 0f) return;
+
+            _health.TakeDamage(thorns, false);
+
+            IVfxService vfx = AllServices.Container.Single<IVfxService>();
+            if (vfx != null)
+                vfx.Play(VfxId.ThornsHit, transform.position);
         }
 
         private void HandleAnimationEvent(string eventName)
@@ -84,6 +108,7 @@ namespace CodeBase.Enemy
             if (Hit(out Collider2D hit))
             {
                 hit.GetComponentInParent<PlayerHealth>().TakeDamage(_damage);
+                ApplyThorns();
             }
         }
 

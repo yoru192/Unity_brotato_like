@@ -1,7 +1,9 @@
 ﻿using System.Collections.Generic;
 using CodeBase.Infrastructure.Services.Audio;
 using CodeBase.Infrastructure.Services.Perk;
+using CodeBase.Infrastructure.Services.Vfx;
 using CodeBase.Logic;
+using CodeBase.StaticData.Vfx;
 using UnityEngine;
 using CodeBase.Player.Movement;
 using CodeBase.StaticData.Ability;
@@ -26,6 +28,7 @@ namespace CodeBase.Ability.Concrete
         private Vector2 originalVelocity;
         private readonly IAudioService _audioService;
         private readonly IPerkService _perkService;
+        private readonly IVfxService _vfxService;
 
         // Перк Deadly Dash: кожного ворога зачіпаємо не більше одного разу за ривок.
         private readonly HashSet<IHealth> _damagedThisDash = new HashSet<IHealth>();
@@ -47,9 +50,11 @@ namespace CodeBase.Ability.Concrete
             PlayerMovement playerMovement,
             DashAbilityData staticData,
             IAudioService audioService,
-            IPerkService perkService)
+            IPerkService perkService,
+            IVfxService vfxService)
             : base(playerTransform, playerRb, staticData)
         {
+            _vfxService = vfxService;
             this.playerMovement = playerMovement;
             dashData = staticData;
             _audioService = audioService;
@@ -86,7 +91,11 @@ namespace CodeBase.Ability.Concrete
             _lastBodyCenter = BodyCenter();
 
             if (_dashDamage > 0f)
+            {
                 IgnoreEnemiesAlongDash();
+                if (_vfxService != null)
+                    _vfxService.Play(VfxId.DashStart, _lastBodyCenter);
+            }
 
             // Забираємо керування рухом на час dash. Саме прапорець, а не enabled: enabled належить
             // станам гри, і ривок не має права ввімкнути керування, яке вимкнув стан (екран апгрейдів, смерть).

@@ -35,6 +35,8 @@ namespace CodeBase.Enemy
 
         private SpriteRenderer[] _renderers;
         private Color[] _originalColors;
+        private bool _colorsCaptured;
+        private Color _statusTint = Color.white;
         private bool _isFlashing;
         private float _flashTimer;
 
@@ -95,25 +97,50 @@ namespace CodeBase.Enemy
         {
             if (flashDuration <= 0f) return;
 
-            if (!_isFlashing)
+            _isFlashing = true;
+            _flashTimer = flashDuration;
+            ApplyColors();
+        }
+
+        /// <summary>
+        /// Постійний відтінок спрайтів від статус-ефекту (горіння, заморозка). Спалах від удару тимчасово
+        /// його перекриває і потім повертає. Color.white — без відтінку.
+        /// </summary>
+        public void SetStatusTint(Color tint)
+        {
+            if (_statusTint == tint) return;
+
+            _statusTint = tint;
+            ApplyColors();
+        }
+
+        private void CaptureOriginalColors()
+        {
+            if (_colorsCaptured) return;
+
+            for (int i = 0; i < _renderers.Length; i++)
             {
-                for (int i = 0; i < _renderers.Length; i++)
-                {
-                    if (_renderers[i] == null) continue;
+                if (_renderers[i] != null)
                     _originalColors[i] = _renderers[i].color;
-                }
             }
+
+            _colorsCaptured = true;
+        }
+
+        private void ApplyColors()
+        {
+            // Оригінальні кольори запам'ятовуємо один раз і ліниво: у Awake варіації монстра ще могли не застосуватись.
+            CaptureOriginalColors();
 
             for (int i = 0; i < _renderers.Length; i++)
             {
                 if (_renderers[i] == null) continue;
-                Color color = flashColor;
-                color.a = _originalColors[i].a;
+
+                Color original = _originalColors[i];
+                Color color = _isFlashing ? flashColor : original * _statusTint;
+                color.a = original.a;
                 _renderers[i].color = color;
             }
-
-            _isFlashing = true;
-            _flashTimer = flashDuration;
         }
 
         private void UpdateFlash()
@@ -129,13 +156,8 @@ namespace CodeBase.Enemy
         {
             if (!_isFlashing) return;
 
-            for (int i = 0; i < _renderers.Length; i++)
-            {
-                if (_renderers[i] == null) continue;
-                _renderers[i].color = _originalColors[i];
-            }
-
             _isFlashing = false;
+            ApplyColors();
         }
 
         private void StartRecoil(float distance)
@@ -174,7 +196,10 @@ namespace CodeBase.Enemy
 
         private void ResetState()
         {
-            RestoreColors();
+            _isFlashing = false;
+            _statusTint = Color.white;
+            if (_colorsCaptured)
+                ApplyColors();
 
             if (_recoilTimer > 0f && _visual != null)
                 _visual.localPosition = _visualBaseLocalPosition;

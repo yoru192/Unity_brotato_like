@@ -58,6 +58,22 @@ namespace CodeBase.Enemy
             HealthChanged?.Invoke();
         }
 
+        /// <summary>
+        /// Урон від статус-ефекту (горіння тощо). На відміну від TakeDamage не шле подію Damaged,
+        /// тому не викликає віддачу/тряску і не запускає нові ефекти "при ударі".
+        /// </summary>
+        public void TakeStatusDamage(float damage)
+        {
+            if (Current <= 0) return;
+
+            Vector3 spawnPos = GetSpawnPosition();
+
+            Current -= damage;
+
+            SpawnDamageNumber(damage, spawnPos, isCritical: false);
+            HealthChanged?.Invoke();
+        }
+
         /// <summary>Атака була спрямована на цього ворога, але промазала. HP не змінюється, крит не рахуємо.</summary>
         public void Miss()
         {

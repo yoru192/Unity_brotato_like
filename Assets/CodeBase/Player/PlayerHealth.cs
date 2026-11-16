@@ -1,8 +1,13 @@
 ﻿using System;
 using CodeBase.Data;
+using CodeBase.Infrastructure.Services;
+using CodeBase.Infrastructure.Services.Perk;
+using CodeBase.Infrastructure.Services.Vfx;
+using CodeBase.StaticData.Vfx;
 using CodeBase.Infrastructure.Services.PersistentProgress;
 using CodeBase.Logic;
 using CodeBase.StaticData;
+using CodeBase.StaticData.Perk;
 using CodeBase.StaticData.Hero;
 using UnityEngine;
 
@@ -13,6 +18,12 @@ namespace CodeBase.Player
         public event Action HealthChanged;
         private HeroStaticData _playerData;
         private IPersistentProgressService _persistentProgressService;
+        private IPerkService _perkService;
+
+        private void Awake()
+        {
+            _perkService = AllServices.Container.Single<IPerkService>();
+        }
 
         public float Current
         {
@@ -65,10 +76,34 @@ namespace CodeBase.Player
         public void TakeDamage(float damage)
         {
             if(Current <= 0)
-                return; 
-            
+                return;
+
+            if (Current - damage <= 0 && TryUseSecondChance())
+                return;
+
             Current -= damage;
             HealthChanged?.Invoke();
+        }
+
+        /// <summary>
+        /// Перк Second Chance: смертельний удар не вбиває, а лишає частину здоров'я. Перк при цьому витрачається.
+        /// </summary>
+        private bool TryUseSecondChance()
+        {
+            if (_perkService == null) return false;
+
+            float healthPercent = _perkService.GetValue(PerkId.SecondChance);
+            if (healthPercent <= 0f) return false;
+
+            _perkService.Remove(PerkId.SecondChance);
+
+            Current = Mathf.Max(1f, Max * Mathf.Clamp01(healthPercent / 100f));
+            HealthChanged?.Invoke();
+
+            IVfxService vfx = AllServices.Container.Single<IVfxService>();
+            if (vfx != null)
+                vfx.PlayFollowing(VfxId.SecondChance, transform);
+            return true;
         }
 
         /// <summary>Для гравця крит наразі нічим не відрізняється від звичайного урону.</summary>

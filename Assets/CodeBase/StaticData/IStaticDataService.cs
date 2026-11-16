@@ -24,5 +24,10 @@ namespace CodeBase.StaticData
         MapLevelLibrary GetMapLevelLibrary();
         AudioStaticData GetAudio();
         MusicStaticData GetMusic();
+        Vfx.VfxStaticData GetVfx();
+
+        /// <summary>Усі мета-апгрейди, відсортовані за гілкою та порядком у гілці.</summary>
+        List<MetaUpgrade.MetaUpgradeStaticData> GetAllMetaUpgrades();
+        MetaUpgrade.MetaUpgradeStaticData ForMetaUpgrade(MetaUpgrade.MetaUpgradeId id);
     }
 }

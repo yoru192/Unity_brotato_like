@@ -565,6 +565,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyGFX
   followerEntity: {fileID: 4064631859868788643}
+  faceTargetDistance: 3
+  targetDeadzoneX: 0.15
+  velocityThresholdX: 0.3
 --- !u!4 &2858118581433484401 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 117150395161187362, guid: 882efb70f3ba0194cad0695302ae5810, type: 3}

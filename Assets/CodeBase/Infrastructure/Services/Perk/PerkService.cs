@@ -57,6 +57,15 @@ namespace CodeBase.Infrastructure.Services.Perk
             Changed?.Invoke();
         }
 
+        public void Remove(PerkId id)
+        {
+            int index = IndexOf(id);
+            if (index < 0) return;
+
+            Perks.RemoveAt(index);
+            Changed?.Invoke();
+        }
+
         private int IndexOf(PerkId id)
         {
             List<PerkEntry> perks = Perks;

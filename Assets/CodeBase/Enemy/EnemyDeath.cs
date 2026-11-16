@@ -2,11 +2,17 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Assets.FantasyMonsters.Common.Scripts;
+using CodeBase.Infrastructure.Services;
 using CodeBase.Infrastructure.Services.Balance;
+using CodeBase.Infrastructure.Services.HitFeel;
+using CodeBase.Infrastructure.Services.Perk;
 using CodeBase.Infrastructure.Services.ProgressService;
+using CodeBase.Infrastructure.Services.Vfx;
+using CodeBase.StaticData.Vfx;
 using CodeBase.Logic;
 using CodeBase.Loot;
 using CodeBase.StaticData.Enemy;
+using CodeBase.StaticData.Perk;
 using Pathfinding;
 using UnityEngine;
 
@@ -30,7 +36,28 @@ namespace CodeBase.Enemy
         private readonly List<Collider2D> _disabledOnDeath = new List<Collider2D>();
         private readonly List<Collider2D> _colliderBuffer = new List<Collider2D>();
 
+        [Header("Перк Death Explosion")]
+        [SerializeField] private float explosionRadius = 2.5f;
+        [SerializeField] private float explosionDelay = 0.12f;
+        [SerializeField] private float explosionShakeAmplitude = 0.12f;
+        [SerializeField] private float explosionShakeDuration = 0.12f;
+
+        private static readonly List<Collider2D> ExplosionBuffer = new List<Collider2D>(32);
+        private static readonly HashSet<EnemyHealth> ExplosionVictims = new HashSet<EnemyHealth>();
+        private static readonly ContactFilter2D ExplosionFilter = new ContactFilter2D { useTriggers = false };
+
+        private IPerkService _perkService;
+        private IHitFeelService _hitFeel;
+        private IVfxService _vfx;
+
         public bool IsConstructed { get; set; }
+
+        private void Awake()
+        {
+            _perkService = AllServices.Container.Single<IPerkService>();
+            _hitFeel = AllServices.Container.Single<IHitFeelService>();
+            _vfx = AllServices.Container.Single<IVfxService>();
+        }
 
         public void Construct(IBalanceService balanceService, IProgressService progressService, EnemyStaticData enemyData, XpOrbSet xpOrbSet, Transform playerTransform)
         {
@@ -84,6 +111,45 @@ namespace CodeBase.Enemy
 
             _monster.Die();
             StartCoroutine(DestroyAfterAnimation());
+
+            float explosionDamage = _perkService != null ? _perkService.GetValue(PerkId.DeathExplosion) : 0f;
+            if (explosionDamage > 0f)
+                StartCoroutine(ExplodeAfterDelay(explosionDamage));
+        }
+
+        /// <summary>
+        /// Перк Death Explosion: труп вибухає і ранить ворогів поруч. Із затримкою — щоб ланцюгові вибухи
+        /// йшли хвилею, а не всі в одному кадрі (і без рекурсії смертей).
+        /// </summary>
+        private IEnumerator ExplodeAfterDelay(float damage)
+        {
+            yield return new WaitForSeconds(explosionDelay);
+
+            // У ворогів колайдери на різних шарах, тому шукаємо по всіх і відбираємо за EnemyHealth.
+            int count = Physics2D.OverlapCircle(transform.position, explosionRadius, ExplosionFilter, ExplosionBuffer);
+
+            ExplosionVictims.Clear();
+            for (int i = 0; i < count; i++)
+            {
+                EnemyHealth victim = ExplosionBuffer[i].GetComponentInParent<EnemyHealth>();
+                if (victim != null && victim != health)
+                    ExplosionVictims.Add(victim);
+            }
+            ExplosionBuffer.Clear();
+
+            // Ефект показуємо завжди, навіть якщо поруч нікого: гравець має бачити, що перк спрацював.
+            if (_vfx != null)
+                _vfx.Play(VfxId.DeathExplosion, transform.position);
+
+            if (ExplosionVictims.Count == 0) yield break;
+
+            // Копія в масив не потрібна: TakeDamage не змінює цей набір (смерті обробляються пізніше, зі своєю затримкою).
+            foreach (EnemyHealth victim in ExplosionVictims)
+                victim.TakeDamage(damage, false);
+            ExplosionVictims.Clear();
+
+            if (_hitFeel != null)
+                _hitFeel.Shake(explosionShakeAmplitude, explosionShakeDuration);
         }
 
         private void SetCollidersEnabled(bool value)

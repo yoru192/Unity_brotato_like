@@ -1,0 +1,50 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3f36c7071f8fb9d788b68486ec8a7047, type: 3}
+  m_Name: VfxStaticData
+  m_EditorClassIdentifier: Assembly-CSharp::CodeBase.StaticData.Vfx.VfxStaticData
+  entries:
+  - id: 1
+    prefab: {fileID: 7226888052703040409, guid: 7ec363c8df426644ea85f8d6d570561c, type: 3}
+    scale: 1
+    offset: {x: 0, y: 0.3, z: 0}
+    lifetime: 0
+  - id: 2
+    prefab: {fileID: 6294508013172393196, guid: 043176b6a68be2b43b073aaaa4782c7d, type: 3}
+    scale: 0.6
+    offset: {x: 0, y: 0.3, z: 0}
+    lifetime: 0
+  - id: 3
+    prefab: {fileID: 5112403345868107898, guid: 6f34ef0d986e9db4199cf75805f79753, type: 3}
+    scale: 1
+    offset: {x: 0, y: 0.5, z: 0}
+    lifetime: 0
+  - id: 4
+    prefab: {fileID: 4021103657954561961, guid: 5c755f9bc5253ea418e919994537dcc7, type: 3}
+    scale: 1
+    offset: {x: 0, y: 0.5, z: 0}
+    lifetime: 0
+  - id: 5
+    prefab: {fileID: 3280519133390621005, guid: a71be3e7990efb040a07565c43cbb198, type: 3}
+    scale: 1
+    offset: {x: 0, y: 0, z: 0}
+    lifetime: 2
+  - id: 6
+    prefab: {fileID: 8771972552311404799, guid: bbf9e36a48d6c5648a13889afab076fd, type: 3}
+    scale: 0.6
+    offset: {x: 0, y: 1, z: 0}
+    lifetime: 0
+  - id: 7
+    prefab: {fileID: 141433446842962269, guid: 9fe8f8b3288e45a44af36ff8aa04486e, type: 3}
+    scale: 1
+    offset: {x: 0, y: 0.5, z: 0}
+    lifetime: 0

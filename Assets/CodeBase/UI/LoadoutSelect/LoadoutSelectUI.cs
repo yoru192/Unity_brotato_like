@@ -99,6 +99,8 @@ namespace CodeBase.UI.LoadoutSelect
             }
 
             _progressService.Progress.worldData.selectedHero = _selectedHero.heroTypeId;
+            // Герой відомий лише тут, тому бонуси дерева мета-апгрейдів накладаємо саме зараз.
+            _metaProgress.ApplyRunBonuses(_selectedHero);
 
             // Hero chosen — head to the branching map; a node there launches the actual run.
             _stateMachine.Enter<LevelMapState>();

@@ -6,6 +6,8 @@ using CodeBase.Infrastructure.Services;
 using CodeBase.Infrastructure.Services.Audio;
 using CodeBase.Infrastructure.Services.CritDamage;
 using CodeBase.Infrastructure.Services.Perk;
+using CodeBase.Infrastructure.Services.Vfx;
+using CodeBase.StaticData.Vfx;
 using CodeBase.Infrastructure.Services.PersistentProgress;
 using CodeBase.Logic;
 using CodeBase.StaticData.Perk;
@@ -122,8 +124,9 @@ namespace CodeBase.Weapon
             _isAttacking = true;
         }
 
-        private float ApllyCritDamage() => 
-            _critDamageService.GetCritDamage(Damage, _critChance, _critRate);
+        private float ApllyCritDamage() =>
+            _critDamageService.GetCritDamage(
+                PerkDamage.WithBerserk(Damage, _perkService, _ownerHealth), _critChance, _critRate);
 
         private void OnAttackHit()
         {
@@ -160,6 +163,10 @@ namespace CodeBase.Weapon
             if (heal <= 0f || _ownerHealth.Current <= 0f || _ownerHealth.Current >= _ownerHealth.Max) return;
 
             _ownerHealth.Current = Mathf.Min(_ownerHealth.Current + heal, _ownerHealth.Max);
+
+            IVfxService vfx = AllServices.Container.Single<IVfxService>();
+            if (vfx != null)
+                vfx.PlayFollowing(VfxId.VampirismHeal, transform.root);
         }
 
         /// <summary>Кут атаки з урахуванням перку Wide Swing, не більше повного кола.</summary>

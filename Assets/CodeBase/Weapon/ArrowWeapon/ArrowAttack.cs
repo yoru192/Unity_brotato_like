@@ -5,6 +5,7 @@ using CodeBase.Infrastructure.Services;
 using CodeBase.Infrastructure.Services.Audio;
 using CodeBase.Infrastructure.Services.CritDamage;
 using CodeBase.Infrastructure.Services.Perk;
+using CodeBase.Logic;
 using CodeBase.StaticData.Perk;
 using CodeBase.Infrastructure.Services.PersistentProgress;
 using UnityEngine;
@@ -34,6 +35,7 @@ namespace CodeBase.Weapon.ArrowWeapon
 
         private ContactFilter2D _targetFilter;
         private IPerkService _perkService;
+        private IHealth _ownerHealth;
         private IAudioService _audioService;
         private State _state;
         private float _detectionRadius;
@@ -84,6 +86,7 @@ namespace CodeBase.Weapon.ArrowWeapon
         {
             _audioService = AllServices.Container.Single<IAudioService>();
             _perkService = AllServices.Container.Single<IPerkService>();
+            _ownerHealth = GetComponentInParent<IHealth>();
             _launcher = GetComponent<ProjectileLauncher>();
             _hittableLayer = PhysicsLayers.HittableMask;
             _targetFilter = new ContactFilter2D
@@ -160,7 +163,8 @@ namespace CodeBase.Weapon.ArrowWeapon
         }
 
         private float ApplyCritDamage() =>
-            _critDamageService.GetCritDamage(Damage, _critChance, _critRate);
+            _critDamageService.GetCritDamage(
+                PerkDamage.WithBerserk(Damage, _perkService, _ownerHealth), _critChance, _critRate);
 
         private void SpawnProjectile(Transform target, bool isMiss, float missSeverity)
         {

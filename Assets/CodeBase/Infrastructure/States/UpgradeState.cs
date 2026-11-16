@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using CodeBase.Infrastructure.Factory;
 using CodeBase.Infrastructure.Services.Balance;
+using CodeBase.Infrastructure.Services.MetaProgress;
 using CodeBase.Infrastructure.Services.Upgrade;
 using CodeBase.StaticData;
+using CodeBase.StaticData.MetaUpgrade;
 using CodeBase.UI;
 using CodeBase.UI.Screens;
 using UnityEngine;
@@ -22,17 +24,21 @@ namespace CodeBase.Infrastructure.States
         private readonly IGameFactory _gameFactory;
         private readonly IUpgradeService _upgradeService;
         private readonly IBalanceService _balanceService;
+        private readonly IMetaProgressService _metaProgress;
 
         private GameObject _upgradeUI;
         private UpgradeScreen _upgradeScreen;
         private int _rerollCost;
+        private int _freeRerolls;
 
         public UpgradeState(
             IGameStateMachine stateMachine,
             IGameFactory gameFactory,
             IUpgradeService upgradeService,
-            IBalanceService balanceService)
+            IBalanceService balanceService,
+            IMetaProgressService metaProgress)
         {
+            _metaProgress = metaProgress;
             _stateMachine = stateMachine;
             _gameFactory = gameFactory;
             _upgradeService = upgradeService;
@@ -42,6 +48,7 @@ namespace CodeBase.Infrastructure.States
         public void Enter()
         {
             _rerollCost = BaseRerollCost;
+            _freeRerolls = Mathf.RoundToInt(_metaProgress.GetUpgradeValue(MetaUpgradeId.FreeReroll));
             _ = ShowUpgradeOptions();
         }
 
@@ -86,11 +93,19 @@ namespace CodeBase.Infrastructure.States
 
         private void OnRerollRequested()
         {
+            // Free rerolls (Free Reroll meta upgrade) go first and do not escalate the price.
             // Paid reroll: charge first, then escalate the next price and re-roll the options.
-            if (!_balanceService.TryRemoveBalance(_rerollCost))
-                return;
+            if (_freeRerolls > 0)
+            {
+                _freeRerolls--;
+            }
+            else
+            {
+                if (!_balanceService.TryRemoveBalance(_rerollCost))
+                    return;
 
-            _rerollCost += RerollCostStep;
+                _rerollCost += RerollCostStep;
+            }
 
             List<UpgradeStaticData> options = _upgradeService.GenerateUpgradeOptions(OptionsCount);
             _upgradeScreen.ShowOptions(options);
@@ -99,7 +114,8 @@ namespace CodeBase.Infrastructure.States
 
         private void UpdateRerollUI()
         {
-            _upgradeScreen.SetRerollState(_rerollCost, _balanceService.CurrentBalance >= _rerollCost);
+            int cost = _freeRerolls > 0 ? 0 : _rerollCost;
+            _upgradeScreen.SetRerollState(cost, _balanceService.CurrentBalance >= cost);
         }
 
         private void OnUpgradeSelected(UpgradeStaticData selectedUpgrade)

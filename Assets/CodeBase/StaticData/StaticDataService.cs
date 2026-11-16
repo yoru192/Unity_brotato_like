@@ -23,6 +23,9 @@ namespace CodeBase.StaticData
         private MapLevelLibrary _mapLevelLibrary;
         private AudioStaticData _audio;
         private MusicStaticData _music;
+        private Vfx.VfxStaticData _vfx;
+        private List<MetaUpgrade.MetaUpgradeStaticData> _metaUpgradeList;
+        private Dictionary<MetaUpgrade.MetaUpgradeId, MetaUpgrade.MetaUpgradeStaticData> _metaUpgrades;
 
 
         public void Load()
@@ -46,7 +49,22 @@ namespace CodeBase.StaticData
             _mapLevelLibrary = Resources.Load<MapLevelLibrary>("StaticData/Map/MapLevelLibrary");
             _audio = Resources.Load<AudioStaticData>("StaticData/Audio/AudioStaticData");
             _music = Resources.Load<MusicStaticData>("StaticData/Audio/MusicStaticData");
+            _vfx = Resources.Load<Vfx.VfxStaticData>("StaticData/Vfx/VfxStaticData");
+            _metaUpgradeList = Resources.LoadAll<MetaUpgrade.MetaUpgradeStaticData>("StaticData/MetaUpgrades")
+                .OrderBy(x => x.branch)
+                .ThenBy(x => x.order)
+                .ToList();
+            _metaUpgrades = _metaUpgradeList.ToDictionary(x => x.id, x => x);
         }
+
+        public Vfx.VfxStaticData GetVfx() => _vfx;
+
+        public List<MetaUpgrade.MetaUpgradeStaticData> GetAllMetaUpgrades() => _metaUpgradeList;
+
+        public MetaUpgrade.MetaUpgradeStaticData ForMetaUpgrade(MetaUpgrade.MetaUpgradeId id) =>
+            _metaUpgrades.TryGetValue(id, out MetaUpgrade.MetaUpgradeStaticData staticData)
+                ? staticData
+                : null;
         
         public LevelStaticData ForLevel(string sceneKey) =>
             _levels.TryGetValue(sceneKey, out LevelStaticData staticData)

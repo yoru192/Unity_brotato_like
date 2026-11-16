@@ -20,6 +20,7 @@ using CodeBase.Infrastructure.Services.SelectedLevel;
 using CodeBase.Infrastructure.Services.Settings;
 using CodeBase.Infrastructure.Services.ShopService;
 using CodeBase.Infrastructure.Services.Upgrade;
+using CodeBase.Infrastructure.Services.Vfx;
 using CodeBase.Player;
 using CodeBase.StaticData;
 using UnityEngine;
@@ -78,14 +79,16 @@ namespace CodeBase.Infrastructure.States
             _services.RegisterSingle<IPersistentProgressService>( new PersistentProgressService());
 
             // Прогрес між забігами: читаємо з диска один раз на старті гри.
+            // Перки реєструються раніше, бо дерево мета-апгрейдів видає стартові перки.
+            _services.RegisterSingle<IPerkService>(new PerkService(_services.Single<IPersistentProgressService>()));
             IMetaProgressService metaProgress = new MetaProgressService(
                 _services.Single<IStaticDataService>(),
-                _services.Single<IPersistentProgressService>());
+                _services.Single<IPersistentProgressService>(),
+                _services.Single<IPerkService>());
             metaProgress.Load();
             _services.RegisterSingle(metaProgress);
             _services.RegisterSingle<IProgressService>(new ProgressService(_services.Single<IPersistentProgressService>()));
             _services.RegisterSingle<IBalanceService>(new BalanceService(_services.Single<IPersistentProgressService>()));
-            _services.RegisterSingle<IPerkService>(new PerkService(_services.Single<IPersistentProgressService>()));
             _services.RegisterSingle<IUpgradeService>(new UpgradeService(
                 _services.Single<IStaticDataService>(),
                 _services.Single<IPersistentProgressService>(),
@@ -106,6 +109,7 @@ namespace CodeBase.Infrastructure.States
                 _services.Single<ISelectedLevelService>()));
             _services.RegisterSingle<ICritDamageService>(new CritDamageService());
             _services.RegisterSingle<IHitFeelService>(new HitFeelService(_coroutineRunner));
+            _services.RegisterSingle<IVfxService>(new VfxService(_services.Single<IStaticDataService>()));
             _services.RegisterSingle<IAudioService>(new AudioService(_services.Single<IStaticDataService>().GetAudio()));
             _services.RegisterSingle<IGameFactory>(new GameFactory(
                 _services.Single<IAssets>(),
@@ -119,7 +123,8 @@ namespace CodeBase.Infrastructure.States
                 _services.Single<ISelectedLevelService>(),
                 _services.Single<ICritDamageService>(),
                 _services.Single<IAudioService>(),
-                _services.Single<IPerkService>()));
+                _services.Single<IPerkService>(),
+                _services.Single<IVfxService>()));
             _services.RegisterSingle<ISaveLoadService>( new SaveLoadService(
                 _services.Single<IPersistentProgressService>(),
                 _services.Single<IGameFactory>()));

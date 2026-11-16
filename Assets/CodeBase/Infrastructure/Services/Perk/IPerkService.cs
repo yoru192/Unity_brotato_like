@@ -20,5 +20,8 @@ namespace CodeBase.Infrastructure.Services.Perk
         bool Has(PerkId id);
 
         void Add(PerkId id, float value);
+
+        /// <summary>Повністю забирає перк (для одноразових, що витрачаються при спрацюванні).</summary>
+        void Remove(PerkId id);
     }
 }

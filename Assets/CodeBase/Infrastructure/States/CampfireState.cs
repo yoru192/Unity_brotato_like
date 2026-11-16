@@ -4,9 +4,11 @@ using System.Threading.Tasks;
 using CodeBase.Infrastructure.Factory;
 using CodeBase.Infrastructure.Services.Audio;
 using CodeBase.Infrastructure.Services.Map;
+using CodeBase.Infrastructure.Services.MetaProgress;
 using CodeBase.Infrastructure.Services.PersistentProgress;
 using CodeBase.Infrastructure.Services.Upgrade;
 using CodeBase.StaticData;
+using CodeBase.StaticData.MetaUpgrade;
 using CodeBase.UI;
 using CodeBase.UI.Screens;
 using UnityEngine;
@@ -16,7 +18,8 @@ namespace CodeBase.Infrastructure.States
 {
     /// <summary>
     /// Campfire node, reached only from the level map. Opens as an overlay in the map scene with two
-    /// choices: rest to heal 30% of max HP, or take a random upgrade (rolled and revealed on demand).
+    /// choices: rest to heal 30% of max HP (more with the Campfire Warmth meta upgrade), or take a random
+    /// upgrade (rolled and revealed on demand).
     /// </summary>
     public class CampfireState : IState
     {
@@ -28,6 +31,7 @@ namespace CodeBase.Infrastructure.States
         private readonly IUpgradeService _upgradeService;
         private readonly IPersistentProgressService _persistentProgress;
         private readonly IAudioService _audioService;
+        private readonly IMetaProgressService _metaProgress;
 
         private GameObject _campfireUI;
 
@@ -36,8 +40,10 @@ namespace CodeBase.Infrastructure.States
             IMapService mapService,
             IUpgradeService upgradeService,
             IPersistentProgressService persistentProgress,
-            IAudioService audioService)
+            IAudioService audioService,
+            IMetaProgressService metaProgress)
         {
+            _metaProgress = metaProgress;
             _stateMachine = stateMachine;
             _gameFactory = gameFactory;
             _mapService = mapService;
@@ -79,10 +85,11 @@ namespace CodeBase.Infrastructure.States
             }
         }
 
-        // Rest: heal 30% of max HP, then leave.
+        // Rest: heal 30% of max HP (plus the meta upgrade bonus), then leave.
         private void OnChooseRest()
         {
-            float healAmount = _persistentProgress.Progress.playerState.maxHealth * HealPercentOfMax;
+            float healPercent = HealPercentOfMax + _metaProgress.GetUpgradeValue(MetaUpgradeId.CampfireWarmth) / 100f;
+            float healAmount = _persistentProgress.Progress.playerState.maxHealth * healPercent;
             _persistentProgress.Progress.playerState.Heal(healAmount);
             CloseToMap();
         }

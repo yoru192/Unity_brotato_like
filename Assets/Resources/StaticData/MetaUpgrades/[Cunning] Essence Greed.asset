@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 528edb429fb54c6bbe968c9ade508b48, type: 3}
+  m_Name: '[Cunning] Essence Greed'
+  m_EditorClassIdentifier: Assembly-CSharp::CodeBase.StaticData.MetaUpgrade.MetaUpgradeStaticData
+  id: 8
+  branch: 2
+  order: 1
+  upgradeName: Essence Greed
+  description: +5% essence from every run per level
+  icon: {fileID: 21300000, guid: 977c4096baf39402ba9189c178750b19, type: 3}
+  valuePerLevel: 5
+  costs: 190000002d00000046000000
+  requiredBranchLevels: 0

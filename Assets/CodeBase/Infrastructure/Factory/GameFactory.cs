@@ -15,6 +15,7 @@ using CodeBase.Infrastructure.Services.ProgressService;
 using CodeBase.Infrastructure.Services.SelectedLevel;
 using CodeBase.Infrastructure.Services.ShopService;
 using CodeBase.Infrastructure.Services.Upgrade;
+using CodeBase.Infrastructure.Services.Vfx;
 using CodeBase.Logic;
 using CodeBase.Player;
 using CodeBase.Player.Movement;
@@ -54,6 +55,7 @@ namespace CodeBase.Infrastructure.Factory
         private readonly ICritDamageService _critDamageService;
         private readonly IAudioService _audioService;
         private readonly IPerkService _perkService;
+        private readonly IVfxService _vfxService;
 
         public GameFactory(IAssets assets,
             IStaticDataService staticData,
@@ -66,9 +68,11 @@ namespace CodeBase.Infrastructure.Factory
             ISelectedLevelService selectedLevel,
             ICritDamageService critDamageService,
             IAudioService audioService,
-            IPerkService perkService)
+            IPerkService perkService,
+            IVfxService vfxService)
         {
             _perkService = perkService;
+            _vfxService = vfxService;
             _assets = assets;
             _staticData = staticData;
             _balanceService = balanceService;
@@ -125,7 +129,8 @@ namespace CodeBase.Infrastructure.Factory
                     playerMovement,
                     dashData,
                     _audioService,
-                    _perkService);
+                    _perkService,
+                    _vfxService);
                 abilityController.AddAbility(dashAbility);
             }
 
@@ -286,6 +291,8 @@ namespace CodeBase.Infrastructure.Factory
 
             if (!enemy.TryGetComponent<EnemyHitFeedback>(out _))
                 enemy.AddComponent<EnemyHitFeedback>();
+            if (!enemy.TryGetComponent<EnemyStatusEffects>(out _))
+                enemy.AddComponent<EnemyStatusEffects>();
 
             enemy.GetComponent<EnemyDeath>().IsConstructed = true;
         }
