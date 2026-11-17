@@ -75,7 +75,7 @@ namespace CodeBase.Infrastructure.States
 
                 CampfireScreen screen = _campfireUI.GetComponentInChildren<CampfireScreen>();
                 if (screen != null)
-                    screen.Construct(OnChooseRest, TakeRandomUpgrade, CloseToMap);
+                    screen.Construct(OnChooseRest, TakeRandomUpgrade, CloseToMap, HealPercent());
                 else
                     Debug.LogError("CampfireScreen component not found!");
             }
@@ -88,11 +88,13 @@ namespace CodeBase.Infrastructure.States
         // Rest: heal 30% of max HP (plus the meta upgrade bonus), then leave.
         private void OnChooseRest()
         {
-            float healPercent = HealPercentOfMax + _metaProgress.GetUpgradeValue(MetaUpgradeId.CampfireWarmth) / 100f;
-            float healAmount = _persistentProgress.Progress.playerState.maxHealth * healPercent;
+            float healAmount = _persistentProgress.Progress.playerState.maxHealth * HealPercent();
             _persistentProgress.Progress.playerState.Heal(healAmount);
             CloseToMap();
         }
+
+        private float HealPercent() =>
+            HealPercentOfMax + _metaProgress.GetUpgradeValue(MetaUpgradeId.CampfireWarmth) / 100f;
 
 
         private UpgradeStaticData TakeRandomUpgrade()

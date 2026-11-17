@@ -21,6 +21,8 @@ namespace CodeBase.UI.Screens
         [SerializeField] private GameObject choiceRoot;
         [SerializeField] private Button restButton;
         [SerializeField] private Button takeUpgradeButton;
+        [Tooltip("Rest card label; filled with the actual heal percent (meta upgrades raise it).")]
+        [SerializeField] private TextMeshProUGUI restLabel;
 
         [Header("Reward Screen")]
         [SerializeField] private GameObject rewardScreen;
@@ -61,12 +63,16 @@ namespace CodeBase.UI.Screens
                 continueButton.onClick.RemoveListener(OnContinueClicked);
         }
 
-        public void Construct(Action onChooseRest, Func<UpgradeStaticData> onTakeUpgrade, Action onContinue)
+        public void Construct(Action onChooseRest, Func<UpgradeStaticData> onTakeUpgrade, Action onContinue,
+            float healPercent)
         {
             _onChooseRest = onChooseRest;
             _onTakeUpgrade = onTakeUpgrade;
             _onContinue = onContinue;
-            
+
+            if (restLabel != null)
+                restLabel.text = $"Heal {Mathf.RoundToInt(healPercent * 100f)}% of Max Health";
+
             if (choiceRoot != null)
                 choiceRoot.SetActive(true);
             if (rewardScreen != null)
