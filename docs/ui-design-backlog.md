@@ -62,7 +62,7 @@ Used by Pause/Settings and the HUD — reuse for other screens.
 - "Stats" row touches the bottom edge; Music and SFX share the same icon.
 
 **Choose Upgrade** — restyled 2026-11-17 (purple dim over the paused game, kit `CardFrame_01` cards: grey frame for stats, purple frame + corner decor + "PERK" tag for perks via `UpgradeButton.perkFrame/statFrame`, whole card is the click target, gold Reroll with coin). Remaining:
-- Upgrade icons have baked labels that don't match: Deadly Dash shows "Move Speed", Magnet shows "Max Stamina", Vampirism shows "Current Health". Needs label-free icons (data/art, not UI).
+- (Done 2026-11-17: all 11 perks use label-free icons from `Assets/500FreeSkillIcons/Icons` instead of the labelled Gemini sheet; stat upgrades keep the labelled icons since their labels match. Description box is 80 px with auto-size down to 13 so long texts never reach the button.)
 - Stat upgrade names mix "sprint" and "stamina" (`+ 100 max sprint`, `+ 20 regen sprint rate`) while the HUD and descriptions say Stamina; the asset file `+10 regen sprint rate` actually gives 20. Consider renaming for consistency.
 
 **Shop** — restyled 2026-11-17 (painted background kept under a purple dim, opaque kit cards with an icon slot, coin + gold price that turns red only when unaffordable and hides the coin when SOLD, gold Buy / Leave buttons, balance plate like the HUD; `[Upgrade]` prefix removed from the three `itemName`s). Remaining:
