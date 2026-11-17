@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe482f41f29e4da0b3d4e115d3edfbc8, type: 3}
   m_Name: '[Upgrade] Heal 25 HP'
   m_EditorClassIdentifier: Assembly-CSharp::CodeBase.StaticData.ShopItemStaticData
-  itemName: '[Upgrade] Heal 25 HP'
+  itemName: Heal 25 HP
   itemDescription: 
   itemIcon: {fileID: 2127019733, guid: fc7d4998a6f3ce54a94e94a270800592, type: 3}
   itemBackground: {fileID: 0}

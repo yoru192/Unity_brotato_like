@@ -15,7 +15,14 @@ namespace CodeBase.UI.Elements
         [SerializeField] private TextMeshProUGUI nameText;
         [SerializeField] private TextMeshProUGUI descriptionText;
         [SerializeField] private TextMeshProUGUI price;
-        
+        [Tooltip("Coin icon next to the price; hidden once the item is sold.")]
+        [SerializeField] private GameObject priceIcon;
+
+        [Header("Price colours")]
+        [SerializeField] private Color affordableColor = new Color(0.965f, 0.882f, 0.612f);
+        [SerializeField] private Color unaffordableColor = new Color(0.95f, 0.42f, 0.38f);
+        [SerializeField] private Color soldColor = new Color(0.6f, 0.6f, 0.6f);
+
         private ShopItemStaticData _itemData;
         private Action<ShopItem> _onItemClicked;
         private bool _sold;
@@ -47,7 +54,7 @@ namespace CodeBase.UI.Elements
                 descriptionText.text = itemData.itemDescription;
         
             if (price != null)
-                price.text = $"{itemData.itemPrice} $";
+                price.text = itemData.itemPrice.ToString();
         
             UpdateAffordability(currentBalance);
         }
@@ -58,7 +65,7 @@ namespace CodeBase.UI.Elements
 
             bool affordable = currentBalance >= _itemData.itemPrice;
             if (price != null)
-                price.color = affordable ? Color.white : Color.red;
+                price.color = affordable ? affordableColor : unaffordableColor;
             if (button != null)
                 button.interactable = affordable;
         }
@@ -72,8 +79,10 @@ namespace CodeBase.UI.Elements
             if (price != null)
             {
                 price.text = "SOLD";
-                price.color = Color.gray;
+                price.color = soldColor;
             }
+            if (priceIcon != null)
+                priceIcon.SetActive(false);
         }
 
         private void OnClick()

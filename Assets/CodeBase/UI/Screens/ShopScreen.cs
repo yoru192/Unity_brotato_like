@@ -65,7 +65,7 @@ namespace CodeBase.UI.Screens
         private void UpdateBalanceLabel()
         {
             if (balanceText != null)
-                balanceText.text = $"{_balanceService.CurrentBalance} $";
+                balanceText.text = _balanceService.CurrentBalance.ToString();
         }
 
         private void OnItemClicked(ShopItem shopItem)
