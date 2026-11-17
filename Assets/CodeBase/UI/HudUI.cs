@@ -188,7 +188,7 @@ namespace CodeBase.UI
         {
             if (_health != null && _hpBarFill != null)
             {
-                _hpBarFill.fillAmount = _health.Current / _health.Max;
+                SetFill(_hpBarFill, _health.Current / _health.Max);
                 if (_hpAmount != null)
                 {
                     _hpAmount.text = $"{Mathf.CeilToInt(_health.Current)}/{_health.Max}";
@@ -209,7 +209,7 @@ namespace CodeBase.UI
         }
         private void UpdateStamina()
         {
-            _staminaBarFill.fillAmount = _playerStamina.CurrentStamina / _playerStamina.MaxStamina;
+            SetFill(_staminaBarFill, _playerStamina.CurrentStamina / _playerStamina.MaxStamina);
             
             if (_staminaAmount != null)
             {
@@ -241,6 +241,16 @@ namespace CodeBase.UI
 
         private static float Stat(float value, float defaultValue) => value == 0 ? defaultValue : value;
 
+        // Bar fills are 9-sliced (rounded ends), which Image.fillAmount ignores — resize via anchors instead.
+        private static void SetFill(Image fill, float ratio)
+        {
+            // NaN-safe: max can still be 0 when the HUD is constructed, and a NaN anchor sticks in the RectTransform.
+            ratio = ratio > 0f ? Mathf.Min(ratio, 1f) : 0f;
+            RectTransform rect = fill.rectTransform;
+            rect.anchorMax = new Vector2(ratio, rect.anchorMax.y);
+            fill.enabled = ratio > 0f;
+        }
+
         private void OnXpGained(int amount)
         {
             UpdateXpBar();
@@ -265,7 +275,7 @@ namespace CodeBase.UI
 
         private void UpdateLevel()
         {
-            _levelText.text = $"lvl {_persistentProgressService.Progress.playerState.currentLevel}";
+            _levelText.text = $"Lv {_persistentProgressService.Progress.playerState.currentLevel}";
         }
 
         private void OnBalanceGained()
