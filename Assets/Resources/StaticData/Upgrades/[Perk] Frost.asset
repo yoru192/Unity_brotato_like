@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CodeBase.StaticData.UpgradeStaticData
   upgradeName: Frost
   description: Hits have a 15% chance to slow the enemy
-  icon: {fileID: -2130327738, guid: fc7d4998a6f3ce54a94e94a270800592, type: 3}
+  icon: {fileID: 21300000, guid: d16ef7e8333a7c34782f9d8e921931d2, type: 3}
   background: {fileID: 0}
   modifierType: 0
   value: 15

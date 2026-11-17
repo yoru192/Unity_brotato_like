@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CodeBase.StaticData.UpgradeStaticData
   upgradeName: Death Explosion
   description: Killed enemies explode for 4 damage to nearby enemies
-  icon: {fileID: -1072849712, guid: fc7d4998a6f3ce54a94e94a270800592, type: 3}
+  icon: {fileID: 21300000, guid: 7af3f4e2fa485a142ae0eae06f40a3ae, type: 3}
   background: {fileID: 0}
   modifierType: 0
   value: 4

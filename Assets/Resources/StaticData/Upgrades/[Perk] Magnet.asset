@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CodeBase.StaticData.UpgradeStaticData
   upgradeName: Magnet
   description: XP orb pickup radius +50%
-  icon: {fileID: -979368755, guid: fc7d4998a6f3ce54a94e94a270800592, type: 3}
+  icon: {fileID: 21300000, guid: cdba1506788764c4d81ac7b4d8b585b1, type: 3}
   background: {fileID: 0}
   modifierType: 0
   value: 0.5
