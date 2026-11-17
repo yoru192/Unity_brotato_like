@@ -41,19 +41,16 @@ Used by Pause/Settings and the HUD — reuse for other screens.
 | Plate | outer `UI_Etc/Switch_Bg_White_Border` tinted frame `(0.432, 0.347, 0.462)`, inner child `Bg` = `UI_Etc/Switch_Bg_White_Bg` `(0.09, 0.071, 0.094, 0.9)` inset 2px (the border sprite is solid, so it must be the bottom layer). Below 60px height set `pixelsPerUnitMultiplier` 1.6 |
 | Bar | `Slider/Slider_Handle_Bg` dark → `Slider_Handle_Fill` (Sliced, inset 4px) → `Slider_Handle_Border` frame colour on top |
 | Accent / headings | gold `(0.965, 0.882, 0.612)`, orange-gold fill `(0.98, 0.69, 0.216)`, panel `(0.224, 0.204, 0.255)` |
+| Gotchas (editor scripting) | Setting `TMP_Text.font` on an object in an open **scene** from editor code may not persist — set `m_fontAsset` / `m_sharedMaterial` through `SerializedObject` and re-check after reopening the scene. Prefab contents (`LoadPrefabContents`) were not affected |
 | Gotchas | Kit frame/border sprites (`Switch_Bg_White_Border`, `Listframe_01~02_Border`, `SlotFrame_Circle_White_Border`) are **solid shapes**, not rings: put the border underneath and the dark fill on top, inset 2px. The project renders UI in linear colour space, so a "nearly opaque" dim (alpha 0.95) still visibly leaks bright text — use alpha 1 when the screen behind must disappear |
 | Fonts on the battlefield | `Alata-Regular-Outline 28 SDF` (small), `Alata-Regular-Outline 50 SDF` (headings) |
 5. ~~Fonts~~ — done 2026-11-17. Two families now: **Alata** (body, buttons, numbers; `Alata-Regular-Outline *` variants on the battlefield, incl. damage numbers) and **Cinzel** (display: screen and section titles only). Lora, MedievalSharp and LiberationSans are no longer used by any scene/prefab. Note: TMP's default font in `TMP Settings` is still LiberationSans (third-party folder, left alone) — new TMP objects must get Alata assigned by hand.
 
 ## Per screen
 
-**Menu**
-- "Fantasy RPG" logo is the kit's demo placeholder; "TAP TO START" is mobile wording.
-- No way into Settings from the menu; the exit "X" button has no label.
+**Menu** — done 2026-11-17: working title **Duskward** (Cinzel text, kit logo images disabled), "PLAY", labelled round Settings / Quit buttons. Settings is now its own prefab `Resources_moved/UI/SettingsScreen.prefab`, nested in `PauseScreen` and instanced in the Menu scene (`MenuUI.settingsScreen`).
 
-**Heroes (LoadoutSelect)**
-- Eight identical "Locked" slots fill half the screen — hide them, or show silhouettes with unlock price.
-- Hero description is kit placeholder text; stat bars have no numbers.
+**Heroes (LoadoutSelect)** — done 2026-11-17: slots without a hero (`HeroTypeId.Unknown`) are hidden by `LoadoutSelectUI` (a slot shows up once its `heroTypeId` is set), the first hero is pre-selected, stat bars show the real value (`StatBar.valueText`) with reference maxima tuned in the scene, hero descriptions rewritten.
 
 **Map** — restyled 2026-11-17 (round kit nodes 96 px: ring `SlotFrame_Circle_White_Border` tinted by state + inner `SlotFrame_Circle_White_Bg`, gold `FocusGlow` and a type caption only on available nodes; "LVL n" / "LOCKED" labels removed; palette edge colours; light purple tint; HUD-style balance plate). `MapNodeView` no longer builds visuals in code — the hierarchy lives in `MapNode.prefab`.
 - The map is a vertical `ScrollRect` (10 rows), so the top rows are reachable by scrolling — a `TopFade` gradient now hints at that. Scrollbars are invisible; consider a visible one or auto-scroll to the current row if players miss it.
