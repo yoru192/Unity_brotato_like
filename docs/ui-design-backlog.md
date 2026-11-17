@@ -55,9 +55,7 @@ Used by Pause/Settings and the HUD — reuse for other screens.
 **Map** — restyled 2026-11-17 (round kit nodes 96 px: ring `SlotFrame_Circle_White_Border` tinted by state + inner `SlotFrame_Circle_White_Bg`, gold `FocusGlow` and a type caption only on available nodes; "LVL n" / "LOCKED" labels removed; palette edge colours; light purple tint; HUD-style balance plate). `MapNodeView` no longer builds visuals in code — the hierarchy lives in `MapNode.prefab`.
 - The map is a vertical `ScrollRect` (10 rows), so the top rows are reachable by scrolling — a `TopFade` gradient now hints at that. Scrollbars are invisible; consider a visible one or auto-scroll to the current row if players miss it.
 
-**Pause**
-- Opaque background hides the game (Game Over uses a dim instead).
-- Settings is first; Continue is the primary action but not emphasised.
+**Pause** — done 2026-11-17: purple dim (alpha 0.9) over the frozen game instead of the opaque panel, Cinzel title, Continue is a big gold button, Settings / Restart / Give Up are a row of smaller round buttons. The HUD is hidden while paused (`HudUI.SetVisible` toggles only its Canvas — `PauseInputHandler` lives on the HUD object and must keep running).
 
 **Settings**
 - Resolution dropdown is the unstyled default and very small.
@@ -73,9 +71,8 @@ Used by Pause/Settings and the HUD — reuse for other screens.
 **Campfire** — restyled 2026-11-17 (background stretched 16% past the right/bottom edge so the Gemini watermark is off-screen, light purple dim, kit cards like the Shop, gold buttons, reward button "Get" → "Continue"; the rest label now shows the real heal % incl. the `CampfireWarmth` meta upgrade). Remaining:
 - The reward card always uses the grey frame — could use the purple perk frame like Choose Upgrade when the rolled upgrade is a perk.
 
-**Win / Game Over**
-- HUD shows through the dim.
-- Menu and Restart have equal visual weight.
+**Win / Game Over** — done 2026-11-17: HUD hidden (via `IGameFactory.Hud`), purple dim 0.9, Cinzel title, "Play Again" is the primary gold button, Menu a smaller dark one below. Remaining:
+- The title frame (`LineTextFrame_06_Demo`) is red on both screens — fine for Game Over, odd for Victory; a gold/neutral frame would read better.
 
 **Meta upgrade tree** — restyled 2026-11-17 (gold buy button with essence gem, `statusText` shows MAX / branch requirement instead of a dead button, Cinzel title and branch headers, framed dark branch panels and nodes, essence plate like the HUD balance).
 
