@@ -65,10 +65,24 @@ namespace CodeBase.UI.LoadoutSelect
 
         private void Start()
         {
+            RoleButton first = null;
             foreach (var btn in roleButtons)
-                btn.OnClicked += HandleRoleButtonClicked;
+            {
+                // Placeholder slots without a hero are hidden; a slot appears once its heroTypeId is set.
+                btn.gameObject.SetActive(btn.HasHero);
+                if (!btn.HasHero)
+                    continue;
 
-            RefreshMeta();
+                btn.OnClicked += HandleRoleButtonClicked;
+                if (first == null)
+                    first = btn;
+            }
+
+            // Show a real hero right away instead of an empty "?" panel.
+            if (first != null)
+                HandleRoleButtonClicked(first);
+            else
+                RefreshMeta();
         }
 
         private void HandleRoleButtonClicked(RoleButton clicked)

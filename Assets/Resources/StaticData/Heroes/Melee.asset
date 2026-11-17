@@ -15,8 +15,8 @@ MonoBehaviour:
   heroTypeId: 1
   HeroName: Abrams
   HeroClass: Melee
-  Description: It is a melee character that uses a sword  and a shield freely, and
-    it is easy to operate.
+  Description: 'Sword-and-shield fighter. Sturdy and quick on foot: wades into the
+    crowd and cuts it down up close.'
   HeroImage: {fileID: -1534167812385636411, guid: 2189049c4820e6940aaaaad135742aee, type: 3}
   Icon: {fileID: 21300000, guid: 6c313154b24174e74a18a2c64be8e231, type: 3}
   maxStamina: 100
@@ -24,3 +24,4 @@ MonoBehaviour:
   maxHealth: 100
   moveSpeed: 7
   startWeapons: 00000000
+  unlockCost: 0

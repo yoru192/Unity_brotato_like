@@ -45,15 +45,20 @@ namespace CodeBase.UI.LoadoutSelect
             if (heroImage)      heroImage.sprite    = heroData.HeroImage;
             if (iconImage)      iconImage.sprite    = heroData.Icon;
 
-            // --- Стати героя ---
-            healthBar?.SetValue(heroData.maxHealth / maxHealthRef);
-            staminaBar?.SetValue(heroData.maxStamina / maxStaminaRef);
-            staminaRegenBar?.SetValue(heroData.regenRateStamina / maxStaminaRegenRef);
-            moveSpeedBar?.SetValue(heroData.moveSpeed / maxSpeedRef);
+            // --- Стати героя (смуга відносно еталону + справжнє число) ---
+            SetBar(healthBar, heroData.maxHealth, maxHealthRef);
+            SetBar(staminaBar, heroData.maxStamina, maxStaminaRef);
+            SetBar(staminaRegenBar, heroData.regenRateStamina, maxStaminaRegenRef);
+            SetBar(moveSpeedBar, heroData.moveSpeed, maxSpeedRef);
 
             // --- Дамаг зброї ---
-            float totalDamage = GetTotalWeaponDamage(heroData);
-            damageBar?.SetValue(totalDamage / maxDamageRef);
+            SetBar(damageBar, GetTotalWeaponDamage(heroData), maxDamageRef);
+        }
+
+        private static void SetBar(StatBar bar, float value, float reference)
+        {
+            if (bar != null)
+                bar.SetValue(value / reference, value.ToString("0.#"));
         }
 
         private float GetTotalWeaponDamage(HeroStaticData heroData)

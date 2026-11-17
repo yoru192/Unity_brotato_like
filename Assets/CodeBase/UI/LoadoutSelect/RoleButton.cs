@@ -20,13 +20,13 @@ namespace CodeBase.UI.LoadoutSelect
         private void Awake()
         {
             _staticDataService = AllServices.Container.Single<IStaticDataService>();
+            // Loaded in Awake so LoadoutSelectUI.Start can already read it (auto-select, hiding empty slots).
+            _heroStaticData = _staticDataService.ForHero(heroTypeId);
             GetComponentInChildren<Button>().onClick.AddListener(() => OnClicked?.Invoke(this));
         }
 
-        private void Start()
-        {
-            _heroStaticData = _staticDataService.ForHero(heroTypeId);
-        }
+        /// <summary>False for placeholder slots (no hero assigned) — those are hidden.</summary>
+        public bool HasHero => heroTypeId != HeroTypeId.Unknown && _heroStaticData != null;
         
         public void Focus()
         {
