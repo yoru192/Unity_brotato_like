@@ -9,7 +9,8 @@ namespace CodeBase.UI.Map
 {
     /// <summary>
     /// Visual + button for a single map node. Only <see cref="NodeState.Available"/> nodes are
-    /// clickable; locked/completed nodes are shown dimmed.
+    /// clickable; locked/completed nodes are shown dimmed. The visual hierarchy (ring frame, inner
+    /// background, icon, glow, type label) lives in the prefab; this class only tints it per state.
     /// </summary>
     public class MapNodeView : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     {
@@ -18,9 +19,8 @@ namespace CodeBase.UI.Map
         [SerializeField] private GameObject availableHighlight;
         [SerializeField] private Image background;
         [SerializeField] private Image frame;
+        [Tooltip("Node type caption (FIGHT, SHOP, ...); shown only on nodes the player can pick.")]
         [SerializeField] private TextMeshProUGUI typeLabel;
-        [SerializeField] private TextMeshProUGUI floorLabel;
-        [SerializeField] private TextMeshProUGUI statusLabel;
 
         [Header("Type Icons")]
         [SerializeField] private Sprite combatSprite;
@@ -32,10 +32,15 @@ namespace CodeBase.UI.Map
         [Header("State Colors")]
         [SerializeField] private Color lockedColor = new Color(1f, 1f, 1f, 0.35f);
         [SerializeField] private Color availableColor = Color.white;
-        [SerializeField] private Color completedColor = new Color(0.55f, 0.55f, 0.55f, 1f);
-        [SerializeField] private Color availableFrameColor = new Color(1f, 0.78f, 0.25f, 1f);
-        [SerializeField] private Color completedFrameColor = new Color(0.42f, 0.95f, 0.65f, 1f);
-        [SerializeField] private Color lockedFrameColor = new Color(0.36f, 0.39f, 0.48f, 0.85f);
+        [SerializeField] private Color completedColor = new Color(0.65f, 0.6f, 0.55f, 1f);
+        [SerializeField] private Color availableFrameColor = new Color(0.98f, 0.78f, 0.3f, 1f);
+        [SerializeField] private Color completedFrameColor = new Color(0.6f, 0.52f, 0.36f, 1f);
+        [SerializeField] private Color lockedFrameColor = new Color(0.432f, 0.347f, 0.462f, 1f);
+        [SerializeField] private Color completedBackgroundColor = new Color(0.18f, 0.16f, 0.22f, 1f);
+        [SerializeField] private Color lockedBackgroundColor = new Color(0.13f, 0.11f, 0.16f, 1f);
+        [Tooltip("How much the type accent is darkened for the background of an available node.")]
+        [Range(0f, 1f)]
+        [SerializeField] private float availableBackgroundDarken = 0.45f;
         [SerializeField] private Color combatColor = new Color(0.36f, 0.55f, 0.95f, 1f);
         [SerializeField] private Color eliteColor = new Color(0.95f, 0.38f, 0.32f, 1f);
         [SerializeField] private Color shopColor = new Color(0.32f, 0.78f, 0.58f, 1f);
@@ -56,8 +61,6 @@ namespace CodeBase.UI.Map
             _onClicked = onClicked;
             _baseScale = transform.localScale;
 
-            EnsureVisuals();
-
             if (icon != null)
             {
                 icon.sprite = SpriteFor(node.Type);
@@ -66,9 +69,6 @@ namespace CodeBase.UI.Map
 
             if (typeLabel != null)
                 typeLabel.text = LabelFor(node.Type);
-
-            if (floorLabel != null)
-                floorLabel.text = $"LVL {node.Row + 1}";
 
             ApplyState(node.State);
 
@@ -106,34 +106,25 @@ namespace CodeBase.UI.Map
 
         private void ApplyState(NodeState state)
         {
+            bool available = state == NodeState.Available;
+
             if (button != null)
-                button.interactable = state == NodeState.Available;
+                button.interactable = available;
 
             if (availableHighlight != null)
-                availableHighlight.SetActive(state == NodeState.Available);
+                availableHighlight.SetActive(available);
 
             if (icon != null)
                 icon.color = ColorFor(state);
 
-            Color accent = AccentFor(_node.Type);
-
             if (background != null)
-                background.color = BackgroundFor(state, accent);
+                background.color = BackgroundFor(state, AccentFor(_node.Type));
 
             if (frame != null)
                 frame.color = FrameFor(state);
 
             if (typeLabel != null)
-                typeLabel.color = state == NodeState.Locked ? lockedColor : Color.white;
-
-            if (floorLabel != null)
-                floorLabel.color = new Color(1f, 1f, 1f, state == NodeState.Locked ? 0.45f : 0.82f);
-
-            if (statusLabel != null)
-            {
-                statusLabel.text = StatusFor(state);
-                statusLabel.color = FrameFor(state);
-            }
+                typeLabel.gameObject.SetActive(available);
 
             transform.localScale = _baseScale;
         }
@@ -162,9 +153,9 @@ namespace CodeBase.UI.Map
         {
             switch (state)
             {
-                case NodeState.Available: return Color.Lerp(accent, Color.black, 0.28f);
-                case NodeState.Completed: return new Color(0.13f, 0.2f, 0.16f, 0.95f);
-                default: return new Color(0.08f, 0.09f, 0.12f, 0.82f);
+                case NodeState.Available: return Color.Lerp(accent, Color.black, availableBackgroundDarken);
+                case NodeState.Completed: return completedBackgroundColor;
+                default: return lockedBackgroundColor;
             }
         }
 
@@ -192,16 +183,6 @@ namespace CodeBase.UI.Map
             }
         }
 
-        private string StatusFor(NodeState state)
-        {
-            switch (state)
-            {
-                case NodeState.Available: return "READY";
-                case NodeState.Completed: return "DONE";
-                default: return "LOCKED";
-            }
-        }
-
         private Sprite SpriteFor(NodeType type)
         {
             switch (type)
@@ -212,94 +193,6 @@ namespace CodeBase.UI.Map
                 case NodeType.Campfire: return campfireSprite;
                 default: return combatSprite;
             }
-        }
-
-        private void EnsureVisuals()
-        {
-            Image rootImage = GetComponent<Image>();
-            if (background == null)
-                background = rootImage != null ? rootImage : gameObject.AddComponent<Image>();
-
-            background.type = Image.Type.Simple;
-
-            if (button != null && button.targetGraphic == null)
-                button.targetGraphic = background;
-
-            frame ??= CreateImage("Frame", transform, new Vector2(1f, 1f), new Vector2(10f, 10f));
-            frame.type = Image.Type.Simple;
-            frame.raycastTarget = false;
-
-            if (icon != null)
-            {
-                icon.raycastTarget = false;
-                icon.rectTransform.anchorMin = new Vector2(0.5f, 0.5f);
-                icon.rectTransform.anchorMax = new Vector2(0.5f, 0.5f);
-                icon.rectTransform.pivot = new Vector2(0.5f, 0.5f);
-                icon.rectTransform.anchoredPosition = new Vector2(0f, 6f);
-                icon.rectTransform.sizeDelta = new Vector2(42f, 42f);
-            }
-
-            if (availableHighlight != null)
-            {
-                Image highlight = availableHighlight.GetComponent<Image>() ??
-                                  availableHighlight.AddComponent<Image>();
-                highlight.type = Image.Type.Simple;
-                highlight.color = new Color(1f, 0.76f, 0.2f, 0.22f);
-                highlight.raycastTarget = false;
-                availableHighlight.transform.SetAsFirstSibling();
-            }
-
-            typeLabel ??= CreateLabel("TypeLabel", new Vector2(0.5f, 1f), new Vector2(0f, -7f), 18f, FontStyles.Bold);
-            floorLabel ??= CreateLabel("FloorLabel", new Vector2(0.5f, 0f), new Vector2(0f, 8f), 13f, FontStyles.Bold);
-            statusLabel ??= CreateLabel("StatusLabel", new Vector2(0.5f, 0f), new Vector2(0f, -18f), 10f, FontStyles.Bold);
-
-            frame.transform.SetAsLastSibling();
-            if (icon != null)
-                icon.transform.SetAsLastSibling();
-            if (typeLabel != null)
-                typeLabel.transform.SetAsLastSibling();
-            if (floorLabel != null)
-                floorLabel.transform.SetAsLastSibling();
-            if (statusLabel != null)
-                statusLabel.transform.SetAsLastSibling();
-        }
-
-        private Image CreateImage(string name, Transform parent, Vector2 anchor, Vector2 padding)
-        {
-            GameObject go = new GameObject(name, typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
-            go.layer = gameObject.layer;
-            go.transform.SetParent(parent, false);
-
-            RectTransform rect = (RectTransform)go.transform;
-            rect.anchorMin = Vector2.zero;
-            rect.anchorMax = anchor;
-            rect.offsetMin = padding;
-            rect.offsetMax = -padding;
-
-            return go.GetComponent<Image>();
-        }
-
-        private TextMeshProUGUI CreateLabel(string name, Vector2 anchor, Vector2 position, float size, FontStyles style)
-        {
-            GameObject go = new GameObject(name, typeof(RectTransform), typeof(CanvasRenderer), typeof(TextMeshProUGUI));
-            go.layer = gameObject.layer;
-            go.transform.SetParent(transform, false);
-
-            RectTransform rect = (RectTransform)go.transform;
-            rect.anchorMin = anchor;
-            rect.anchorMax = anchor;
-            rect.pivot = new Vector2(0.5f, 0.5f);
-            rect.anchoredPosition = position;
-            rect.sizeDelta = new Vector2(96f, 22f);
-
-            TextMeshProUGUI label = go.GetComponent<TextMeshProUGUI>();
-            label.alignment = TextAlignmentOptions.Center;
-            label.fontSize = size;
-            label.fontStyle = style;
-            label.raycastTarget = false;
-            label.textWrappingMode = TextWrappingModes.NoWrap;
-
-            return label;
         }
     }
 }
