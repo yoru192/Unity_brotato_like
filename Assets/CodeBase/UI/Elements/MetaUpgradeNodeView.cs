@@ -20,6 +20,10 @@ namespace CodeBase.UI.Elements
         [SerializeField] private TextMeshProUGUI costText;
         [Tooltip("Опційно: об'єкт, що вмикається, поки вузол закритий вимогою гілки.")]
         [SerializeField] private GameObject lockedOverlay;
+        [Tooltip("Опційно: іконка есенції біля ціни на кнопці.")]
+        [SerializeField] private GameObject costIcon;
+        [Tooltip("Опційно: напис замість кнопки — MAX або вимога гілки. Якщо задано, кнопка ховається в цих станах.")]
+        [SerializeField] private TextMeshProUGUI statusText;
 
         private MetaUpgradeStaticData _data;
         private Action<MetaUpgradeStaticData> _onBuy;
@@ -62,15 +66,27 @@ namespace CodeBase.UI.Elements
             if (levelText != null)
                 levelText.text = $"{level}/{_data.MaxLevel}";
 
-            if (costText != null)
+            bool maxed = cost < 0;
+            string status = maxed ? "MAX" : !unlocked ? $"Needs {_data.requiredBranchLevels} levels\nin branch" : null;
+
+            if (statusText != null)
             {
-                if (cost < 0)
-                    costText.text = "MAX";
-                else if (!unlocked)
-                    costText.text = $"Need {_data.requiredBranchLevels} levels in branch";
-                else
-                    costText.text = cost.ToString();
+                // Status replaces the button: a buy button that can never be pressed only adds noise.
+                statusText.gameObject.SetActive(status != null);
+                statusText.text = status ?? string.Empty;
+                if (buyButton != null)
+                    buyButton.gameObject.SetActive(status == null);
             }
+            else if (costText != null && status != null)
+            {
+                costText.text = maxed ? "MAX" : $"Need {_data.requiredBranchLevels} levels in branch";
+            }
+
+            if (costText != null && status == null)
+                costText.text = cost.ToString();
+
+            if (costIcon != null)
+                costIcon.SetActive(status == null);
 
             if (lockedOverlay != null)
                 lockedOverlay.SetActive(!unlocked);
