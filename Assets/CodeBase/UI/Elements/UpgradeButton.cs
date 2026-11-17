@@ -15,6 +15,12 @@ namespace CodeBase.UI.Elements
         [SerializeField] private TextMeshProUGUI nameText;
         [SerializeField] private TextMeshProUGUI descriptionText;
 
+        [Header("Frame by kind")]
+        [Tooltip("Shown for perks (purple frame, corner decor, PERK tag).")]
+        [SerializeField] private GameObject perkFrame;
+        [Tooltip("Shown for stat upgrades (plain grey frame).")]
+        [SerializeField] private GameObject statFrame;
+
         private UpgradeStaticData _upgradeData;
         private Action<UpgradeStaticData> _onClick;
 
@@ -39,6 +45,13 @@ namespace CodeBase.UI.Elements
         
             if (descriptionText != null)
                 descriptionText.text = upgradeData.description;
+
+            bool isPerk = upgradeData.kind == UpgradeKind.Perk;
+            if (perkFrame != null)
+                perkFrame.SetActive(isPerk);
+            if (statFrame != null)
+                statFrame.SetActive(!isPerk);
+
             MMTwoSidedUI twoSided = GetComponent<MMTwoSidedUI>();
             if (twoSided != null)
             {
