@@ -72,7 +72,7 @@ Used by Pause/Settings and the HUD — reuse for other screens.
 - The reward card always uses the grey frame — could use the purple perk frame like Choose Upgrade when the rolled upgrade is a perk.
 
 **Win / Game Over** — done 2026-11-17: HUD hidden (via `IGameFactory.Hud`), purple dim 0.9, Cinzel title, "Play Again" is the primary gold button, Menu a smaller dark one below. Remaining:
-- The title frame (`LineTextFrame_06_Demo`) is red on both screens — fine for Game Over, odd for Victory; a gold/neutral frame would read better.
+- (Done 2026-11-17: Victory uses the white `LineTextFrame_06_White_Glow` + `_White_Line` tinted gold; Game Over keeps the red `LineTextFrame_06_Demo`.)
 
 **Meta upgrade tree** — restyled 2026-11-17 (gold buy button with essence gem, `statusText` shows MAX / branch requirement instead of a dead button, Cinzel title and branch headers, framed dark branch panels and nodes, essence plate like the HUD balance).
 
