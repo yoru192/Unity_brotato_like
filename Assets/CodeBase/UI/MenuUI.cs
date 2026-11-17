@@ -1,5 +1,7 @@
 ﻿using CodeBase.Infrastructure.Services;
+using CodeBase.Infrastructure.Services.Settings;
 using CodeBase.Infrastructure.States;
+using CodeBase.UI.Screens;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -11,17 +13,27 @@ namespace CodeBase.UI
         [SerializeField] private Button startGameButton;
         [SerializeField] private Button quitGameButton;
 
+        [Header("Settings (опційно)")]
+        [SerializeField] private Button settingsButton;
+        [Tooltip("Неактивний екземпляр префаба SettingsScreen у цій сцені.")]
+        [SerializeField] private SettingsScreen settingsScreen;
+
         private IGameStateMachine _stateMachine;
+        private ISettingsService _settings;
 
         private void Awake()
         {
             _stateMachine = AllServices.Container.Single<IGameStateMachine>();
+            _settings = AllServices.Container.Single<ISettingsService>();
 
             if (startGameButton != null)
                 startGameButton.onClick.AddListener(OnStartGameClicked);
 
             if (quitGameButton != null)
                 quitGameButton.onClick.AddListener(OnQuitGameClicked);
+
+            if (settingsButton != null)
+                settingsButton.onClick.AddListener(OnSettingsClicked);
         }
 
         private void OnDestroy()
@@ -31,6 +43,15 @@ namespace CodeBase.UI
 
             if (quitGameButton != null)
                 quitGameButton.onClick.RemoveListener(OnQuitGameClicked);
+
+            if (settingsButton != null)
+                settingsButton.onClick.RemoveListener(OnSettingsClicked);
+        }
+
+        private void OnSettingsClicked()
+        {
+            if (settingsScreen != null)
+                settingsScreen.Open(_settings, null);
         }
 
         private void OnStartGameClicked()
