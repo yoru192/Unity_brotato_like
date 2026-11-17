@@ -1,0 +1,22 @@
+# Unity serializes these files with LF line endings. Pin them to LF so core.autocrlf
+# does not report Unity re-saves as modified ("LF will be replaced by CRLF").
+# text=auto keeps git's binary detection (some .asset files are binary).
+*.unity              text=auto eol=lf
+*.prefab             text=auto eol=lf
+*.asset              text=auto eol=lf
+*.meta               text=auto eol=lf
+*.mat                text=auto eol=lf
+*.anim               text=auto eol=lf
+*.controller         text=auto eol=lf
+*.overrideController text=auto eol=lf
+*.mask               text=auto eol=lf
+*.mixer              text=auto eol=lf
+*.playable           text=auto eol=lf
+*.preset             text=auto eol=lf
+*.spriteatlas        text=auto eol=lf
+*.spriteatlasv2      text=auto eol=lf
+*.physicsMaterial2D  text=auto eol=lf
+*.renderTexture      text=auto eol=lf
+*.lighting           text=auto eol=lf
+*.signal             text=auto eol=lf
+*.inputactions       text=auto eol=lf
