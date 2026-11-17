@@ -27,12 +27,14 @@ namespace CodeBase.Infrastructure.States
         public void Enter()
         {
             Time.timeScale = 0f;
+            SetHudVisible(false);
             _ = ShowPauseMenu();
         }
 
         public void Exit()
         {
             Time.timeScale = 1f;
+            SetHudVisible(true);
             if (_pauseScreen != null)
                 UnityEngine.Object.Destroy(_pauseScreen);
         }
@@ -48,6 +50,12 @@ namespace CodeBase.Infrastructure.States
             {
                 Debug.LogException(e);
             }
+        }
+
+        private void SetHudVisible(bool visible)
+        {
+            if (_gameFactory.Hud != null)
+                _gameFactory.Hud.SetVisible(visible);
         }
 
         public void Continue() => _stateMachine.Enter<GameLoopState>();

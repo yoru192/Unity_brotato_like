@@ -29,6 +29,7 @@ namespace CodeBase.Infrastructure.States
         public void Enter()
         {
             Time.timeScale = 0f;
+            SetHudVisible(false);
             int essenceReward = _metaProgress.CompleteRun(won: true);
             _ = ShowWinUI(essenceReward);
         }
@@ -36,6 +37,7 @@ namespace CodeBase.Infrastructure.States
         public void Exit()
         {
             Time.timeScale = 1f;
+            SetHudVisible(true);
             _shopService.StopShopTimer();
         }
 
@@ -50,6 +52,12 @@ namespace CodeBase.Infrastructure.States
             {
                 Debug.LogException(e);
             }
+        }
+
+        private void SetHudVisible(bool visible)
+        {
+            if (_gameFactory.Hud != null)
+                _gameFactory.Hud.SetVisible(visible);
         }
 
         public void Restart()

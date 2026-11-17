@@ -42,6 +42,7 @@ namespace CodeBase.Infrastructure.Factory
         public PauseInputHandler PauseInputHandler { get; private set; }
         
         public AbilityController AbilityController { get; private set; }
+        public HudUI Hud { get; private set; }
 
         private readonly IAssets _assets;
         private readonly IStaticDataService _staticData;
@@ -182,6 +183,7 @@ namespace CodeBase.Infrastructure.Factory
             GameObject hud = await InstantiateRegistered(AssetsAddress.HudPath);
             PauseInputHandler = hud.AddComponent<PauseInputHandler>();
             HudUI hudUI = hud.GetComponent<HudUI>();
+            Hud = hudUI;
             hudUI.Construct(
                 _balanceService,
                 _progress,

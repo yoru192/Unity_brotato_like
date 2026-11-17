@@ -65,6 +65,7 @@ namespace CodeBase.UI
         private AbilityController _abilityController;
         private IAbility _currentAbility;
         private ISettingsService _settings;
+        private Canvas _canvas;
 
         public void Construct( IBalanceService balanceService, IProgressService progressService, 
             IPersistentProgressService persistentProgressService, 
@@ -100,7 +101,19 @@ namespace CodeBase.UI
             UpdateStats();
         }
 
-        private void Update() 
+        /// <summary>
+        /// Hides/shows the HUD under full-screen overlays (pause, win, game over). Only the Canvas is
+        /// toggled, so components on this object (e.g. PauseInputHandler) keep running.
+        /// </summary>
+        public void SetVisible(bool visible)
+        {
+            if (_canvas == null)
+                _canvas = GetComponent<Canvas>();
+            if (_canvas != null)
+                _canvas.enabled = visible;
+        }
+
+        private void Update()
         {
             UpdateAbilityUI();
         }

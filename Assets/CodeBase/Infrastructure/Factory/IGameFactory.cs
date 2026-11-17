@@ -8,6 +8,7 @@ using CodeBase.StaticData;
 using CodeBase.StaticData.Enemy;
 using CodeBase.StaticData.Hero;
 using CodeBase.StaticData.Weapon;
+using CodeBase.UI;
 using UnityEngine;
 
 namespace CodeBase.Infrastructure.Factory
@@ -19,6 +20,8 @@ namespace CodeBase.Infrastructure.Factory
         WaveController WaveController { get; }
         PauseInputHandler PauseInputHandler { get; }
         AbilityController AbilityController { get; }
+        /// <summary>The HUD of the current level; null (destroyed) outside a combat scene.</summary>
+        HudUI Hud { get; }
         GameObject PlayerGameObject { get; set; }
         Task WarmUp();
         void Cleanup();
