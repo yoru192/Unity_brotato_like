@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: '[Upgrade] + 1 Weapon Damage'
   m_EditorClassIdentifier: Assembly-CSharp::CodeBase.StaticData.ShopItemStaticData
   itemName: +1 Weapon Damage
-  itemDescription: 
+  itemDescription: +1 damage for every weapon you own
   itemIcon: {fileID: -1072849712, guid: fc7d4998a6f3ce54a94e94a270800592, type: 3}
   itemBackground: {fileID: 0}
   itemPrice: 45

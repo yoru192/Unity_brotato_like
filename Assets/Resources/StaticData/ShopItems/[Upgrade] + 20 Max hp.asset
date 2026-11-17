@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: '[Upgrade] + 20 Max hp'
   m_EditorClassIdentifier: Assembly-CSharp::CodeBase.StaticData.ShopItemStaticData
   itemName: +20 Max HP
-  itemDescription: 
+  itemDescription: +20 max health; also heals 20
   itemIcon: {fileID: -2131673021, guid: fc7d4998a6f3ce54a94e94a270800592, type: 3}
   itemBackground: {fileID: 0}
   itemPrice: 30

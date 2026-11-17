@@ -13,7 +13,8 @@ MonoBehaviour:
   m_Name: '[Weapon] Bow'
   m_EditorClassIdentifier: Assembly-CSharp::CodeBase.StaticData.ShopItemStaticData
   itemName: Bow
-  itemDescription: 
+  itemDescription: 'Adds a bow as a second weapon: it shoots alongside the one you
+    have'
   itemIcon: {fileID: 21300000, guid: f049b8f6e6c70664abce7e9de8fc5a5c, type: 3}
   itemBackground: {fileID: 0}
   itemPrice: 30

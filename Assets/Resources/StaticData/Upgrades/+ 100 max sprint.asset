@@ -13,9 +13,12 @@ MonoBehaviour:
   m_Name: + 100 max sprint
   m_EditorClassIdentifier: Assembly-CSharp::CodeBase.StaticData.UpgradeStaticData
   upgradeName: + 100 max sprint
-  description: 
+  description: '+100 max stamina, refilled right away: sprint for longer'
   icon: {fileID: -979368755, guid: fc7d4998a6f3ce54a94e94a270800592, type: 3}
   background: {fileID: 0}
   modifierType: 6
   value: 100
+  kind: 0
+  perkId: 0
+  maxPicks: 0
   weight: 1
