@@ -63,10 +63,10 @@ Used by Pause/Settings and the HUD — reuse for other screens.
 
 **Choose Upgrade** — restyled 2026-11-17 (purple dim over the paused game, kit `CardFrame_01` cards: grey frame for stats, purple frame + corner decor + "PERK" tag for perks via `UpgradeButton.perkFrame/statFrame`, whole card is the click target, gold Reroll with coin). Remaining:
 - Upgrade icons have baked labels that don't match: Deadly Dash shows "Move Speed", Magnet shows "Max Stamina", Vampirism shows "Current Health". Needs label-free icons (data/art, not UI).
-- Stat upgrades have no `description`, so their cards have an empty middle — fill descriptions in the assets.
+- Stat upgrade names mix "sprint" and "stamina" (`+ 100 max sprint`, `+ 20 regen sprint rate`) while the HUD and descriptions say Stamina; the asset file `+10 regen sprint rate` actually gives 20. Consider renaming for consistency.
 
 **Shop** — restyled 2026-11-17 (painted background kept under a purple dim, opaque kit cards with an icon slot, coin + gold price that turns red only when unaffordable and hides the coin when SOLD, gold Buy / Leave buttons, balance plate like the HUD; `[Upgrade]` prefix removed from the three `itemName`s). Remaining:
-- Shop items have no `itemDescription` — fill them so cards say what they do (e.g. what buying a Bow means).
+- (Descriptions for all stat upgrades and shop items were filled on 2026-11-17 from what the code actually does; shop cards grew to 460 px to fit them.)
 
 **Campfire** — restyled 2026-11-17 (background stretched 16% past the right/bottom edge so the Gemini watermark is off-screen, light purple dim, kit cards like the Shop, gold buttons, reward button "Get" → "Continue"; the rest label now shows the real heal % incl. the `CampfireWarmth` meta upgrade). Remaining:
 - The reward card always uses the grey frame — could use the purple perk frame like Choose Upgrade when the rolled upgrade is a perk.
