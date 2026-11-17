@@ -29,7 +29,7 @@ UI kit: `Assets/Layer Lab/GUI Pro-FantasyRPG/ResourcesData/` (sprites under `Spr
 1. ~~Canvas scaling~~ — done.
 2. ~~Show the essence reward~~ — done (`Text_EssenceReward` under `PlayContinue/Continue` in both prefabs, wired to `_essenceRewardText`). Follow-ups: replace the word "essence" with the gem icon used in the Heroes header; consider a small run summary (nodes cleared, essence gained, total).
 3. ~~In-combat HUD readability~~ — done 2026-11-17 (see "Style reference" below; `HudUI` now sizes bar fills via anchors instead of `fillAmount`, which also fixed the HP bar never shrinking).
-4. **One visual style.** Four styles are mixed: flat cartoon purple (Menu, Heroes, Pause, Game Over), teal/gold "book" (Choose Upgrade), realistic painted art (Shop, Campfire), dark ink map — all over a lime pixel battlefield. **Chosen base (2026-11-17): dark purple + gold accent** (Heroes/Pause look). Converted on 2026-11-17: HUD, Choose Upgrade, Shop, Campfire, Map, Meta upgrade tree (painted backgrounds kept under a purple dim). Not yet: the Menu / Heroes / Pause / Win leftovers listed below.
+4. **One visual style.** Four styles are mixed: flat cartoon purple (Menu, Heroes, Pause, Game Over), teal/gold "book" (Choose Upgrade), realistic painted art (Shop, Campfire), dark ink map — all over a lime pixel battlefield. **Chosen base (2026-11-17): dark purple + gold accent** (Heroes/Pause look). Converted on 2026-11-17: every screen (HUD, Menu, Heroes, Meta tree, Map, Choose Upgrade, Shop, Campfire, Pause, Settings, Win/Game Over); painted backgrounds kept under a purple dim. Only small follow-ups remain in "Per screen".
 
 ### Style reference (dark purple + gold)
 
@@ -57,9 +57,7 @@ Used by Pause/Settings and the HUD — reuse for other screens.
 
 **Pause** — done 2026-11-17: purple dim (alpha 0.9) over the frozen game instead of the opaque panel, Cinzel title, Continue is a big gold button, Settings / Restart / Give Up are a row of smaller round buttons. The HUD is hidden while paused (`HudUI.SetVisible` toggles only its Canvas — `PauseInputHandler` lives on the HUD object and must keep running).
 
-**Settings**
-- Resolution dropdown is the unstyled default and very small.
-- "Stats" row touches the bottom edge; Music and SFX share the same icon.
+**Settings** — done 2026-11-17 (in `SettingsScreen.prefab`, so Pause and Menu both get it): resolution dropdown restyled as a framed dark plate with a gold arrow and a dark list with gold hover/scrollbar; right column tightened so Stats clears the bottom edge; SFX uses the sword icon (`function_icon_sword_2`); Cinzel title.
 
 **Choose Upgrade** — restyled 2026-11-17 (purple dim over the paused game, kit `CardFrame_01` cards: grey frame for stats, purple frame + corner decor + "PERK" tag for perks via `UpgradeButton.perkFrame/statFrame`, whole card is the click target, gold Reroll with coin). Remaining:
 - (Done 2026-11-17: all 11 perks use label-free icons from `Assets/500FreeSkillIcons/Icons` instead of the labelled Gemini sheet; stat upgrades keep the labelled icons since their labels match. Description box is 80 px with auto-size down to 13 so long texts never reach the button.)
