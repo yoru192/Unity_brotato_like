@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 58427bc6f71a47e09b1593b961834d72, type: 3}
-  m_Name: +10 regen sprint rate
+  m_Name: +20 stamina regen
   m_EditorClassIdentifier: Assembly-CSharp::CodeBase.StaticData.UpgradeStaticData
-  upgradeName: + 20 regen sprint rate
+  upgradeName: +20 stamina regen
   description: Stamina regenerates 20 per second faster
   icon: {fileID: -7231814426140239619, guid: fc7d4998a6f3ce54a94e94a270800592, type: 3}
   background: {fileID: 0}
