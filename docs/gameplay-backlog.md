@@ -1,0 +1,70 @@
+# Gameplay backlog
+
+Boss work and battlefield ideas, collected on 2026-11-23. Tick items off or delete them as they are done.
+
+## Boss: Brood Queen
+
+### Done (2026-11-23)
+
+- **Minimal boss** (`925ef1bc`): `Wave_Boss` has `spawnBoss`; `WaveController` spawns the queen ~9 units from the player (`bossSpawnDistance`), the run ends when she dies (`bossDefeatedDelay` 3 s), background waves stop and all spawned enemies are killed. `BossBrain` loop: Chase → Telegraph (tint pulse) → attack → Recover. HUD `BossHealthBar` replaces the wave counter.
+- **Larva**: new fast, fragile melee minion (`EnemyTypeId.Larva`, prefab `Resources_moved/Enemy/Larva.prefab`). Its attack animation has no `AttackEnded` event, so `EnemyAttack._endAttackOnHitEvent` is enabled on it.
+- **Step 2** (`3500baeb`): attack rotation Spit → Brood → Eggs.
+  - **Egg barrage:** pooled `GroundTelegraph` circles (area + growing fill + ring, prefab `Resources_moved/Enemy/EggWarning.prefab`); the impact deals area damage and one egg hatches a larva.
+  - **Phase 2 at 50% HP:** roar with `EnemyHealth.IsInvulnerable`, poison cloud VFX and shake; after it, tempo ×0.7, 5-way spit, 5 eggs, green tint.
+  - **Presentation:** intro banner `BossIntroBanner`, phase marker on the HUD bar, death VFX + hit stop + shake. The world HP bar above the queen is hidden.
+- All tuning lives in `Resources/StaticData/Bosses/BroodQueen.asset` (`BossStaticData`). HP, rewards and prefab come from `Resources/StaticData/Enemy/BroodQueen.asset`.
+
+### To check / tune
+
+- **Play the fight by hand.** It was only verified with forced damage via MCP, so the real length and difficulty are unknown.
+  - Start numbers: HP 180, spit damage 2, egg damage 3, attack interval 2.5 s.
+  - In the test, the player dropped to 59/100 quickly, mostly from larvae and background enemies. Levers: `summonCount`, `maxAliveMinions`, Larva damage/HP, `Wave_Boss` budget.
+- **`Wave_Boss` background waves were weakened** for the boss fight: `waveValueMultiplier` 16 → 6, `maxAlive` 18 → 8.
+- **Egg spread was raised after the last visual check** (`eggScatterRadius` 3.5, `eggImpactRadius` 1.6) and has not been looked at in game since.
+
+### Ideas not done yet
+
+- **Elite nodes:** add a "champion" modifier (more HP, an aura, a guaranteed reward). Right now Elite only differs from Combat by enemy count.
+- **Roar animation:** BugQueen has no roar animation, so the phase shift plays her normal attack. A scale/shake pulse on the sprite child would read better.
+- **Telegraph readability:** circles can hide under characters. Consider a brighter outline in phase 2 or a short "drop" sprite for the egg.
+- **Boss music/sounds:** `MusicTrackId.Boss` is already played; no SFX yet for spit, egg impact, roar or death.
+- **More bosses:** the same `BossBrain` + `BossStaticData` pattern. The FantasyMonsters pack also has Giants (Juggernaut, Dreadnought) and MossQueen/SlugQueen. Titan and Dragon controllers exist, but their sprites are not in the project.
+
+## Battlefield
+
+### Current state (2026-11-23)
+
+- **One map for every node:** a single ~200×200 map baked into `Assets/Scenes/Main.unity` (Grid → Ground / Path / Wall Shadows / Walls tilemaps, sorting −10…−7). It uses rule tiles from the Avesta Tilemap Generator **sample** (`Plugins/BerserkPixel/.../Samples/Tilemap/Tiles`), with 14 spawn points. Every map node uses this map.
+- **Camera:** orthographic size 5, so about 18×10 units are visible (well under 1% of the map).
+
+### Problems
+
+1. **Style clash:** pixel-art lime ground under HD cartoon characters (HeroEditor / FantasyMonsters) and the dark-purple + gold UI. The brown wall blobs don't read as walls or holes.
+2. **Readability:** the saturated lime ground competes with gameplay colours (green boss acid, green stamina bar, red warning circles). Ground should be the quietest layer on screen.
+3. **Arena too big for the genre:** survivor games use a compact, bounded arena (2–3 screens) where enemies close in and positioning matters. Here enemies spawn far away (the boss first spawned 77 units off) and the player can just run.
+4. **No variety:** 10 map rows, Elite and Boss all play on the same field.
+5. **Flat image:** no lighting, no vignette, no decor.
+
+### Plan (cheap → expensive)
+
+**Step 1: no new art, about an evening.** Do it in a **new arena scene** so `Main` stays for comparison; switch via `positionOnLevel.Level`.
+- **Palette:** darker, desaturated ground and paths (tint via `Tilemap.color`) to match "Duskward" and the purple UI.
+- **URP 2D lighting:** a slightly darker, cooler global light plus a warm light around the player. Add a soft vignette (post-processing).
+- **Compact arena ~40×24 units:** a clear border (walls, rocks or darkness) and 3–5 obstacles inside. Spawn points on the arena edge.
+- **Camera:** ortho 5 → 6–6.5 so the player sees what is coming.
+
+**Step 2: new ground art.** Needed to close the style gap.
+- **Art set:** a hand-painted top-down cartoon set close to FantasyMonsters, with 1–2 quiet ground tiles plus separate props (rocks, stumps, bushes, bones, mushrooms). The project has nothing suitable; `Assets/Assets/SomeTiles/0x72_DungeonTilesetII` is pixel art too.
+- **Props:** some purely decorative (no collider), some obstacles (with colliders). Y-sorting already works (`TransparencySortMode.CustomAxis` on Y).
+
+**Step 3: biomes and a boss arena.**
+- **Biomes:** 2–3 arena variants that change by map row (forest → swamp → hive), chosen per node type via `LevelStaticData` / `MapLevelLibrary`.
+- **Brood Queen arena:** organic hive floor, egg clutches around the edge, slime, green spores in the air, so the boss feels like an event.
+
+**Small touches:** ambient particles (leaves, spores, fireflies), fading death stains or remains, light fog at the arena edges.
+
+### Technical notes
+
+- After changing walls or obstacles, rescan the A* graph (`AstarPath.Scan`), or enemies will path through the new obstacles.
+- With a compact hand-made arena, the Avesta generator may not be needed at all; 2–3 hand-built arenas or arena prefabs are simpler.
+- `EnemySpawner` picks spawn points at least `minDistanceFromPlayer` (5) away. The boss uses `SpawnUntracked(id, preferredDistance)`, which takes the point closest to that distance. On a compact arena, recheck both.
