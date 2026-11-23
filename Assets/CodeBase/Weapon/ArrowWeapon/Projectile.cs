@@ -256,6 +256,17 @@ namespace CodeBase.Weapon.ArrowWeapon
         {
             _speedCurve = speedCurve;
         }
-        
+
+        /// <summary>
+        /// Летіти в точку цілі + зсув (віяло снарядів боса). На відміну від промаху, урон усе одно
+        /// наноситься, якщо ціль опинилась у точці приземлення. Викликати між InitializeProjectile і Launch.
+        /// </summary>
+        public void SetAimOffset(Vector3 offset)
+        {
+            if (_isMiss) return;
+
+            _missOffset = offset;
+            _fixedTargetPosition = _target.position + offset;
+        }
     }
 }

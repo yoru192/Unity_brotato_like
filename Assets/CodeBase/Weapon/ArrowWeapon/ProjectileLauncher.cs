@@ -27,5 +27,17 @@ namespace CodeBase.Weapon.ArrowWeapon
                 projectile.InitializeSpeedCurve(_speedCurve);
             projectile.Launch();
         }
+
+        /// <summary>Постріл у точку цілі + aimOffset (для віяла). Влучає, лише якщо ціль там опиниться.</summary>
+        public void LaunchWithOffset(Transform target, float speed, float damage, Vector3 aimOffset)
+        {
+            var go = ObjectPoolManager.SpawnObject(_projectilePrefab, transform.position, Quaternion.identity, ObjectPoolManager.PoolType.Projectile);
+            var projectile = go.GetComponent<Projectile>();
+            projectile.InitializeProjectile(target, speed, _arcHeight, damage);
+            projectile.SetAimOffset(aimOffset);
+            if (_speedCurve != null && _speedCurve.keys.Length > 0)
+                projectile.InitializeSpeedCurve(_speedCurve);
+            projectile.Launch();
+        }
     }
 }

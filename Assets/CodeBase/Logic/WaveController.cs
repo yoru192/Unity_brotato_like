@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using CodeBase.Enemy;
 using CodeBase.StaticData;
 using CodeBase.StaticData.Enemy;
 using UnityEngine;
@@ -47,10 +48,22 @@ namespace CodeBase.Logic
         private bool _isSpawning = false;
         private bool _isWaveCompleting = false;
 
+        private bool _isBossFight;
+        private float _bossSpawnTimer;
+        private bool _bossRequested;
+        private bool _bossDefeated;
+        private EnemyDeath _bossDeath;
+
         public int MaxWaves => _maxWaves;
+
+        /// <summary>Бій з босом: забіг закінчується смертю боса, а не лічильником хвиль.</summary>
+        public bool IsBossFight => _isBossFight;
 
         public event Action OnWaveCompleted;
         public event Action OnRunCompleted;
+
+        /// <summary>Бос з'явився на арені (для смуги HP у HUD).</summary>
+        public event Action<GameObject> OnBossSpawned;
 
         public void Construct(WaveControllerStaticData waveControllerData)
         {
@@ -65,8 +78,16 @@ namespace CodeBase.Logic
             enemyConfigs         = _waveControllerData.enemyConfigs
                 .Select(e => new EnemyWaveConfig { enemyTypeId = e.enemyTypeId, cost = e.cost })
                 .ToList();
+            _isBossFight         = _waveControllerData.spawnBoss;
+            _bossSpawnTimer      = _waveControllerData.bossSpawnDelay;
 
             GenerateWave();
+        }
+
+        private void OnDestroy()
+        {
+            if (_bossDeath != null)
+                _bossDeath.OnDying -= OnBossDying;
         }
 
         private void Awake()
@@ -78,6 +99,16 @@ namespace CodeBase.Logic
 
         void FixedUpdate()
         {
+            if (_isBossFight)
+            {
+                // Після смерті боса нових ворогів немає — лише очікування переходу.
+                if (_bossDefeated) return;
+
+                _bossSpawnTimer -= Time.fixedDeltaTime;
+                if (!_bossRequested && _bossSpawnTimer <= 0f)
+                    SpawnBoss();
+            }
+
             _initialSpawnTimer -= Time.fixedDeltaTime;
             waveTimer -= Time.fixedDeltaTime;
 
@@ -127,7 +158,7 @@ namespace CodeBase.Logic
             _isWaveCompleting = true;
             currentWave++;
 
-            if (_maxWaves > 0 && currentWave > _maxWaves)
+            if (!_isBossFight && _maxWaves > 0 && currentWave > _maxWaves)
             {
                 StartCoroutine(NotifyRunCompletedDelayed());
                 return;
@@ -136,6 +167,43 @@ namespace CodeBase.Logic
             OnWaveCompleted?.Invoke();
             GenerateWave();
             _isWaveCompleting = false;
+        }
+
+        private async void SpawnBoss()
+        {
+            _bossRequested = true;
+            try
+            {
+                GameObject boss = await _spawner.SpawnUntracked(_waveControllerData.bossTypeId, _waveControllerData.bossSpawnDistance);
+                if (boss == null || this == null) return;
+
+                _bossDeath = boss.GetComponent<EnemyDeath>();
+                if (_bossDeath != null)
+                    _bossDeath.OnDying += OnBossDying;
+
+                OnBossSpawned?.Invoke(boss);
+            }
+            catch (Exception e)
+            {
+                Debug.LogException(e);
+            }
+        }
+
+        private void OnBossDying()
+        {
+            _bossDeath.OnDying -= OnBossDying;
+            _bossDeath = null;
+            _bossDefeated = true;
+
+            enemiesToSpawn.Clear();
+            _spawner.KillAll();
+            StartCoroutine(NotifyBossDefeatedDelayed());
+        }
+
+        private IEnumerator NotifyBossDefeatedDelayed()
+        {
+            yield return new WaitForSeconds(_waveControllerData.bossDefeatedDelay);
+            OnRunCompleted?.Invoke();
         }
 
         private IEnumerator NotifyRunCompletedDelayed()

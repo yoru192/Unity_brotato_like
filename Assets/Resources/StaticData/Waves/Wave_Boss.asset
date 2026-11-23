@@ -13,12 +13,16 @@ MonoBehaviour:
   m_Name: Wave_Boss
   m_EditorClassIdentifier: Assembly-CSharp::CodeBase.StaticData.WaveControllerStaticData
   maxWaves: 2
-  waveValueMultiplier: 16
+  waveValueMultiplier: 6
   maxEnemiesPerWave: 60
   initialSpawnTimer: 2
   waveDuration: 60
   spawnInterval: 1
-  maxAlive: 18
+  maxAlive: 8
+  spawnBoss: 1
+  bossTypeId: 4
+  bossSpawnDelay: 2
+  bossDefeatedDelay: 3
   enemyConfigs:
   - enemyTypeId: 1
     cost: 3

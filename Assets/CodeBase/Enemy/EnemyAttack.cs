@@ -16,7 +16,10 @@ namespace CodeBase.Enemy
     {
         public event Action OnCooldownStarted;
         public event Action OnCooldownEnded;
-        
+
+        [Tooltip("Для анімацій без події AttackEnded (напр. Larva): атака завершується одразу після удару.")]
+        [SerializeField] private bool _endAttackOnHitEvent;
+
         private EnemyMover _mover;
         private Monster _monster;
         private float _attackCooldown;
@@ -76,6 +79,8 @@ namespace CodeBase.Enemy
             {
                 case AnimationEventNames.Attack:
                     OnAttack();
+                    if (_endAttackOnHitEvent)
+                        OnAttackEnded();
                     break;
                 case AnimationEventNames.AttackEnded:
                     OnAttackEnded();

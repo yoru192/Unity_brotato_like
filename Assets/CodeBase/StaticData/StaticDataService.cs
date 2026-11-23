@@ -14,6 +14,7 @@ namespace CodeBase.StaticData
         private Dictionary<string, LevelStaticData> _levels;
         private Dictionary<WeaponTypeId, WeaponStaticData> _weapons;
         private Dictionary<EnemyTypeId, EnemyStaticData> _enemies;
+        private Dictionary<EnemyTypeId, BossStaticData> _bosses;
         private Dictionary<AbilityTypeId, AbilityStaticData> _abilities;
         private Dictionary<HeroTypeId, HeroStaticData> _heroes;
         private List<UpgradeStaticData> _upgrades;
@@ -35,6 +36,8 @@ namespace CodeBase.StaticData
             _weapons = Resources.LoadAll<WeaponStaticData>("StaticData/Weapons")
                 .ToDictionary(x => x.weaponTypeId,  x => x);
             _enemies = Resources.LoadAll<EnemyStaticData>("StaticData/Enemy")
+                .ToDictionary(x => x.enemyTypeId,  x => x);
+            _bosses = Resources.LoadAll<BossStaticData>("StaticData/Bosses")
                 .ToDictionary(x => x.enemyTypeId,  x => x);
             _abilities = Resources.LoadAll<AbilityStaticData>("StaticData/Abilities")
                 .ToDictionary(x => x.abilityTypeId, x => x);
@@ -76,6 +79,10 @@ namespace CodeBase.StaticData
                 : null;
         public EnemyStaticData ForEnemy(EnemyTypeId enemyId) =>
             _enemies.TryGetValue(enemyId, out EnemyStaticData staticData)
+                ? staticData
+                : null;
+        public BossStaticData ForBoss(EnemyTypeId enemyId) =>
+            _bosses.TryGetValue(enemyId, out BossStaticData staticData)
                 ? staticData
                 : null;
 

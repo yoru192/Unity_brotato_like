@@ -43,6 +43,7 @@ namespace CodeBase.Editor.Tests
 
         public LevelStaticData ForLevel(string sceneKey) => null;
         public EnemyStaticData ForEnemy(EnemyTypeId enemyId) => null;
+        public BossStaticData ForBoss(EnemyTypeId enemyId) => null;
         public List<UpgradeStaticData> GetAllUpgrades() => new List<UpgradeStaticData>();
         public AbilityStaticData ForAbility(AbilityTypeId abilityId) => null;
         public WaveControllerStaticData GetWaveController() => null;

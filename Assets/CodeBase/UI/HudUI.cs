@@ -43,6 +43,10 @@ namespace CodeBase.UI
         [SerializeField] private TextMeshProUGUI _moveSpeed;
         [Header("Wave")]
         [SerializeField] private TextMeshProUGUI _waveText;
+        [Tooltip("Плашка з лічильником хвиль; ховається в бою з босом, на її місці — смуга HP боса.")]
+        [SerializeField] private GameObject _wavePanel;
+        [Header("Boss")]
+        [SerializeField] private CodeBase.UI.Elements.BossHealthBar _bossHealthBar;
         [Header("Ability")]
         [SerializeField] private Image _abilityIcon;
         [SerializeField] private Slider _abilitySlider;
@@ -152,6 +156,7 @@ namespace CodeBase.UI
         {
             _waveController = waveController;
             _waveController.OnWaveCompleted += UpdateWaveText;
+            _waveController.OnBossSpawned += OnBossSpawned;
             UpdateWaveText();
         }
 
@@ -159,7 +164,16 @@ namespace CodeBase.UI
         {
             Unsubscribe();
             if (_waveController != null)
+            {
                 _waveController.OnWaveCompleted -= UpdateWaveText;
+                _waveController.OnBossSpawned -= OnBossSpawned;
+            }
+        }
+
+        private void OnBossSpawned(GameObject boss)
+        {
+            if (_bossHealthBar != null)
+                _bossHealthBar.Show(boss);
         }
 
         private void Subscribe()
@@ -248,6 +262,13 @@ namespace CodeBase.UI
         private void UpdateWaveText()
         {
             if (_waveText == null || _waveController == null) return;
+
+            // У бою з босом хвилі лише фон — лічильник нічого не означає, замість нього смуга HP боса.
+            if (_wavePanel != null)
+                _wavePanel.SetActive(!_waveController.IsBossFight);
+            if (_waveController.IsBossFight)
+                return;
+
             int displayed = Mathf.Max(1, _waveController.currentWave);
             _waveText.text = $"Wave {displayed}/{_waveController.MaxWaves}";
         }

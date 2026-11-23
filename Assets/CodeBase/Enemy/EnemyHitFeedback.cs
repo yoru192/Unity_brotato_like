@@ -37,6 +37,7 @@ namespace CodeBase.Enemy
         private Color[] _originalColors;
         private bool _colorsCaptured;
         private Color _statusTint = Color.white;
+        private Color _telegraphTint = Color.white;
         private bool _isFlashing;
         private float _flashTimer;
 
@@ -114,6 +115,18 @@ namespace CodeBase.Enemy
             ApplyColors();
         }
 
+        /// <summary>
+        /// Відтінок попередження перед атакою (бос). Множиться зі статус-відтінком, тому не стирає горіння
+        /// чи заморозку. Color.white — без відтінку.
+        /// </summary>
+        public void SetTelegraphTint(Color tint)
+        {
+            if (_telegraphTint == tint) return;
+
+            _telegraphTint = tint;
+            ApplyColors();
+        }
+
         private void CaptureOriginalColors()
         {
             if (_colorsCaptured) return;
@@ -137,7 +150,7 @@ namespace CodeBase.Enemy
                 if (_renderers[i] == null) continue;
 
                 Color original = _originalColors[i];
-                Color color = _isFlashing ? flashColor : original * _statusTint;
+                Color color = _isFlashing ? flashColor : original * _statusTint * _telegraphTint;
                 color.a = original.a;
                 _renderers[i].color = color;
             }
@@ -198,6 +211,7 @@ namespace CodeBase.Enemy
         {
             _isFlashing = false;
             _statusTint = Color.white;
+            _telegraphTint = Color.white;
             if (_colorsCaptured)
                 ApplyColors();
 

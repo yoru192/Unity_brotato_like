@@ -15,6 +15,9 @@ namespace CodeBase.StaticData
         LevelStaticData ForLevel(string sceneKey);
         WeaponStaticData ForWeapon(WeaponTypeId weaponId);
         EnemyStaticData ForEnemy(EnemyTypeId enemyId);
+
+        /// <summary>Атаки боса (Resources/StaticData/Bosses). null, якщо цей ворог не бос.</summary>
+        BossStaticData ForBoss(EnemyTypeId enemyId);
         List<UpgradeStaticData> GetAllUpgrades();
         AbilityStaticData ForAbility(AbilityTypeId abilityId);
         WaveControllerStaticData GetWaveController();

@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1d7847fe7cce465aa72d1ace415ee0cb, type: 3}
+  m_Name: Larva
+  m_EditorClassIdentifier: Assembly-CSharp::CodeBase.StaticData.Enemy.EnemyStaticData
+  enemyTypeId: 5
+  health: 2
+  damage: 1
+  moveSpeed: 4
+  cooldown: 1.2
+  radius: 0.6
+  xpReward: 1
+  balanceReward: 1
+  prefabReference:
+    m_AssetGUID: 91dac44adf9b66645a47cf5500a496e6
+    m_SubObjectName: 
+    m_SubObjectType: 
+    m_SubObjectGUID: 
+    m_EditorAssetChanged: 0
+  spriteScale: {x: 0.7, y: 0.7, z: 1}
+  projectileSpeed: 0

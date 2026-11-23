@@ -54,6 +54,49 @@ namespace CodeBase.Logic
             return enemy;
         }
 
+        /// <summary>
+        /// Спавнить ворога (боса) на точці спавну, чия відстань до гравця найближча до preferredDistance,
+        /// без ліміту maxAlive і без обліку в цьому спавнері — щоб звичайні хвилі не чекали на його смерть.
+        /// </summary>
+        public Task<GameObject> SpawnUntracked(EnemyTypeId enemyTypeId, float preferredDistance)
+        {
+            return _gameFactory.CreateEnemy(enemyTypeId, SpawnPositionNearDistance(preferredDistance));
+        }
+
+        private Vector2 SpawnPositionNearDistance(float preferredDistance)
+        {
+            if (_spawnPositions == null || _spawnPositions.Count == 0)
+                return player != null ? (Vector2)player.position + Vector2.right * preferredDistance : Vector2.zero;
+            if (player == null)
+                return _spawnPositions[0];
+
+            Vector2 best = _spawnPositions[0];
+            float bestError = float.MaxValue;
+            foreach (Vector2 position in _spawnPositions)
+            {
+                float error = Mathf.Abs(Vector2.Distance(position, player.position) - preferredDistance);
+                if (error < bestError)
+                {
+                    bestError = error;
+                    best = position;
+                }
+            }
+            return best;
+        }
+
+        /// <summary>Добиває всіх живих ворогів зі спавнера (після смерті боса). Нагороди падають як завжди.</summary>
+        public void KillAll()
+        {
+            // Копія: смерть прибирає ворога з _spawnedEnemies через OnDying.
+            GameObject[] alive = _spawnedEnemies.ToArray();
+            foreach (GameObject enemy in alive)
+            {
+                if (enemy == null || !enemy.activeInHierarchy) continue;
+                if (enemy.TryGetComponent(out EnemyHealth health) && health.Current > 0f)
+                    health.TakeStatusDamage(health.Current);
+            }
+        }
+
         private Vector2 GetValidSpawnPosition()
         {
             if (_spawnPositions.Count == 0)

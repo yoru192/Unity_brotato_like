@@ -7,7 +7,7 @@ namespace CodeBase.StaticData.Enemy
     public class EnemyStaticData : ScriptableObject
     {
         public EnemyTypeId enemyTypeId;
-        [Range(1, 30)] 
+        [Range(1, 500)]
         public int health;
         [Range(0,10)]
         public int damage;

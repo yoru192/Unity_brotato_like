@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1c6e855121a87684dbd36fc573bc3a1c, type: 3}
+  m_Name: BroodQueen
+  m_EditorClassIdentifier: Assembly-CSharp::CodeBase.StaticData.Enemy.BossStaticData
+  enemyTypeId: 4
+  displayName: The Brood Queen
+  moveSpeed: 1.6
+  engageRange: 14
+  attackInterval: 2.5
+  telegraphDuration: 0.7
+  recoverDuration: 0.8
+  telegraphTint: {r: 0.6, g: 1, b: 0.3, a: 1}
+  spitProjectiles: 3
+  spitSpreadAngle: 40
+  spitDamage: 2
+  spitProjectileSpeed: 9
+  minionTypeId: 5
+  summonCount: 3
+  summonRadius: 2.5
+  maxAliveMinions: 8

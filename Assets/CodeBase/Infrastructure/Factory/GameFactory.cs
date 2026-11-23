@@ -287,6 +287,9 @@ namespace CodeBase.Infrastructure.Factory
             if (enemy.TryGetComponent<EnemyRangerAttack>(out var ranger))
                 ranger.Construct(enemyData.damage, enemyData.cooldown, enemyData.projectileSpeed, enemyData.radius);
 
+            if (enemy.TryGetComponent<BossBrain>(out var boss))
+                boss.Construct(_staticData.ForBoss(enemyData.enemyTypeId), PlayerGameObject.transform);
+
             enemy.GetComponent<EnemyDeath>().Construct(_balanceService, _progress, enemyData, xpOrbSet, PlayerGameObject.transform);
             enemy.GetComponent<ActorUI>().Construct(enemy.GetComponent<IHealth>());
             enemy.GetComponentInChildren<EnemyGFX>().Construct(enemyData.spriteScale);
