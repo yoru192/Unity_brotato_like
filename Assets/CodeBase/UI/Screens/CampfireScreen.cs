@@ -28,6 +28,10 @@ namespace CodeBase.UI.Screens
         [SerializeField] private GameObject rewardScreen;
         [SerializeField] private Image upgradeIcon;
         [SerializeField] private TextMeshProUGUI upgradeName;
+        [Tooltip("Purple frame with corner decor and a PERK tag, shown when the rolled upgrade is a perk.")]
+        [SerializeField] private GameObject upgradePerkFrame;
+        [Tooltip("Plain grey frame, shown for stat upgrades.")]
+        [SerializeField] private GameObject upgradeStatFrame;
         [SerializeField] private Button continueButton;
         [SerializeField] private MMF_Player rewardRevealFeedback;
 
@@ -107,6 +111,12 @@ namespace CodeBase.UI.Screens
                     upgradeIcon.sprite = upgrade.icon;
                 if (upgradeName != null)
                     upgradeName.text = upgrade.upgradeName;
+
+                bool isPerk = upgrade.kind == UpgradeKind.Perk;
+                if (upgradePerkFrame != null)
+                    upgradePerkFrame.SetActive(isPerk);
+                if (upgradeStatFrame != null)
+                    upgradeStatFrame.SetActive(!isPerk);
             }
 
             if (rewardScreen != null)
