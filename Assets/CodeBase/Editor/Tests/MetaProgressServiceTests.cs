@@ -102,11 +102,23 @@ namespace CodeBase.Editor.Tests
             MetaProgressService service = CreateService(essence: 0);
             CompleteNodes(3);
 
-            int reward = service.CompleteRun(won: true);
+            RunSummary summary = service.CompleteRun(won: true);
 
-            Assert.AreEqual(3 * 5 + 50, reward);
-            Assert.AreEqual(reward, service.Essence);
+            Assert.AreEqual(3 * 5 + 50, summary.EssenceReward);
+            Assert.AreEqual(summary.EssenceReward, service.Essence);
+            Assert.AreEqual(service.Essence, summary.EssenceTotal);
+            Assert.AreEqual(3, summary.NodesCompleted);
             Assert.AreEqual(1, service.RunsWon);
+        }
+
+        [Test]
+        public void CompleteRun_FlagsNewBestOnlyWhenNodesRecordIsBeaten()
+        {
+            MetaProgressService service = CreateService(essence: 0);
+            CompleteNodes(3);
+
+            Assert.IsTrue(service.CompleteRun(won: false).IsNewBest);
+            Assert.IsFalse(service.CompleteRun(won: false).IsNewBest);
         }
 
         [Test]
@@ -118,7 +130,7 @@ namespace CodeBase.Editor.Tests
             service.TryBuyUpgrade(greed);
             CompleteNodes(10);
 
-            int reward = service.CompleteRun(won: true);
+            int reward = service.CompleteRun(won: true).EssenceReward;
 
             // (10 * 5 + 50) * 1.10
             Assert.AreEqual(110, reward);

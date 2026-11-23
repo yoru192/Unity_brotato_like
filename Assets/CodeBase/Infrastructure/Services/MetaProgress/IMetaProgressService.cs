@@ -50,8 +50,8 @@ namespace CodeBase.Infrastructure.Services.MetaProgress
 
         /// <summary>
         /// Фіксує кінець забігу: нараховує есенцію за пройдені вузли карти (і бонус за перемогу),
-        /// оновлює статистику та зберігає. Повертає нараховану есенцію.
+        /// оновлює статистику та зберігає. Повертає підсумок забігу (вузли, есенція, рекорд).
         /// </summary>
-        int CompleteRun(bool won);
+        RunSummary CompleteRun(bool won);
     }
 }

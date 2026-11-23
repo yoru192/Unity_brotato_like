@@ -30,8 +30,8 @@ namespace CodeBase.Infrastructure.States
         {
             Time.timeScale = 0f;
             SetHudVisible(false);
-            int essenceReward = _metaProgress.CompleteRun(won: true);
-            _ = ShowWinUI(essenceReward);
+            RunSummary summary = _metaProgress.CompleteRun(won: true);
+            _ = ShowWinUI(summary);
         }
 
         public void Exit()
@@ -41,12 +41,12 @@ namespace CodeBase.Infrastructure.States
             _shopService.StopShopTimer();
         }
 
-        private async Task ShowWinUI(int essenceReward)
+        private async Task ShowWinUI(RunSummary summary)
         {
             try
             {
                 GameObject winScreen = await _gameFactory.CreateWinScreen();
-                winScreen.GetComponent<WinUI>().Construct(this, essenceReward, _metaProgress.Essence);
+                winScreen.GetComponent<WinUI>().Construct(this, summary);
             }
             catch (Exception e)
             {

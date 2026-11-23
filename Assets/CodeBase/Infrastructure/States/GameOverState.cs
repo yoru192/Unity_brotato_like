@@ -31,8 +31,8 @@ namespace CodeBase.Infrastructure.States
         {
             Time.timeScale = 0f;
             SetHudVisible(false);
-            int essenceReward = _metaProgress.CompleteRun(won: false);
-            _ = ShowGameOverUI(essenceReward);
+            RunSummary summary = _metaProgress.CompleteRun(won: false);
+            _ = ShowGameOverUI(summary);
         }
 
         public void Exit()
@@ -42,12 +42,12 @@ namespace CodeBase.Infrastructure.States
             _shopService.StopShopTimer();
         }
 
-        private async Task ShowGameOverUI(int essenceReward)
+        private async Task ShowGameOverUI(RunSummary summary)
         {
             try
             {
                 GameObject gameOverScreen = await _gameFactory.CreateGameOverScreen();
-                gameOverScreen.GetComponent<GameOverUI>().Construct(this, essenceReward, _metaProgress.Essence);
+                gameOverScreen.GetComponent<GameOverUI>().Construct(this, summary);
             }
             catch (Exception e)
             {

@@ -184,21 +184,22 @@ namespace CodeBase.Infrastructure.Services.MetaProgress
                 _perkService.Add(PerkId.SecondChance, secondChance);
         }
 
-        public int CompleteRun(bool won)
+        public RunSummary CompleteRun(bool won)
         {
             int nodesCompleted = NodesCompletedThisRun();
             int reward = CalculateReward(nodesCompleted, won);
+            bool isNewBest = nodesCompleted > _data.bestNodesCompleted;
 
             _data.essence += reward;
             _data.runsFinished++;
             if (won)
                 _data.runsWon++;
-            if (nodesCompleted > _data.bestNodesCompleted)
+            if (isNewBest)
                 _data.bestNodesCompleted = nodesCompleted;
 
             Save();
             Changed?.Invoke();
-            return reward;
+            return new RunSummary(nodesCompleted, reward, _data.essence, isNewBest);
         }
 
         private int NodesCompletedThisRun()
