@@ -13,6 +13,8 @@ namespace CodeBase.UI.Elements
         [Tooltip("9-sliced заливка: ширина задається якорями, як у смуг HP/стаміни гравця.")]
         [SerializeField] private Image _fill;
         [SerializeField] private TextMeshProUGUI _nameText;
+        [Tooltip("Мітка на смузі там, де бос переходить у другу фазу.")]
+        [SerializeField] private RectTransform _phaseMarker;
 
         private IHealth _health;
 
@@ -34,6 +36,18 @@ namespace CodeBase.UI.Elements
             BossBrain brain = boss.GetComponent<BossBrain>();
             if (_nameText != null && brain != null && brain.Data != null)
                 _nameText.text = brain.Data.displayName.ToUpperInvariant();
+
+            if (_phaseMarker != null)
+            {
+                bool hasPhase = brain != null && brain.Data != null && brain.Data.phase2HealthFraction > 0f;
+                _phaseMarker.gameObject.SetActive(hasPhase);
+                if (hasPhase)
+                {
+                    float x = brain.Data.phase2HealthFraction;
+                    _phaseMarker.anchorMin = new Vector2(x, _phaseMarker.anchorMin.y);
+                    _phaseMarker.anchorMax = new Vector2(x, _phaseMarker.anchorMax.y);
+                }
+            }
 
             _health.HealthChanged += UpdateFill;
             _root.SetActive(true);

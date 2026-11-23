@@ -28,3 +28,21 @@ MonoBehaviour:
   summonCount: 3
   summonRadius: 2.5
   maxAliveMinions: 8
+  eggCount: 3
+  eggScatterRadius: 3.5
+  eggWarningDuration: 1
+  eggImpactRadius: 1.6
+  eggDamage: 3
+  eggsThatHatch: 1
+  eggWarningColor: {r: 1, g: 0.25, b: 0.2, a: 0.45}
+  phase2HealthFraction: 0.5
+  phaseShiftDuration: 1.2
+  phase2TempoMultiplier: 0.7
+  phase2SpitProjectiles: 5
+  phase2EggCount: 5
+  phase2Tint: {r: 0.8, g: 1, b: 0.65, a: 1}
+  introShakeAmplitude: 0.25
+  introShakeDuration: 0.6
+  deathHitStop: 0.15
+  deathShakeAmplitude: 0.35
+  deathShakeDuration: 0.5

@@ -91,6 +91,10 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3857564479067765829, guid: 79171cc7afbd7524da1e002766f5d634, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4752512289087285980, guid: 79171cc7afbd7524da1e002766f5d634, type: 3}
       propertyPath: m_Size.x
       value: 3.9937782
@@ -378,6 +382,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c859f6c97f01094418bebc440764e482, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CodeBase.Enemy.BossBrain
+  _eggWarningPrefab: {fileID: 4142222509606728597, guid: c5c8a501035057d47bd4d610e374f624, type: 3}
 --- !u!114 &8894924013016324415
 MonoBehaviour:
   m_ObjectHideFlags: 0

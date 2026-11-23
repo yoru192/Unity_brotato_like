@@ -28,5 +28,14 @@ namespace CodeBase.StaticData.Vfx
 
         /// <summary>Старт ривка з перком Deadly Dash.</summary>
         DashStart = 7,
+
+        /// <summary>Падіння яйця королеви (атака боса Egg Barrage).</summary>
+        EggImpact = 8,
+
+        /// <summary>Ричання боса при переході в другу фазу.</summary>
+        BossRoar = 9,
+
+        /// <summary>Смерть боса.</summary>
+        BossDeath = 10,
     }
 }

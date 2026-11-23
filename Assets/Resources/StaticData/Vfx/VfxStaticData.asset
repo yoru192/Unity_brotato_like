@@ -48,3 +48,18 @@ MonoBehaviour:
     scale: 1
     offset: {x: 0, y: 0.5, z: 0}
     lifetime: 0
+  - id: 8
+    prefab: {fileID: 3432958286849152088, guid: 87ee7299dd44ed747af24dbb91bcd33b, type: 3}
+    scale: 0.9
+    offset: {x: 0, y: 0, z: 0}
+    lifetime: 0
+  - id: 9
+    prefab: {fileID: 4425129568585013132, guid: bbeeb0ddc21369746aaaae5c5c1c09cf, type: 3}
+    scale: 1.4
+    offset: {x: 0, y: 0, z: 0}
+    lifetime: 0
+  - id: 10
+    prefab: {fileID: 4593184484909914552, guid: 2e1e9506f5904a64b81744324fb7cd50, type: 3}
+    scale: 1.8
+    offset: {x: 0, y: 0, z: 0}
+    lifetime: 0

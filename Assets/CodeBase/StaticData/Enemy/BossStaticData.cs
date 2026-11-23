@@ -41,5 +41,36 @@ namespace CodeBase.StaticData.Enemy
         public float summonRadius = 2.5f;
         [Tooltip("Більше живих міньйонів бос не кличе — замість виводку плюється.")]
         public int maxAliveMinions = 8;
+
+        [Header("Egg Barrage")]
+        public int eggCount = 3;
+        [Tooltip("Перше яйце падає точно на гравця, решта — випадково в цьому радіусі навколо нього.")]
+        public float eggScatterRadius = 2.5f;
+        [Tooltip("Скільки коло на землі попереджає, перш ніж яйце впаде.")]
+        public float eggWarningDuration = 1f;
+        public float eggImpactRadius = 1.3f;
+        public float eggDamage = 3f;
+        [Tooltip("Скільки яєць з одного залпу вилуплюються в міньйона.")]
+        public int eggsThatHatch = 1;
+        public Color eggWarningColor = new Color(1f, 0.25f, 0.2f, 0.45f);
+
+        [Header("Phase 2")]
+        [Tooltip("Частка HP, на якій бос переходить у другу фазу.")]
+        [Range(0f, 1f)] public float phase2HealthFraction = 0.5f;
+        [Tooltip("Ричання: бос стоїть і не отримує урону.")]
+        public float phaseShiftDuration = 1.2f;
+        [Tooltip("Множник пауз (між атаками, попередження, відновлення) у другій фазі.")]
+        public float phase2TempoMultiplier = 0.7f;
+        public int phase2SpitProjectiles = 5;
+        public int phase2EggCount = 5;
+        [Tooltip("Постійний відтінок у другій фазі.")]
+        public Color phase2Tint = new Color(0.8f, 1f, 0.65f);
+
+        [Header("Intro / Death")]
+        public float introShakeAmplitude = 0.25f;
+        public float introShakeDuration = 0.6f;
+        public float deathHitStop = 0.15f;
+        public float deathShakeAmplitude = 0.35f;
+        public float deathShakeDuration = 0.5f;
     }
 }

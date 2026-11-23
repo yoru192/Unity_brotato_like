@@ -31,6 +31,9 @@ namespace CodeBase.Enemy
         public float Current { get => current; set => current = value; }
         public float Max { get => max; set => max = value; }
 
+        /// <summary>Урон ігнорується (бос під час зміни фази). Скидає той, хто ввімкнув.</summary>
+        public bool IsInvulnerable { get; set; }
+
         private void Awake()
         {
             _critDamageService = AllServices.Container.Single<ICritDamageService>();
@@ -46,7 +49,7 @@ namespace CodeBase.Enemy
 
         public void TakeDamage(float damage, bool isCritical)
         {
-            if (Current <= 0) return;
+            if (Current <= 0 || IsInvulnerable) return;
 
             Vector3 spawnPos = GetSpawnPosition();
 
@@ -64,7 +67,7 @@ namespace CodeBase.Enemy
         /// </summary>
         public void TakeStatusDamage(float damage)
         {
-            if (Current <= 0) return;
+            if (Current <= 0 || IsInvulnerable) return;
 
             Vector3 spawnPos = GetSpawnPosition();
 

@@ -47,6 +47,7 @@ namespace CodeBase.UI
         [SerializeField] private GameObject _wavePanel;
         [Header("Boss")]
         [SerializeField] private CodeBase.UI.Elements.BossHealthBar _bossHealthBar;
+        [SerializeField] private CodeBase.UI.Elements.BossIntroBanner _bossIntroBanner;
         [Header("Ability")]
         [SerializeField] private Image _abilityIcon;
         [SerializeField] private Slider _abilitySlider;
@@ -174,6 +175,10 @@ namespace CodeBase.UI
         {
             if (_bossHealthBar != null)
                 _bossHealthBar.Show(boss);
+
+            CodeBase.Enemy.BossBrain brain = boss.GetComponent<CodeBase.Enemy.BossBrain>();
+            if (_bossIntroBanner != null && brain != null && brain.Data != null)
+                _bossIntroBanner.Play(brain.Data.displayName);
         }
 
         private void Subscribe()
