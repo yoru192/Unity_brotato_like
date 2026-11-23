@@ -27,7 +27,7 @@ UI kit: `Assets/Layer Lab/GUI Pro-FantasyRPG/ResourcesData/` (sprites under `Spr
 ## Priorities (suggested order)
 
 1. ~~Canvas scaling~~ — done.
-2. ~~Show the essence reward~~ — done (`Text_EssenceReward` under `PlayContinue/Continue` in both prefabs, wired to `_essenceRewardText`). Follow-ups: replace the word "essence" with the gem icon used in the Heroes header; consider a small run summary (nodes cleared, essence gained, total).
+2. ~~Show the essence reward~~ — done; replaced on 2026-11-23 by a run summary (see Win / Game Over).
 3. ~~In-combat HUD readability~~ — done 2026-11-17 (see "Style reference" below; `HudUI` now sizes bar fills via anchors instead of `fillAmount`, which also fixed the HP bar never shrinking).
 4. **One visual style.** Four styles are mixed: flat cartoon purple (Menu, Heroes, Pause, Game Over), teal/gold "book" (Choose Upgrade), realistic painted art (Shop, Campfire), dark ink map — all over a lime pixel battlefield. **Chosen base (2026-11-17): dark purple + gold accent** (Heroes/Pause look). Converted on 2026-11-17: every screen (HUD, Menu, Heroes, Meta tree, Map, Choose Upgrade, Shop, Campfire, Pause, Settings, Win/Game Over); painted backgrounds kept under a purple dim. Only small follow-ups remain in "Per screen".
 
@@ -53,24 +53,20 @@ Used by Pause/Settings and the HUD — reuse for other screens.
 **Heroes (LoadoutSelect)** — done 2026-11-17: slots without a hero (`HeroTypeId.Unknown`) are hidden by `LoadoutSelectUI` (a slot shows up once its `heroTypeId` is set), the first hero is pre-selected, stat bars show the real value (`StatBar.valueText`) with reference maxima tuned in the scene, hero descriptions rewritten.
 
 **Map** — restyled 2026-11-17 (round kit nodes 96 px: ring `SlotFrame_Circle_White_Border` tinted by state + inner `SlotFrame_Circle_White_Bg`, gold `FocusGlow` and a type caption only on available nodes; "LVL n" / "LOCKED" labels removed; palette edge colours; light purple tint; HUD-style balance plate). `MapNodeView` no longer builds visuals in code — the hierarchy lives in `MapNode.prefab`.
-- The map is a vertical `ScrollRect` (10 rows), so the top rows are reachable by scrolling — a `TopFade` gradient now hints at that. Scrollbars are invisible; consider a visible one or auto-scroll to the current row if players miss it.
+- The map is a vertical `ScrollRect` (10 rows) with a `TopFade` hint. Since 2026-11-23 `MapView` glides (unscaled time) after every render so the lowest available row sits at `focusViewportFraction` (0.35) of the viewport.
 
 **Pause** — done 2026-11-17: purple dim (alpha 0.9) over the frozen game instead of the opaque panel, Cinzel title, Continue is a big gold button, Settings / Restart / Give Up are a row of smaller round buttons. The HUD is hidden while paused (`HudUI.SetVisible` toggles only its Canvas — `PauseInputHandler` lives on the HUD object and must keep running).
 
 **Settings** — done 2026-11-17 (in `SettingsScreen.prefab`, so Pause and Menu both get it): resolution dropdown restyled as a framed dark plate with a gold arrow and a dark list with gold hover/scrollbar; right column tightened so Stats clears the bottom edge; SFX uses the sword icon (`function_icon_sword_2`); Cinzel title.
 
-**Choose Upgrade** — restyled 2026-11-17 (purple dim over the paused game, kit `CardFrame_01` cards: grey frame for stats, purple frame + corner decor + "PERK" tag for perks via `UpgradeButton.perkFrame/statFrame`, whole card is the click target, gold Reroll with coin). Remaining:
-- (Done 2026-11-17: all 11 perks use label-free icons from `Assets/500FreeSkillIcons/Icons` instead of the labelled Gemini sheet; stat upgrades keep the labelled icons since their labels match. Description box is 80 px with auto-size down to 13 so long texts never reach the button.)
-- Stat upgrade names mix "sprint" and "stamina" (`+ 100 max sprint`, `+ 20 regen sprint rate`) while the HUD and descriptions say Stamina; the asset file `+10 regen sprint rate` actually gives 20. Consider renaming for consistency.
+**Choose Upgrade** — done 2026-11-17 (purple dim over the paused game, kit `CardFrame_01` cards: grey frame for stats, purple frame + corner decor + "PERK" tag for perks via `UpgradeButton.perkFrame/statFrame`, whole card is the click target, gold Reroll with coin). All 11 perks use label-free icons from `Assets/500FreeSkillIcons/Icons`; stat upgrades keep the labelled icons since their labels match. Description box is 80 px with auto-size down to 13. Stamina upgrades renamed on 2026-11-23 (`+100 max stamina`, `+20 stamina regen`).
 
 **Shop** — restyled 2026-11-17 (painted background kept under a purple dim, opaque kit cards with an icon slot, coin + gold price that turns red only when unaffordable and hides the coin when SOLD, gold Buy / Leave buttons, balance plate like the HUD; `[Upgrade]` prefix removed from the three `itemName`s). Remaining:
 - (Descriptions for all stat upgrades and shop items were filled on 2026-11-17 from what the code actually does; shop cards grew to 460 px to fit them.)
 
-**Campfire** — restyled 2026-11-17 (background stretched 16% past the right/bottom edge so the Gemini watermark is off-screen, light purple dim, kit cards like the Shop, gold buttons, reward button "Get" → "Continue"; the rest label now shows the real heal % incl. the `CampfireWarmth` meta upgrade). Remaining:
-- The reward card always uses the grey frame — could use the purple perk frame like Choose Upgrade when the rolled upgrade is a perk.
+**Campfire** — done 2026-11-17 (background stretched 16% past the right/bottom edge so the Gemini watermark is off-screen, light purple dim, kit cards like the Shop, gold buttons, reward button "Get" → "Continue"; the rest label shows the real heal % incl. the `CampfireWarmth` meta upgrade). Since 2026-11-23 the reward card switches to the purple perk frame + "PERK" tag for perks (`CampfireScreen.upgradePerkFrame/upgradeStatFrame`).
 
-**Win / Game Over** — done 2026-11-17: HUD hidden (via `IGameFactory.Hud`), purple dim 0.9, Cinzel title, "Play Again" is the primary gold button, Menu a smaller dark one below. Remaining:
-- (Done 2026-11-17: Victory uses the white `LineTextFrame_06_White_Glow` + `_White_Line` tinted gold; Game Over keeps the red `LineTextFrame_06_Demo`.)
+**Win / Game Over** — done 2026-11-17: HUD hidden (via `IGameFactory.Hud`), purple dim 0.9, Cinzel title (Victory: white `LineTextFrame_06_White_Glow` + `_White_Line` tinted gold; Game Over: red `LineTextFrame_06_Demo`), "Play Again" is the primary gold button, Menu a smaller dark one below. Since 2026-11-23 a `RunSummary` plate (`RunSummaryView`) shows nodes cleared (+ "NEW BEST!" badge), essence earned and total with gem icons; `IMetaProgressService.CompleteRun` returns the `RunSummary`.
 
 **Meta upgrade tree** — restyled 2026-11-17 (gold buy button with essence gem, `statusText` shows MAX / branch requirement instead of a dead button, Cinzel title and branch headers, framed dark branch panels and nodes, essence plate like the HUD balance).
 
