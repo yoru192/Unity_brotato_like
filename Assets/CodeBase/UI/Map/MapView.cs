@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using CodeBase.Infrastructure.Map;
 using CodeBase.Infrastructure.Services;
@@ -32,6 +33,12 @@ namespace CodeBase.UI.Map
         [SerializeField] private float edgeThickness = 7f;
         [SerializeField] private float edgeNodePadding = 42f;
 
+        [Header("Auto Scroll")]
+        [Tooltip("Where the current row ends up in the viewport: 0 = bottom edge, 1 = top edge.")]
+        [Range(0f, 1f)]
+        [SerializeField] private float focusViewportFraction = 0.35f;
+        [SerializeField] private float scrollToCurrentDuration = 0.5f;
+
         [Header("Edge Colors")]
         [SerializeField] private Color edgeColor = new Color(0.44f, 0.5f, 0.64f, 0.45f);
         [SerializeField] private Color openEdgeColor = new Color(1f, 0.75f, 0.22f, 1f);
@@ -41,9 +48,14 @@ namespace CodeBase.UI.Map
         private IGameStateMachine _stateMachine;
         private IPersistentProgressService _progress;
         private IBalanceService _balanceService;
+        private ScrollRect _scrollRect;
+        private Coroutine _scrollRoutine;
 
         private void Awake()
         {
+            if (content != null)
+                _scrollRect = content.GetComponentInParent<ScrollRect>();
+
             _mapService = AllServices.Container.Single<IMapService>();
             _stateMachine = AllServices.Container.Single<IGameStateMachine>();
             _progress = AllServices.Container.Single<IPersistentProgressService>();
@@ -102,6 +114,63 @@ namespace CodeBase.UI.Map
             }
 
             DrawEdges(map, views);
+            ScrollToCurrentRow(map);
+        }
+
+        // Glide the content so the lowest row the player can pick from sits in view,
+        // otherwise later rows (the map is taller than the screen) start off-screen.
+        private void ScrollToCurrentRow(GeneratedMap map)
+        {
+            if (_scrollRect == null)
+                return;
+
+            RectTransform viewport = _scrollRect.viewport != null
+                ? _scrollRect.viewport
+                : (RectTransform)_scrollRect.transform;
+
+            Canvas.ForceUpdateCanvases();
+            float viewportHeight = viewport.rect.height;
+            float maxScroll = Mathf.Max(0f, content.sizeDelta.y - viewportHeight);
+            float rowY = CurrentRow(map) * rowSpacing + verticalPadding;
+            float target = -Mathf.Clamp(rowY - viewportHeight * focusViewportFraction, 0f, maxScroll);
+
+            if (_scrollRoutine != null)
+                StopCoroutine(_scrollRoutine);
+            _scrollRoutine = StartCoroutine(ScrollContentTo(target));
+        }
+
+        private IEnumerator ScrollContentTo(float targetY)
+        {
+            _scrollRect.StopMovement();
+            Vector2 start = content.anchoredPosition;
+            Vector2 end = new Vector2(start.x, targetY);
+
+            // Unscaled: the map can be shown while timeScale is 0 (after a paused overlay).
+            for (float t = 0f; t < scrollToCurrentDuration; t += Time.unscaledDeltaTime)
+            {
+                content.anchoredPosition = Vector2.Lerp(start, end, Mathf.SmoothStep(0f, 1f, t / scrollToCurrentDuration));
+                yield return null;
+            }
+
+            content.anchoredPosition = end;
+            _scrollRoutine = null;
+        }
+
+        // Lowest row with an available node; when nothing is available, the highest completed row.
+        private static int CurrentRow(GeneratedMap map)
+        {
+            int lowestAvailable = int.MaxValue;
+            int highestCompleted = 0;
+
+            foreach (MapNode node in map.AllNodes)
+            {
+                if (node.State == NodeState.Available && node.Row < lowestAvailable)
+                    lowestAvailable = node.Row;
+                else if (node.State == NodeState.Completed && node.Row > highestCompleted)
+                    highestCompleted = node.Row;
+            }
+
+            return lowestAvailable != int.MaxValue ? lowestAvailable : highestCompleted;
         }
 
         private void DrawEdges(GeneratedMap map, Dictionary<MapNode, MapNodeView> views)
