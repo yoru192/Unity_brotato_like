@@ -35,7 +35,7 @@ Boss work and battlefield ideas, collected on 2026-11-23. Tick items off or dele
 ### Current state (2026-11-23)
 
 - **One map for every node:** a single ~200×200 map baked into `Assets/Scenes/Main.unity` (Grid → Ground / Path / Wall Shadows / Walls tilemaps, sorting −10…−7). It uses rule tiles from the Avesta Tilemap Generator **sample** (`Plugins/BerserkPixel/.../Samples/Tilemap/Tiles`), with 14 spawn points. Every map node uses this map.
-- **Camera:** orthographic size 20 (checked 2026-11-24; an earlier note said 5), so about 71×40 units are visible. On the 40×24 `Arena_Default` the whole arena fits on screen with empty margins around it — camera size vs arena size still has to be decided.
+- **Camera:** orthographic size 20 (checked 2026-11-24; an earlier note said 5), so about 71×40 units are visible. Decided in PR #2 review: the arena must be bigger than the camera view, so `Arena_Default` is 108×60 (~1.5 views per axis) with ortho 20 kept.
 
 ### Problems
 
@@ -53,7 +53,7 @@ Boss work and battlefield ideas, collected on 2026-11-23. Tick items off or dele
 
 ### Level design rules for arenas
 
-- Size ~2–3 screens (~40×24 units), clearly bounded — the player can't just run away.
+- Bigger than the camera view (~1.5 views per axis, 108×60 at ortho 20), clearly bounded — the player can't just run away.
 - Open centre for kiting; obstacles create maneuver points, not a maze.
 - No dead ends or narrow pockets: every passage at least 3–4 units wide.
 - Enemies spawn off-screen on the arena edge.
@@ -68,7 +68,8 @@ Boss work and battlefield ideas, collected on 2026-11-23. Tick items off or dele
 - **Procedural dressing by `mapSeed + node.Id`** (like `MapLevelLibrary.WaveConfigFor`): choose layout from the pool, mirror/rotate, scatter small obstacles and decor in allowed zones, slight ground tint variation. Same node → same arena.
 - **Validation:** after placing obstacles, keep passages ≥ 3–4 units and no unreachable areas; then `AstarPath.Scan`.
 - **Look on existing art:** darker, desaturated ground (`Tilemap.color`) to match "Duskward" and the purple UI; URP 2D lighting (darker cooler global light + warm light around the player); soft vignette.
-- **Camera:** decide between a closer camera (arena = 2–3 screens, edges off-screen) and the whole arena on screen (Brotato-style, then fill the margins / fit the arena to the view).
+- **Camera / arena size:** arena bigger than the view (108×60 at ortho 20). Revisit only if characters feel too small.
+- **Spawn off-screen:** `EnemySpawner.minDistanceFromPlayer` (5) is far smaller than the view (~71×40), so enemies can appear right next to the hero. Pick spawn points outside the camera view instead (boss `bossSpawnDistance` 9 too).
 
 **Step 2: biomes and a boss arena.**
 - **Biomes:** 2–3 layout pools that change by map row (forest → swamp → hive) / node type. Boss nodes always get their own arena.
