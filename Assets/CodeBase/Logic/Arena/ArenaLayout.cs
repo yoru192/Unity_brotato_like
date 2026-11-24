@@ -1,38 +1,34 @@
-using System.Collections.Generic;
 using Pathfinding;
 using UnityEngine;
 
 namespace CodeBase.Logic.Arena
 {
     /// <summary>
-    /// Root of an arena layout prefab: playable bounds, hero start and enemy spawn points.
-    /// Instantiated by the factory into the Arena scene; LoadLevelState reads the level data from it
-    /// instead of a per-scene LevelStaticData.
+    /// Root of an arena layout prefab: playable bounds and hero start. Instantiated by the factory
+    /// into the Arena scene; LoadLevelState reads the level data from it instead of a per-scene
+    /// LevelStaticData. Enemies spawn just off-screen around the hero (EnemySpawner), so the
+    /// layout has no fixed spawn points.
     /// </summary>
     public class ArenaLayout : MonoBehaviour
     {
-        [SerializeField] private Vector2 size = new Vector2(40f, 24f);
+        [SerializeField] private Vector2 size = new Vector2(324f, 180f);
         [SerializeField] private Transform heroSpawn;
-        [Tooltip("Every child transform is an enemy spawn point. Keep them on the arena edge.")]
-        [SerializeField] private Transform spawnPointsRoot;
+        [SerializeField] private ArenaGround ground;
 
         public Rect Bounds => new Rect((Vector2)transform.position - size * 0.5f, size);
 
         public Vector3 HeroPosition => heroSpawn != null ? heroSpawn.position : transform.position;
 
-        public List<Vector2> SpawnPositions()
+        /// <summary>Builds the ground and fits + rescans the scene's grid graph to the arena bounds.</summary>
+        public void Build()
         {
-            var positions = new List<Vector2>();
-            if (spawnPointsRoot == null)
-                return positions;
+            if (ground != null)
+                ground.Fill(Bounds);
 
-            foreach (Transform point in spawnPointsRoot)
-                positions.Add(point.position);
-            return positions;
+            ScanNavigation();
         }
 
-        /// <summary>Fits the scene's grid graph to the arena bounds and rescans it (obstacles included).</summary>
-        public void ScanNavigation()
+        private void ScanNavigation()
         {
             AstarPath astar = AstarPath.active;
             if (astar == null)
@@ -63,13 +59,6 @@ namespace CodeBase.Logic.Arena
             {
                 Gizmos.color = Color.green;
                 Gizmos.DrawWireSphere(heroSpawn.position, 0.5f);
-            }
-
-            if (spawnPointsRoot != null)
-            {
-                Gizmos.color = Color.red;
-                foreach (Transform point in spawnPointsRoot)
-                    Gizmos.DrawWireSphere(point.position, 0.4f);
             }
         }
     }

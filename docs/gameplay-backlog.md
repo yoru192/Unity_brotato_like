@@ -35,13 +35,13 @@ Boss work and battlefield ideas, collected on 2026-11-23. Tick items off or dele
 ### Current state (2026-11-23)
 
 - **One map for every node:** a single ~200×200 map baked into `Assets/Scenes/Main.unity` (Grid → Ground / Path / Wall Shadows / Walls tilemaps, sorting −10…−7). It uses rule tiles from the Avesta Tilemap Generator **sample** (`Plugins/BerserkPixel/.../Samples/Tilemap/Tiles`), with 14 spawn points. Every map node uses this map.
-- **Camera:** orthographic size 20 (checked 2026-11-24; an earlier note said 5), so about 71×40 units are visible. Decided in PR #2 review: the arena must be bigger than the camera view, so `Arena_Default` is 108×60 (~1.5 views per axis) with ortho 20 kept.
+- **Camera:** orthographic size 20 (checked 2026-11-24; an earlier note said 5), so about 71×40 units are visible. Decided in PR #2 review (reference: Vampire Survivors): a big map, `Arena_Default` is 324×180 (~4.5 views per axis) with ortho 20 kept.
 
 ### Problems
 
 1. **Style clash:** pixel-art lime ground under HD cartoon characters (HeroEditor / FantasyMonsters) and the dark-purple + gold UI. The brown wall blobs don't read as walls or holes.
 2. **Readability:** the saturated lime ground competes with gameplay colours (green boss acid, green stamina bar, red warning circles). Ground should be the quietest layer on screen.
-3. **Arena too big for the genre:** survivor games use a compact, bounded arena (2–3 screens) where enemies close in and positioning matters. Here enemies spawn far away (the boss first spawned 77 units off) and the player can just run.
+3. **Spawning far away:** on the old map enemies spawned at fixed points far from the player (the boss first spawned 77 units off). Fixed for `Arena`: enemies spawn just off-screen around the view.
 4. **No variety:** 10 map rows, Elite and Boss all play on the same field.
 5. **Flat image:** no lighting, no vignette, no decor.
 
@@ -53,10 +53,10 @@ Boss work and battlefield ideas, collected on 2026-11-23. Tick items off or dele
 
 ### Level design rules for arenas
 
-- Bigger than the camera view (~1.5 views per axis, 108×60 at ortho 20), clearly bounded — the player can't just run away.
-- Open centre for kiting; obstacles create maneuver points, not a maze.
+- Big map like Vampire Survivors: 324×180 at ortho 20 (~4.5 views per axis), bounded by invisible walls; the player roams, enemies follow.
+- Obstacles are scattered landmarks and maneuver points across the map, not a maze.
 - No dead ends or narrow pockets: every passage at least 3–4 units wide.
-- Enemies spawn off-screen on the arena edge.
+- Enemies spawn just outside the camera view (done: `EnemySpawner.SpawnOffscreen`).
 - Ground is the quietest layer; orientation comes from big obstacles/landmarks.
 - Boss arena: round/oval, more open, atmosphere on the edges.
 
@@ -64,12 +64,12 @@ Boss work and battlefield ideas, collected on 2026-11-23. Tick items off or dele
 
 **Step 1: hybrid arena system on existing art.**
 - **One `Arena` scene** that loads an arena layout prefab via the factory (Addressables); `Main` stays for comparison until the new one is better. No scene per map.
-- **Layout prefab:** bounds/border, ground, big obstacles (with colliders), spawn points on the edge, allowed zones for random obstacles/props.
+- **Layout prefab:** bounds/border, ground (`ArenaGround` fills the tilemap at load), big obstacles (with colliders), allowed zones for random obstacles/props.
 - **Procedural dressing by `mapSeed + node.Id`** (like `MapLevelLibrary.WaveConfigFor`): choose layout from the pool, mirror/rotate, scatter small obstacles and decor in allowed zones, slight ground tint variation. Same node → same arena.
 - **Validation:** after placing obstacles, keep passages ≥ 3–4 units and no unreachable areas; then `AstarPath.Scan`.
 - **Look on existing art:** darker, desaturated ground (`Tilemap.color`) to match "Duskward" and the purple UI; URP 2D lighting (darker cooler global light + warm light around the player); soft vignette.
-- **Camera / arena size:** arena bigger than the view (108×60 at ortho 20). Revisit only if characters feel too small.
-- **Spawn off-screen:** `EnemySpawner.minDistanceFromPlayer` (5) is far smaller than the view (~71×40), so enemies can appear right next to the hero. Pick spawn points outside the camera view instead (boss `bossSpawnDistance` 9 too).
+- **Camera / arena size:** done — 324×180 at ortho 20. Revisit only if characters feel too small.
+- **Spawn off-screen:** done — `EnemySpawner.SpawnOffscreen` picks a point on a ring just outside the camera view (`offscreenMargin`), clamped to the arena; centred on the camera, since it is clamped near the edges. The boss still spawns `bossSpawnDistance` (9) from the player, i.e. on screen (intended).
 
 **Step 2: biomes and a boss arena.**
 - **Biomes:** 2–3 layout pools that change by map row (forest → swamp → hive) / node type. Boss nodes always get their own arena.
@@ -84,5 +84,5 @@ Boss work and battlefield ideas, collected on 2026-11-23. Tick items off or dele
 ### Technical notes
 
 - After changing walls or obstacles, rescan the A* graph (`AstarPath.Scan`), or enemies will path through the new obstacles.
-- With a compact hand-made arena, the Avesta generator may not be needed at all; 2–3 hand-built arenas or arena prefabs are simpler.
-- `EnemySpawner` picks spawn points at least `minDistanceFromPlayer` (5) away. The boss uses `SpawnUntracked(id, preferredDistance)`, which takes the point closest to that distance. On a compact arena, recheck both.
+- The Avesta generator is not needed for arenas; layout prefabs + seeded dressing are simpler.
+- Legacy `Main` still uses fixed spawn points (`minDistanceFromPlayer` 5); `Arena` uses off-screen spawning. A big map needs a big A* grid (324×180 nodes), scanned at load.

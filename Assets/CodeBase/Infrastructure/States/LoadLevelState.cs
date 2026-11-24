@@ -72,24 +72,22 @@ namespace CodeBase.Infrastructure.States
             // Legacy scenes (Main) have the map baked in and a LevelStaticData keyed by scene name;
             // every other combat scene builds its battlefield from an arena layout prefab.
             LevelStaticData levelData = LevelStaticData();
-            Vector3 heroPosition;
-            List<Vector2> spawnPositions;
             if (levelData != null)
             {
-                heroPosition = levelData.initialHeroPosition;
-                spawnPositions = levelData.spawnersPosition;
-            }
-            else
-            {
-                ArenaLayout arena = await _gameFactory.CreateArena(AssetsAddress.DefaultArenaPath);
-                arena.ScanNavigation();
-                cameraFollow.SetBounds(arena.Bounds);
-                heroPosition = arena.HeroPosition;
-                spawnPositions = arena.SpawnPositions();
+                GameObject legacyPlayer = await InitPlayer(levelData.initialHeroPosition, heroType);
+                await _gameFactory.CreateSpawner(levelData.spawnersPosition);
+                await _gameFactory.CreateHud();
+                cameraFollow.Follow(legacyPlayer);
+                return;
             }
 
-            GameObject player = await InitPlayer(heroPosition, heroType);
-            await _gameFactory.CreateSpawner(spawnPositions);
+            ArenaLayout arena = await _gameFactory.CreateArena(AssetsAddress.DefaultArenaPath);
+            arena.Build();
+            cameraFollow.SetBounds(arena.Bounds);
+
+            GameObject player = await InitPlayer(arena.HeroPosition, heroType);
+            GameObject spawner = await _gameFactory.CreateSpawner(new List<Vector2>());
+            spawner.GetComponent<EnemySpawner>().SpawnOffscreen(arena.Bounds, Camera.main);
             await _gameFactory.CreateHud();
             cameraFollow.Follow(player);
         }

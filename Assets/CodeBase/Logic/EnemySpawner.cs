@@ -12,10 +12,20 @@ namespace CodeBase.Logic
         [Header("Spawn Settings")]
         public Transform player;
         public float minDistanceFromPlayer = 5f;
-        
+
+        [Header("Off-screen spawning (arena scenes)")]
+        [Tooltip("How far outside the camera view enemies appear, in units.")]
+        [SerializeField] private float offscreenMargin = 3f;
+        [Tooltip("Keep spawns this far inside the arena bounds.")]
+        [SerializeField] private float boundsInset = 1f;
+
         private IGameFactory _gameFactory;
         private List<GameObject> _spawnedEnemies = new List<GameObject>();
         private List<Vector2> _spawnPositions;
+
+        private bool _spawnOffscreen;
+        private Rect _arenaBounds;
+        private Camera _camera;
 
         public void Construct(IGameFactory gameFactory, List<Vector2> spawnPositions, Transform playerTransform)
         {
@@ -24,15 +34,26 @@ namespace CodeBase.Logic
             player = playerTransform;
         }
 
+        /// <summary>
+        /// Spawns enemies on a ring just outside the camera view around the player (clamped to the arena)
+        /// instead of the fixed spawn points.
+        /// </summary>
+        public void SpawnOffscreen(Rect arenaBounds, Camera viewCamera)
+        {
+            _spawnOffscreen = true;
+            _arenaBounds = arenaBounds;
+            _camera = viewCamera;
+        }
+
         public async Task<GameObject> TrySpawnEnemy(EnemyTypeId enemyTypeId, int maxAlive)
         {
             if (_spawnedEnemies.Count >= maxAlive)
                 return null;
 
-            if (_spawnPositions == null || _spawnPositions.Count == 0)
+            if (!_spawnOffscreen && (_spawnPositions == null || _spawnPositions.Count == 0))
                 return null;
 
-            Vector2 spawnPosition = GetValidSpawnPosition();
+            Vector2 spawnPosition = _spawnOffscreen ? OffscreenSpawnPosition() : GetValidSpawnPosition();
             GameObject enemy = await _gameFactory.CreateEnemy(enemyTypeId, spawnPosition);
 
             if (enemy != null)
@@ -65,6 +86,9 @@ namespace CodeBase.Logic
 
         private Vector2 SpawnPositionNearDistance(float preferredDistance)
         {
+            if (_spawnOffscreen && player != null)
+                return ClampToArena((Vector2)player.position + Random.insideUnitCircle.normalized * preferredDistance);
+
             if (_spawnPositions == null || _spawnPositions.Count == 0)
                 return player != null ? (Vector2)player.position + Vector2.right * preferredDistance : Vector2.zero;
             if (player == null)
@@ -95,6 +119,54 @@ namespace CodeBase.Logic
                 if (enemy.TryGetComponent(out EnemyHealth health) && health.Current > 0f)
                     health.TakeStatusDamage(health.Current);
             }
+        }
+
+        private Vector2 OffscreenSpawnPosition()
+        {
+            // Centre on the camera, not the player: near the arena edge the camera is clamped and the
+            // player is no longer in the middle of the view.
+            Vector2 center = _camera != null ? (Vector2)_camera.transform.position
+                : player != null ? (Vector2)player.position : _arenaBounds.center;
+            float halfHeight = _camera != null ? _camera.orthographicSize : 20f;
+            float halfWidth = _camera != null ? halfHeight * _camera.aspect : halfHeight * 16f / 9f;
+            Vector2 half = new Vector2(halfWidth + offscreenMargin, halfHeight + offscreenMargin);
+
+            // A random point on the rectangle just outside the view. Near the arena edge one side may be
+            // outside the walls; clamping would pull it back on screen, so retry a few times.
+            Vector2 candidate = center;
+            for (int attempt = 0; attempt < 8; attempt++)
+            {
+                candidate = ClampToArena(center + PointOnRectPerimeter(half));
+                Vector2 offset = candidate - center;
+                if (Mathf.Abs(offset.x) >= half.x - 0.01f || Mathf.Abs(offset.y) >= half.y - 0.01f)
+                    return candidate;
+            }
+
+            return candidate;
+        }
+
+        private static Vector2 PointOnRectPerimeter(Vector2 half)
+        {
+            float perimeter = 4f * (half.x + half.y);
+            float t = Random.value * perimeter;
+
+            if (t < 2f * half.x) return new Vector2(-half.x + t, half.y);
+            t -= 2f * half.x;
+            if (t < 2f * half.x) return new Vector2(-half.x + t, -half.y);
+            t -= 2f * half.x;
+            if (t < 2f * half.y) return new Vector2(-half.x, -half.y + t);
+            t -= 2f * half.y;
+            return new Vector2(half.x, -half.y + t);
+        }
+
+        private Vector2 ClampToArena(Vector2 position)
+        {
+            if (!_spawnOffscreen)
+                return position;
+
+            return new Vector2(
+                Mathf.Clamp(position.x, _arenaBounds.xMin + boundsInset, _arenaBounds.xMax - boundsInset),
+                Mathf.Clamp(position.y, _arenaBounds.yMin + boundsInset, _arenaBounds.yMax - boundsInset));
         }
 
         private Vector2 GetValidSpawnPosition()
