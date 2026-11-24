@@ -17,6 +17,7 @@ using CodeBase.Infrastructure.Services.ShopService;
 using CodeBase.Infrastructure.Services.Upgrade;
 using CodeBase.Infrastructure.Services.Vfx;
 using CodeBase.Logic;
+using CodeBase.Logic.Arena;
 using CodeBase.Player;
 using CodeBase.Player.Movement;
 using CodeBase.StaticData;
@@ -91,6 +92,12 @@ namespace CodeBase.Infrastructure.Factory
         {
         }
 
+
+        public async Task<ArenaLayout> CreateArena(string address)
+        {
+            GameObject arena = await InstantiateRegistered(address, Vector3.zero);
+            return arena.GetComponent<ArenaLayout>();
+        }
 
         public async Task<GameObject> CreatePlayer(Vector3 at, HeroTypeId heroType)
         {

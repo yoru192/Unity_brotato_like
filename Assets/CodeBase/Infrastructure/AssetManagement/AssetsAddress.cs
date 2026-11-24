@@ -15,5 +15,6 @@
         public const string UpgradeScreenPath = "UpgradeScreen";
         public const string ShopScreenPath = "ShopScreen";
         public const string CampfireScreenPath = "CampfireScreen";
+        public const string DefaultArenaPath = "Arena_Default";
     }
 }

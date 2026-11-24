@@ -1,10 +1,13 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using CodeBase.CameraLogic;
+using CodeBase.Infrastructure.AssetManagement;
 using CodeBase.Infrastructure.Factory;
 using CodeBase.Infrastructure.Services;
 using CodeBase.Infrastructure.Services.PersistentProgress;
 using CodeBase.Infrastructure.Services.ProgressService;
 using CodeBase.Logic;
+using CodeBase.Logic.Arena;
 using CodeBase.Player;
 using CodeBase.StaticData;
 using CodeBase.StaticData.Hero;
@@ -63,35 +66,40 @@ namespace CodeBase.Infrastructure.States
 
         private async Task InitGameWorld()
         {
-            LevelStaticData levelData = LevelStaticData();
-            
             HeroTypeId heroType = _persistentProgressService.Progress.worldData.selectedHero;
-            
-            GameObject player = await InitPlayer(levelData, heroType);
-            await InitSpawner(levelData);
-            await InitHud();
-            CameraFollow(player);
-        }
-        
-        private void CameraFollow(GameObject hero) =>
-            Camera.main.GetComponent<CameraFollow>().Follow(hero);
-        
-        private async Task<GameObject> InitPlayer(LevelStaticData levelData, HeroTypeId heroType)
-        {
-            GameObject player = await _gameFactory.CreatePlayer(levelData.initialHeroPosition, heroType);
-            player.GetComponent<PlayerDeath>().Construct(_stateMachine);
-            
-            return player;
-        }
-        
-        private async Task InitHud()
-        {
+            CameraFollow cameraFollow = Camera.main.GetComponent<CameraFollow>();
+
+            // Legacy scenes (Main) have the map baked in and a LevelStaticData keyed by scene name;
+            // every other combat scene builds its battlefield from an arena layout prefab.
+            LevelStaticData levelData = LevelStaticData();
+            Vector3 heroPosition;
+            List<Vector2> spawnPositions;
+            if (levelData != null)
+            {
+                heroPosition = levelData.initialHeroPosition;
+                spawnPositions = levelData.spawnersPosition;
+            }
+            else
+            {
+                ArenaLayout arena = await _gameFactory.CreateArena(AssetsAddress.DefaultArenaPath);
+                arena.ScanNavigation();
+                cameraFollow.SetBounds(arena.Bounds);
+                heroPosition = arena.HeroPosition;
+                spawnPositions = arena.SpawnPositions();
+            }
+
+            GameObject player = await InitPlayer(heroPosition, heroType);
+            await _gameFactory.CreateSpawner(spawnPositions);
             await _gameFactory.CreateHud();
+            cameraFollow.Follow(player);
         }
-        
-        private async Task InitSpawner(LevelStaticData levelData)
+
+        private async Task<GameObject> InitPlayer(Vector3 at, HeroTypeId heroType)
         {
-                await _gameFactory.CreateSpawner(levelData.spawnersPosition);
+            GameObject player = await _gameFactory.CreatePlayer(at, heroType);
+            player.GetComponent<PlayerDeath>().Construct(_stateMachine);
+
+            return player;
         }
 
         

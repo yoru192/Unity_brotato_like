@@ -40,9 +40,13 @@ namespace CodeBase.Infrastructure.States
             _progressService.Progress = NewProgress();
         }
         
+        // Combat scene for map nodes: "Arena" builds the battlefield from an arena layout prefab;
+        // "Main" is the old baked map, kept for comparison.
+        private const string CombatScene = "Arena";
+
         private PlayerProgress NewProgress()
         {
-            return new PlayerProgress("Main");
+            return new PlayerProgress(CombatScene);
         }
     }
 }

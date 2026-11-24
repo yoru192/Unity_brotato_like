@@ -4,6 +4,7 @@ using CodeBase.Ability;
 using CodeBase.Infrastructure.Services;
 using CodeBase.Infrastructure.Services.PersistentProgress;
 using CodeBase.Logic;
+using CodeBase.Logic.Arena;
 using CodeBase.StaticData;
 using CodeBase.StaticData.Enemy;
 using CodeBase.StaticData.Hero;
@@ -25,6 +26,7 @@ namespace CodeBase.Infrastructure.Factory
         GameObject PlayerGameObject { get; set; }
         Task WarmUp();
         void Cleanup();
+        Task<ArenaLayout> CreateArena(string address);
         Task<GameObject> CreatePlayer(Vector3 at, HeroTypeId heroType);
         Task<GameObject> CreateEnemy(EnemyTypeId enemyId, Vector2 position);
         Task<GameObject> CreateSpawner(List<Vector2> spawnPositions);

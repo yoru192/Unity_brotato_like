@@ -57,6 +57,14 @@ namespace CodeBase.CameraLogic
 
         public void Follow(GameObject following) => target = following.transform;
 
+        /// <summary>Clamps the camera to the given arena (overrides the inspector bounds).</summary>
+        public void SetBounds(Rect bounds)
+        {
+            useBounds = true;
+            boundsCenter = bounds.center;
+            boundsSize = bounds.size;
+        }
+
         private Vector3 ClampToBounds(Vector3 pos)
         {
             float halfH = cam.orthographicSize;
