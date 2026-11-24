@@ -45,21 +45,38 @@ Boss work and battlefield ideas, collected on 2026-11-23. Tick items off or dele
 4. **No variety:** 10 map rows, Elite and Boss all play on the same field.
 5. **Flat image:** no lighting, no vignette, no decor.
 
-### Plan (cheap → expensive)
+### Decisions (2026-11-24)
 
-**Step 1: no new art, about an evening.** Do it in a **new arena scene** so `Main` stays for comparison; switch via `positionOnLevel.Level`.
-- **Palette:** darker, desaturated ground and paths (tint via `Tilemap.color`) to match "Duskward" and the purple UI.
-- **URP 2D lighting:** a slightly darker, cooler global light plus a warm light around the player. Add a soft vignette (post-processing).
-- **Compact arena ~40×24 units:** a clear border (walls, rocks or darkness) and 3–5 obstacles inside. Spawn points on the arena edge.
+- **Hybrid arenas:** hand-made arena layouts (prefabs) + procedural dressing chosen by seed. Not full procedural generation (it gives little for a survivor arena and easily makes bad pockets/chokepoints), not only hand-made maps (they get repetitive over 10 map rows).
+- **Existing art first**, new ground art later — **do not forget the art step** (see Step 3): without it the style clash stays.
+- **Obstacles matter for gameplay** (cover, kiting around them, pulling enemies through gaps), not just decor like Brotato.
+
+### Level design rules for arenas
+
+- Size ~2–3 screens (~40×24 units), clearly bounded — the player can't just run away.
+- Open centre for kiting; obstacles create maneuver points, not a maze.
+- No dead ends or narrow pockets: every passage at least 3–4 units wide.
+- Enemies spawn off-screen on the arena edge.
+- Ground is the quietest layer; orientation comes from big obstacles/landmarks.
+- Boss arena: round/oval, more open, atmosphere on the edges.
+
+### Plan
+
+**Step 1: hybrid arena system on existing art.**
+- **One `Arena` scene** that loads an arena layout prefab via the factory (Addressables); `Main` stays for comparison until the new one is better. No scene per map.
+- **Layout prefab:** bounds/border, ground, big obstacles (with colliders), spawn points on the edge, allowed zones for random obstacles/props.
+- **Procedural dressing by `mapSeed + node.Id`** (like `MapLevelLibrary.WaveConfigFor`): choose layout from the pool, mirror/rotate, scatter small obstacles and decor in allowed zones, slight ground tint variation. Same node → same arena.
+- **Validation:** after placing obstacles, keep passages ≥ 3–4 units and no unreachable areas; then `AstarPath.Scan`.
+- **Look on existing art:** darker, desaturated ground (`Tilemap.color`) to match "Duskward" and the purple UI; URP 2D lighting (darker cooler global light + warm light around the player); soft vignette.
 - **Camera:** ortho 5 → 6–6.5 so the player sees what is coming.
 
-**Step 2: new ground art.** Needed to close the style gap.
-- **Art set:** a hand-painted top-down cartoon set close to FantasyMonsters, with 1–2 quiet ground tiles plus separate props (rocks, stumps, bushes, bones, mushrooms). The project has nothing suitable; `Assets/Assets/SomeTiles/0x72_DungeonTilesetII` is pixel art too.
-- **Props:** some purely decorative (no collider), some obstacles (with colliders). Y-sorting already works (`TransparencySortMode.CustomAxis` on Y).
-
-**Step 3: biomes and a boss arena.**
-- **Biomes:** 2–3 arena variants that change by map row (forest → swamp → hive), chosen per node type via `LevelStaticData` / `MapLevelLibrary`.
+**Step 2: biomes and a boss arena.**
+- **Biomes:** 2–3 layout pools that change by map row (forest → swamp → hive) / node type. Boss nodes always get their own arena.
 - **Brood Queen arena:** organic hive floor, egg clutches around the edge, slime, green spores in the air, so the boss feels like an event.
+
+**Step 3: new ground art (TODO, needed to close the style gap).**
+- **Art set:** a hand-painted top-down cartoon set close to FantasyMonsters, with 1–2 quiet ground tiles plus separate props (rocks, stumps, bushes, bones, mushrooms). The project has nothing suitable; `Assets/Assets/SomeTiles/0x72_DungeonTilesetII` is pixel art too. The user will look for / buy a set.
+- **Props:** some purely decorative (no collider), some obstacles (with colliders). Y-sorting already works (`TransparencySortMode.CustomAxis` on Y). Swap the art into the existing layout prefabs.
 
 **Small touches:** ambient particles (leaves, spores, fireflies), fading death stains or remains, light fog at the arena edges.
 
